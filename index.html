@@ -170,6 +170,7 @@
       border-color: rgba(17, 19, 24, 0.16);
     }
   </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body class="min-h-screen selection:bg-amber-400/30 selection:text-amber-200">
 <script>
@@ -1283,36 +1284,116 @@ function renderAuthHeader() {
   }
 }
 
+const GOOGLE_OAUTH_CLIENT_ID = "1050613430857-dnjfkt1fs1ecd51najfqtmon6cgeahlo.apps.googleusercontent.com";
+let googleTokenClient = null;
+let googleAccessToken = null;
+
+function initGoogleOAuth() {
+  if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
+    return false;
+  }
+  if (!googleTokenClient) {
+    googleTokenClient = window.google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_OAUTH_CLIENT_ID,
+      scope: 'openid profile email',
+      callback: async (tokenResponse) => {
+        if (tokenResponse && tokenResponse.error) {
+          showToast('Login Google OAuth dibatalkan atau gagal.');
+          return;
+        }
+        googleAccessToken = tokenResponse?.access_token || null;
+        try {
+          let profile = {};
+          if (googleAccessToken) {
+            const resp = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+              headers: { Authorization: `Bearer ${googleAccessToken}` }
+            });
+            if (resp.ok) {
+              profile = await resp.json();
+            }
+          }
+          const email = (profile.email || '').trim().toLowerCase();
+          if (!email) {
+            showToast('Tidak dapat membaca email akun Google.');
+            return;
+          }
+          const role = resolveRoleByEmail(email);
+          const member = (APP_STATE.teamMembers || []).find(
+            m => (m.email || '').toLowerCase() === email
+          );
+          const gcalEl = document.getElementById('gcalToggleInput');
+          const gcal = gcalEl ? gcalEl.checked : true;
+
+          APP_STATE.currentUser = {
+            email,
+            name: profile.name || member?.fullName || email.split('@')[0],
+            nickname: member?.nickname || profile.given_name || email.split('@')[0],
+            photo: profile.picture || APP_ASSETS.FAVICON_LOGO,
+            role,
+            calendarConnected: gcal,
+            calendarEmail: email,
+            authProvider: 'google_oauth'
+          };
+          saveState();
+          applyAssetsAndTheme();
+          renderCurrentView();
+          closeModal();
+          showToast(`Berhasil login Google OAuth sebagai ${APP_STATE.currentUser.nickname}`);
+        } catch (e) {
+          showToast('Gagal memverifikasi profil Google OAuth.');
+        }
+      }
+    });
+  }
+  return true;
+}
+
+function triggerGoogleOAuthLogin() {
+  const ready = initGoogleOAuth();
+  if (!ready || !googleTokenClient) {
+    showToast('Layanan Google OAuth sedang dimuat atau perlu dibuka lewat HTTPS (https://royalpriesthood-phi.vercel.app).');
+    return;
+  }
+  googleTokenClient.requestAccessToken({ prompt: 'select_account' });
+}
+
 function openGoogleSignInModal() {
   const u = APP_STATE.currentUser || {};
   const memberOptions = APP_STATE.teamMembers.map(m =>
     `<option value="${m.email}" ${u.email === m.email ? 'selected' : ''}>${m.nickname} (${m.fullName}) — ${m.email}</option>`
   ).join('');
 
-  openModal('Google Account Sign-In', `
+  openModal('Google OAuth Account Sign-In', `
     <div class="space-y-4 text-xs sm:text-sm">
-      <div class="apple-card-soft p-4 space-y-1.5">
-        <div class="font-bold text-rpGold">Masuk dengan Akun Google</div>
+      <div class="apple-card-soft p-4 space-y-2">
+        <div class="font-bold text-rpGold">Login Google OAuth (royal-priesthood-c43d4)</div>
         <p class="opacity-80 text-xs">
-          Hak akses otomatis menyesuaikan peran yang ditetapkan oleh <strong>Royal Priesthood Manager (RPM)</strong>. Akun <strong>${RPM_PRIMARY_EMAIL}</strong> memiliki otoritas RPM. Jadwal pelayanan pribadi dapat langsung dicatat ke <strong>Google Calendar</strong> akun ini.
+          Masuk langsung menggunakan akun Google terautentikasi pada origin <strong>https://royalpriesthood-phi.vercel.app</strong>. Hak akses otomatis menyesuaikan peran yang ditetapkan oleh <strong>Royal Priesthood Manager (RPM)</strong> (<strong>${RPM_PRIMARY_EMAIL}</strong>).
         </p>
+        <button type="button" onclick="triggerGoogleOAuthLogin()" class="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-full bg-white text-gray-900 hover:bg-gray-100 text-xs sm:text-sm font-bold shadow transition">
+          <span>G</span>
+          <span>Sign in with Google OAuth</span>
+        </button>
       </div>
 
-      <div>
-        <label class="block text-xs font-semibold mb-1.5 opacity-80">Pilih Akun Gmail Terdaftar</label>
-        <select id="googleAccountSelect" onchange="syncRoleFromSelectedEmail()" class="w-full px-3.5 py-2.5 rounded-xl bg-black/25 border border-white/15 text-xs sm:text-sm">
-          ${memberOptions}
-        </select>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="pt-1 border-t border-white/10 space-y-3">
+        <div class="text-[11px] uppercase tracking-wider opacity-65 font-semibold">Atau Pilih / Uji Akun Terdaftar di Database Tim</div>
         <div>
-          <label class="block text-xs font-semibold mb-1.5 opacity-80">Email Gmail</label>
-          <input id="googleEmailInput" type="email" value="${u.email || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15 text-xs sm:text-sm" />
+          <label class="block text-xs font-semibold mb-1.5 opacity-80">Pilih Akun Gmail Terdaftar</label>
+          <select id="googleAccountSelect" onchange="syncRoleFromSelectedEmail()" class="w-full px-3.5 py-2.5 rounded-xl bg-black/25 border border-white/15 text-xs sm:text-sm">
+            ${memberOptions}
+          </select>
         </div>
-        <div>
-          <label class="block text-xs font-semibold mb-1.5 opacity-80">Peran Terdaftar</label>
-          <input id="googleRolePreview" type="text" readonly value="${getRoleDisplayName(resolveRoleByEmail(u.email))}" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs sm:text-sm text-rpGold font-semibold" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1.5 opacity-80">Email Gmail</label>
+            <input id="googleEmailInput" type="email" value="${u.email || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15 text-xs sm:text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1.5 opacity-80">Peran Terdaftar</label>
+            <input id="googleRolePreview" type="text" readonly value="${getRoleDisplayName(resolveRoleByEmail(u.email))}" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs sm:text-sm text-rpGold font-semibold" />
+          </div>
         </div>
       </div>
 
@@ -1326,10 +1407,11 @@ function openGoogleSignInModal() {
 
       <div class="flex items-center justify-between pt-2">
         <button onclick="signOutGoogle()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">Keluar</button>
-        <button onclick="confirmGoogleSignIn()" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold">Lanjutkan dengan Google</button>
+        <button onclick="confirmGoogleSignIn()" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold">Simpan / Masuk Akun</button>
       </div>
     </div>
   `);
+  initGoogleOAuth();
 }
 
 function resolveRoleByEmail(email) {
@@ -1377,6 +1459,11 @@ function confirmGoogleSignIn() {
 }
 
 function signOutGoogle() {
+  const emailToRevoke = APP_STATE.currentUser?.email;
+  if (window.google?.accounts?.oauth2 && emailToRevoke && APP_STATE.currentUser?.authProvider === 'google_oauth') {
+    window.google.accounts.oauth2.revoke(emailToRevoke, () => {});
+  }
+  googleAccessToken = null;
   APP_STATE.currentUser = {
     email: '',
     name: 'Tamu',
@@ -4040,6 +4127,7 @@ function closeModal() {
 document.addEventListener('DOMContentLoaded', () => {
   applyAssetsAndTheme();
   renderCurrentView();
+  initGoogleOAuth();
 });
 </script>
 </body>
