@@ -51,8 +51,8 @@
       --accent-gold: #9E6B24;
     }
     html, body {
-      max-width: 100vw;
-      overflow-x: hidden;
+      max-width: 100%;
+      overflow-x: clip;
     }
     html {
       font-size: calc(15px * var(--app-font-scale));
@@ -63,6 +63,7 @@
       color: var(--text-main);
       transition: background-color 0.25s ease, color 0.25s ease;
       -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
     }
     .apple-glass {
       backdrop-filter: saturate(180%) blur(20px);
@@ -90,6 +91,9 @@
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    #modalBox, #loginGateModal > div:last-child {
+      -webkit-overflow-scrolling: touch;
+    }
     @media print {
       .no-print { display: none !important; }
       body { background: #FFFFFF !important; color: #111111 !important; font-size: 11px !important; }
@@ -114,11 +118,20 @@
     .print-only-header { display: none; }
     /* Adaptive Header & Navigation for Dark and Light Mode */
     .top-header-bar {
-      background-color: rgba(7, 10, 15, 0.90);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 45;
+      background-color: rgba(7, 10, 15, 0.92);
       border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
     }
     html.light .top-header-bar {
-      background-color: rgba(255, 255, 255, 0.92);
+      background-color: rgba(255, 255, 255, 0.95);
       border-bottom: 1px solid rgba(17, 19, 24, 0.10);
     }
     .nav-pill-group {
@@ -209,11 +222,11 @@ const APP_ASSETS = {
 </div>
 
 <!-- TOP NAVIGATION BAR -->
-<header class="no-print sticky top-0 z-40 apple-glass top-header-bar">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-    <div class="flex items-center min-w-0">
+<header class="no-print top-header-bar">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-3">
+    <div class="flex items-center min-w-0 shrink">
       <button onclick="navigateTo('weekly'); handleTripleTapAdmin();" class="flex items-center text-left group focus:outline-none" title="Royal Priesthood (Triple Tap: Whitelist)">
-        <img id="navRpLogo" alt="Royal Priesthood" class="h-8 sm:h-10 max-w-[175px] sm:max-w-[230px] w-auto object-contain" />
+        <img id="navRpLogo" alt="Royal Priesthood" class="h-7 sm:h-9 max-w-[145px] sm:max-w-[230px] w-auto object-contain adapt-logo-png" />
       </button>
     </div>
 
@@ -227,7 +240,7 @@ const APP_ASSETS = {
       <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Prayer Wall</button>
     </nav>
 
-    <div class="flex items-center gap-1.5 sm:gap-2">
+    <div class="flex items-center gap-1 sm:gap-2 shrink-0">
       <div class="hidden sm:flex items-center bg-white/[0.06] border border-white/[0.1] rounded-full p-0.5" title="Ukuran Font">
         <button onclick="adjustFontSize(-0.08)" class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hover:bg-white/10 transition" aria-label="Perkecil Font">A-</button>
         <span id="fontScaleLabel" class="px-1.5 text-[11px] font-semibold opacity-75">100%</span>
@@ -249,30 +262,46 @@ const APP_ASSETS = {
     </div>
   </div>
 
-  <div class="lg:hidden flex items-center gap-1.5 px-4 py-2 overflow-x-auto no-scrollbar border-t border-current/10">
-    <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Weekly Dashboard</button>
+  <div class="lg:hidden flex items-center gap-1 px-2.5 py-1.5 overflow-x-auto no-scrollbar border-t border-current/10">
+    <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Weekly</button>
     <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SCHEDULE</button>
     <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SETLIST</button>
     <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Song Bank</button>
-    <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Service Rundown</button>
-    <button data-nav="team" onclick="navigateTo('team')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Team Database</button>
-    <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Prayer Wall</button>
+    <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Rundown</button>
+    <button data-nav="team" onclick="navigateTo('team')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Team</button>
+    <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Prayer</button>
   </div>
 </header>
 
+<!-- FIXED HEADER SPACER -->
+<div class="header-spacer h-[96px] lg:h-[64px] shrink-0 no-print" aria-hidden="true"></div>
+
 <!-- MOBILE DRAWER -->
 <div id="mobileDrawer" class="no-print fixed inset-0 z-50 hidden">
-  <div onclick="toggleMobileDrawer()" class="fixed inset-0 bg-black/65 backdrop-blur-sm"></div>
-  <div class="fixed right-0 top-0 bottom-0 w-72 apple-card rounded-none p-5 flex flex-col justify-between overflow-y-auto">
-    <div>
-      <div class="flex items-center justify-between pb-4 border-b border-white/10">
-        <span class="font-bold text-sm tracking-wide text-rpGold">ROYAL PRIESTHOOD</span>
-        <button onclick="toggleMobileDrawer()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">✕</button>
+  <div onclick="toggleMobileDrawer()" class="fixed inset-0 bg-black/65 backdrop-blur-sm transition-opacity"></div>
+  <div class="fixed right-0 top-0 bottom-0 w-80 max-w-[85vw] apple-card rounded-none p-5 flex flex-col justify-between overflow-y-auto shadow-2xl border-l border-white/10">
+    <div class="space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <span class="font-extrabold text-sm tracking-wide text-rpGold">ROYAL PRIESTHOOD</span>
+        <button onclick="toggleMobileDrawer()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-sm font-bold transition">✕</button>
       </div>
-      <div id="mobileUserCard" class="my-4"></div>
+
+      <div id="mobileUserCard"></div>
       
+      <!-- Mobile Quick Actions: Whitelist & Theme -->
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="openWhitelistManagerModal(); toggleMobileDrawer();" class="p-2.5 rounded-xl apple-card-soft hover:border-rpGold/40 flex items-center gap-2 text-xs font-semibold transition">
+          <span class="text-base">🛡️</span>
+          <span>Whitelist</span>
+        </button>
+        <button onclick="toggleTheme()" class="p-2.5 rounded-xl apple-card-soft hover:border-rpGold/40 flex items-center gap-2 text-xs font-semibold transition">
+          <span id="mobileThemeIcon" class="text-base">☀️</span>
+          <span id="mobileThemeLabel">Tema</span>
+        </button>
+      </div>
+
       <!-- Mobile Font Scale Controller -->
-      <div class="mb-4 p-3 apple-card-soft flex items-center justify-between">
+      <div class="p-3 apple-card-soft flex items-center justify-between">
         <span class="text-xs font-semibold opacity-80">Ukuran Font</span>
         <div class="flex items-center bg-white/[0.08] border border-white/[0.1] rounded-full p-0.5">
           <button onclick="adjustFontSize(-0.08)" class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hover:bg-white/10" aria-label="Perkecil Font">A-</button>
@@ -281,18 +310,48 @@ const APP_ASSETS = {
         </div>
       </div>
 
+      <!-- Nav Links -->
       <div class="space-y-1">
-        <button onclick="navigateTo('weekly'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Weekly Dashboard</button>
-        <button onclick="navigateTo('schedule'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">SCHEDULE</button>
-        <button onclick="navigateTo('setlist'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">SETLIST</button>
-        <button onclick="navigateTo('songbank'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Song Bank</button>
-        <button onclick="navigateTo('rundown'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Service Rundown</button>
-        <button onclick="navigateTo('team'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Team Database</button>
-        <button onclick="navigateTo('prayer'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Prayer Wall</button>
+        <button onclick="navigateTo('weekly'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+          <span>Weekly Dashboard</span>
+          <span class="text-xs opacity-50">→</span>
+        </button>
+        <button onclick="navigateTo('schedule'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+          <span>SCHEDULE</span>
+          <span class="text-xs opacity-50">→</span>
+        </button>
+        <button onclick="navigateTo('setlist'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+          <span>SETLIST</span>
+          <span class="text-xs opacity-50">→</span>
+        </button>
+        <button onclick="navigateTo('songbank'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+          <span>Song Bank</span>
+          <span class="text-xs opacity-50">→</span>
+        </button>
+        <button onclick="navigateTo('rundown'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+          <span>Service Rundown</span>
+          <span class="text-xs opacity-50">→</span>
+        </button>
+        <button onclick="navigateTo('team'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+          <span>Team Database</span>
+          <span class="text-xs opacity-50">→</span>
+        </button>
+        <button onclick="navigateTo('prayer'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+          <span>Prayer Wall</span>
+          <span class="text-xs opacity-50">→</span>
+        </button>
       </div>
+
+      <!-- Quick CS WA Button in Drawer -->
+      <a href="https://wa.me/6281340538536?text=Halo%20RP%20CS%2C%20saya%20ingin%20bertanya%20mengenai%20pelayanan%20dan%20kebutuhan%20service%20di%20Royal%20Priesthood%20MDC"
+         target="_blank" rel="noopener noreferrer"
+         class="w-full p-2.5 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 border border-[#25D366]/30 text-[#25D366] flex items-center justify-center gap-2 text-xs font-bold transition">
+        <span>💬</span> <span>Tanya CS Pelayanan (WA)</span>
+      </a>
     </div>
-    <div class="pt-4 border-t border-white/10 text-[11px] opacity-60">
-      GKPB Masa Depan Cerah • Google Sign-In Active
+
+    <div class="pt-4 border-t border-white/10 text-[11px] opacity-60 text-center">
+      GKPB Masa Depan Cerah • Royal Priesthood
     </div>
   </div>
 </div>
@@ -1424,6 +1483,11 @@ function applyAssetsAndTheme() {
     document.getElementById('themeIcon').textContent = '☀️';
   }
 
+  const mobThemeIcon = document.getElementById('mobileThemeIcon');
+  const mobThemeLabel = document.getElementById('mobileThemeLabel');
+  if (mobThemeIcon) mobThemeIcon.textContent = isLight ? '🌙' : '☀️';
+  if (mobThemeLabel) mobThemeLabel.textContent = isLight ? 'Dark Mode' : 'Light Mode';
+
   document.documentElement.style.setProperty('--app-font-scale', APP_STATE.fontScale);
   const scaleText = `${Math.round(APP_STATE.fontScale * 100)}%`;
   const fLabel = document.getElementById('fontScaleLabel');
@@ -1458,7 +1522,16 @@ function navigateTo(tabName) {
   saveState();
   highlightNav();
   renderCurrentView();
-  window.scrollTo({ top: 320, behavior: 'smooth' });
+  const targetEl = document.getElementById('appViewContainer');
+  if (targetEl) {
+    const headerOffset = window.innerWidth >= 1024 ? 80 : 115;
+    const elementPosition = targetEl.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+    window.scrollTo({
+      top: Math.max(0, offsetPosition),
+      behavior: 'smooth'
+    });
+  }
 }
 
 function highlightNav() {
@@ -1467,6 +1540,11 @@ function highlightNav() {
     const sizeCls = btn.className.includes('shrink-0') ? 'shrink-0 px-3 py-1' : 'px-3.5 py-1.5';
     btn.className = `nav-pill ${sizeCls} rounded-full text-xs font-semibold transition ` +
       (active ? 'nav-pill-active' : 'nav-pill-inactive');
+    if (active && btn.parentElement && btn.parentElement.classList.contains('lg:hidden')) {
+      try {
+        btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      } catch (e) {}
+    }
   });
 }
 
