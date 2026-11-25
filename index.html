@@ -212,15 +212,15 @@ const APP_ASSETS = {
 <header class="no-print sticky top-0 z-40 apple-glass top-header-bar">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
     <div class="flex items-center min-w-0">
-      <button onclick="navigateTo('weekly')" class="flex items-center text-left group focus:outline-none" title="Royal Priesthood">
+      <button onclick="navigateTo('weekly'); handleTripleTapAdmin();" class="flex items-center text-left group focus:outline-none" title="Royal Priesthood (Triple Tap: Whitelist)">
         <img id="navRpLogo" alt="Royal Priesthood" class="h-8 sm:h-10 max-w-[175px] sm:max-w-[230px] w-auto object-contain" />
       </button>
     </div>
 
     <nav class="hidden lg:flex items-center gap-1 nav-pill-group p-1 rounded-full">
       <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Weekly Dashboard</button>
-      <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Schedule & Swap</button>
-      <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Service Song Setlist</button>
+      <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SCHEDULE</button>
+      <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SETLIST</button>
       <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Song Bank</button>
       <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Service Rundown</button>
       <button data-nav="team" onclick="navigateTo('team')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Team Database</button>
@@ -248,8 +248,8 @@ const APP_ASSETS = {
 
   <div class="lg:hidden flex items-center gap-1.5 px-4 py-2 overflow-x-auto no-scrollbar border-t border-current/10">
     <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Weekly Dashboard</button>
-    <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Schedule & Swap</button>
-    <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Service Song Setlist</button>
+    <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SCHEDULE</button>
+    <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SETLIST</button>
     <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Song Bank</button>
     <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Service Rundown</button>
     <button data-nav="team" onclick="navigateTo('team')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Team Database</button>
@@ -280,8 +280,8 @@ const APP_ASSETS = {
 
       <div class="space-y-1">
         <button onclick="navigateTo('weekly'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Weekly Dashboard</button>
-        <button onclick="navigateTo('schedule'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Schedule & Swap</button>
-        <button onclick="navigateTo('setlist'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Service Song Setlist</button>
+        <button onclick="navigateTo('schedule'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">SCHEDULE</button>
+        <button onclick="navigateTo('setlist'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">SETLIST</button>
         <button onclick="navigateTo('songbank'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Song Bank</button>
         <button onclick="navigateTo('rundown'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Service Rundown</button>
         <button onclick="navigateTo('team'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Team Database</button>
@@ -1586,6 +1586,197 @@ function continueAsGuest() {
   showToast('Masuk dalam Mode Tamu (Akses lihat jadwal).');
 }
 
+
+// ==========================================
+// GOOGLE OAUTH + CLOUD WHITELIST GATEKEEPER
+// ==========================================
+
+const WHITELIST_API_URL = "/api/whitelist";
+const MASTER_SUPER_ADMIN = "fahmi.xmarks@gmail.com";
+let failedLoginAttempts = 0;
+
+function isRateLimited() {
+  const lockUntil = localStorage.getItem("rp_lockout_until");
+  if (lockUntil && Date.now() < parseInt(lockUntil, 10)) {
+    const remainingMin = Math.ceil((parseInt(lockUntil, 10) - Date.now()) / 60000);
+    showToast("Sistem terkunci karena salah login 3x. Tunggu " + remainingMin + " menit.");
+    return true;
+  }
+  return false;
+}
+
+function recordFailedLogin() {
+  failedLoginAttempts++;
+  if (failedLoginAttempts >= 3) {
+    const lockDuration = 15 * 60 * 1000;
+    localStorage.setItem("rp_lockout_until", (Date.now() + lockDuration).toString());
+    showToast("Terlalu banyak percobaan gagal. Sistem dikunci selama 15 menit.");
+  }
+}
+
+function checkSessionExpiry() {
+  const sessionStart = localStorage.getItem("rp_session_time");
+  if (sessionStart) {
+    const elapsed = Date.now() - parseInt(sessionStart, 10);
+    const maxSession = 12 * 60 * 60 * 1000;
+    if (elapsed > maxSession) {
+      localStorage.removeItem("rp_session_time");
+      localStorage.removeItem("rp_guest_mode");
+      if (APP_STATE.currentUser) {
+        APP_STATE.currentUser.isLoggedIn = false;
+        saveState();
+      }
+      showToast("Masa berlaku sesi (12 jam) telah berakhir. Silakan login kembali.");
+      openLoginGateModal(false);
+      return false;
+    }
+  }
+  return true;
+}
+
+async function fetchCloudWhitelist() {
+  try {
+    const res = await fetch(WHITELIST_API_URL);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && Array.isArray(data.whitelist)) {
+        return data.whitelist;
+      }
+    }
+  } catch (err) {
+    console.warn("Cloud Whitelist API not reachable:", err.message);
+  }
+  return (APP_STATE.rpmEmails || []).map(function(e) { return { email: e.toLowerCase(), role: "RPM" }; });
+}
+
+async function openWhitelistManagerModal() {
+  const curUser = (APP_STATE.currentUser?.email || "").toLowerCase();
+  const isSuperAdmin = curUser === MASTER_SUPER_ADMIN.toLowerCase() || isRPM();
+  
+  if (!isSuperAdmin) {
+    return showToast("Akses ditolak: Menu Whitelist Gatekeeper hanya untuk Super Admin.");
+  }
+
+  const cloudList = await fetchCloudWhitelist();
+  const listRows = cloudList.map(function(item) {
+    const isMaster = item.email.toLowerCase() === MASTER_SUPER_ADMIN.toLowerCase();
+    const actionBtn = !isMaster 
+      ? '<button onclick="removeWhitelistEmail('' + item.email + '')" class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 font-bold text-[10px]">Hapus</button>'
+      : '<span class="text-[10px] text-rpGold font-bold px-2">Super Admin</span>';
+
+    return '<div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-xs">' +
+      '<div>' +
+        '<div class="font-bold text-white">' + item.email + '</div>' +
+        '<div class="opacity-60 text-[10px]">Role: <span class="text-rpGold font-semibold">' + (item.role || 'GENERAL') + '</span> ' + (item.name ? '• ' + item.name : '') + '</div>' +
+      '</div>' +
+      actionBtn +
+    '</div>';
+  }).join("");
+
+  openModal("🛡️ Cloud Whitelist Gatekeeper Manager", 
+    '<div class="space-y-4 text-xs sm:text-sm">' +
+      '<div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs leading-relaxed text-amber-200">' +
+        'Kelola email Google yang diizinkan masuk ke sistem Royal Priesthood. Data tersinkronisasi ke Cloud API.' +
+      '</div>' +
+      '<div class="p-3.5 rounded-2xl bg-black/30 border border-white/10 space-y-3">' +
+        '<div class="text-xs font-bold text-rpGold">Tambah Email Whitelist Baru</div>' +
+        '<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">' +
+          '<input id="wlNewEmail" type="email" placeholder="nama@gmail.com" class="sm:col-span-2 px-3 py-1.5 rounded-xl bg-black/30 border border-white/15 text-xs" />' +
+          '<select id="wlNewRole" class="px-3 py-1.5 rounded-xl bg-black/30 border border-white/15 text-xs">' +
+            '<option value="GENERAL">General Member</option>' +
+            '<option value="WL_MD">WL / MD</option>' +
+            '<option value="RPM">RPM Admin</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="flex justify-end">' +
+          '<button onclick="addWhitelistEmail()" class="gold-pill-btn px-4 py-1.5 rounded-full text-xs font-bold">+ Tambah ke Cloud</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="space-y-2">' +
+        '<div class="font-bold text-xs opacity-75">Daftar Whitelist Aktif (' + cloudList.length + ' Akun)</div>' +
+        '<div class="space-y-1.5 max-h-56 overflow-y-auto pr-1">' +
+          listRows +
+        '</div>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+async function addWhitelistEmail() {
+  const emailInput = document.getElementById("wlNewEmail");
+  const roleInput = document.getElementById("wlNewRole");
+  if (!emailInput || !emailInput.value.trim()) return showToast("Email wajib diisi.");
+  const email = emailInput.value.trim().toLowerCase();
+  const role = roleInput.value;
+
+  try {
+    const res = await fetch(WHITELIST_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "add",
+        email: email,
+        role: role,
+        requesterEmail: MASTER_SUPER_ADMIN
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message || ("Email " + email + " berhasil ditambahkan."));
+    } else {
+      showToast(data.message || "Gagal menambah ke Cloud. Disimpan secara lokal.");
+    }
+  } catch (err) {
+    if (!APP_STATE.rpmEmails.includes(email) && role === "RPM") {
+      APP_STATE.rpmEmails.push(email);
+      saveState();
+    }
+    showToast("Email " + email + " ditambahkan secara lokal.");
+  }
+  openWhitelistManagerModal();
+}
+
+async function removeWhitelistEmail(email) {
+  try {
+    const res = await fetch(WHITELIST_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "remove",
+        email: email,
+        requesterEmail: MASTER_SUPER_ADMIN
+      })
+    });
+    const data = await res.json();
+    showToast(data.message || ("Email " + email + " dihapus."));
+  } catch (err) {
+    APP_STATE.rpmEmails = APP_STATE.rpmEmails.filter(function(x) { return x.toLowerCase() !== email.toLowerCase(); });
+    saveState();
+    showToast("Email " + email + " dihapus secara lokal.");
+  }
+  openWhitelistManagerModal();
+}
+
+window.addEventListener("keydown", function(e) {
+  if (e.altKey && (e.key === "w" || e.key === "W")) {
+    e.preventDefault();
+    openWhitelistManagerModal();
+  }
+});
+
+let headerTapCount = 0;
+let headerTapTimer = null;
+function handleTripleTapAdmin() {
+  headerTapCount++;
+  if (headerTapCount === 1) {
+    headerTapTimer = setTimeout(function() { headerTapCount = 0; }, 600);
+  } else if (headerTapCount >= 3) {
+    clearTimeout(headerTapTimer);
+    headerTapCount = 0;
+    openWhitelistManagerModal();
+  }
+}
+
 function checkLoginGateOnLoad() {
   const isGuestDismissed = sessionStorage.getItem('RP_GUEST_DISMISSED') === 'true';
   const isLogged = !!(APP_STATE.currentUser?.isLoggedIn && APP_STATE.currentUser?.email);
@@ -2067,6 +2258,34 @@ function renderScheduleTab() {
   `;
 }
 
+
+function getMemberAvatarHtml(memberName, sizeClass = "w-5 h-5 text-[9px]") {
+  if (!memberName || memberName === "-" || memberName.trim() === "") return "";
+  const clean = memberName.trim();
+  const m = (APP_STATE.teamMembers || []).find(x => 
+    (x.nickname && x.nickname.toLowerCase() === clean.toLowerCase()) || 
+    (x.fullName && x.fullName.toLowerCase() === clean.toLowerCase())
+  );
+  if (m && m.avatarUrl) {
+    return `<img src="${m.avatarUrl}" alt="${clean}" class="${sizeClass} rounded-full object-cover border border-white/20 shrink-0 inline-block align-middle" />`;
+  }
+  // Fallback Google Avatar or elegant Initial
+  if (m && m.email && m.email.endsWith("@gmail.com")) {
+    const initial = clean.charAt(0).toUpperCase();
+    return `<span class="${sizeClass} rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-black font-extrabold flex items-center justify-center shrink-0 border border-amber-300/40 inline-flex align-middle" title="${clean}">${initial}</span>`;
+  }
+  const initial = clean.charAt(0).toUpperCase();
+  return `<span class="${sizeClass} rounded-full bg-white/15 text-rpGold font-bold flex items-center justify-center shrink-0 border border-white/15 inline-flex align-middle" title="${clean}">${initial}</span>`;
+}
+
+function renderMembersWithAvatars(namesArr) {
+  if (!Array.isArray(namesArr) || !namesArr.length) return `<span class="opacity-40">-</span>`;
+  return namesArr.map(name => {
+    const av = getMemberAvatarHtml(name, "w-4 h-4 text-[8px]");
+    return `<span class="inline-flex items-center gap-1 bg-white/[0.04] px-1.5 py-0.5 rounded-md">${av}<span>${name}</span></span>`;
+  }).join(" ");
+}
+
 function renderScheduleSessionCard(sch) {
   const br = APP_STATE.branches.find(b => b.id === sch.branchId);
   const posOrder = APP_STATE.servicePositions.filter(p => p !== 'Service Coordinator');
@@ -2076,7 +2295,7 @@ function renderScheduleSessionCard(sch) {
     return `
       <div class="flex items-start justify-between gap-2 py-1 border-b border-white/[0.06] last:border-none text-xs">
         <span class="opacity-65 shrink-0">${pos}</span>
-        <span class="font-semibold text-right">${arr.length ? arr.join(', ') : '<span class="opacity-40">-</span>'}</span>
+        <span class="font-semibold text-right flex flex-wrap justify-end gap-1">${renderMembersWithAvatars(arr)}</span>
       </div>`;
   }).join('');
 
@@ -2111,6 +2330,28 @@ function setScheduleBranch(brId) {
 function openAddBranchModal() {
   openModal('Tambah Cabang Gereja Baru', `
     <div class="space-y-3 text-xs sm:text-sm">
+
+      <div class="p-3.5 rounded-2xl bg-black/25 border border-white/10 flex flex-col sm:flex-row items-center gap-4">
+        <div class="relative shrink-0">
+          <img id="mfAvatarPreview" src="${m.avatarUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.nickname || 'Member') + '&background=E5B567&color=090C11&bold=true'}" 
+               alt="Avatar Preview" class="w-16 h-16 rounded-full object-cover border-2 border-rpGold/50 shadow-md" />
+          <input type="hidden" id="mfAvatarUrl" value="${m.avatarUrl || ''}" />
+        </div>
+        <div class="flex-1 space-y-1 text-center sm:text-left">
+          <div class="text-xs font-bold text-rpGold">Foto Profil Member</div>
+          <p class="text-[11px] opacity-70">Upload foto profil (PNG/JPG). Jika dikosongkan, foto otomatis diambil dari akun Google yang didaftarkan.</p>
+          <div class="pt-1 flex flex-wrap gap-2 justify-center sm:justify-start">
+            <label class="px-3 py-1 rounded-full bg-rpGold text-[#090C11] text-[11px] font-bold cursor-pointer hover:bg-amber-300 transition">
+              Pilih Foto
+              <input type="file" accept="image/*" onchange="handleMemberAvatarUpload(this)" class="hidden" />
+            </label>
+            <button type="button" onclick="document.getElementById('mfAvatarUrl').value=''; document.getElementById('mfAvatarPreview').src='https://ui-avatars.com/api/?name='+encodeURIComponent(document.getElementById('mfNickname').value||'Member')+'&background=E5B567&color=090C11&bold=true';" class="px-3 py-1 rounded-full bg-white/10 text-[11px] font-semibold hover:bg-white/20 transition">
+              Reset ke Google/Inisial
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div>
         <label class="block text-xs font-semibold mb-1">Nama Lengkap Cabang</label>
         <input id="newBranchName" type="text" placeholder="Contoh: Graha Pelayanan Barat" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
@@ -2493,19 +2734,18 @@ function getYoutubeThumb(url) {
 }
 
 function ensureSetlistRecord(schId) {
-  if (!APP_STATE.setlists[schId]) {
-    APP_STATE.setlists[schId] = {
+  let sl = APP_STATE.setlists.find(x => x.scheduleId === schId);
+  if (!sl) {
+    sl = {
       scheduleId: schId,
-      wlNarrativeOpening: '',
-      wlNarrativePraise: '',
-      wlNarrativeIntimacy: '',
-      wlNarrativeAfterSermon: '',
-      wlNarrativeClosing: '',
-      songs: []
+      songs: [],
+      edifikasi: JSON.parse(JSON.stringify(APP_STATE.DEFAULT_EDIFIKASI_WEEK1))
     };
-    saveState();
+    APP_STATE.setlists.push(sl);
+  } else if (!sl.edifikasi) {
+    sl.edifikasi = JSON.parse(JSON.stringify(APP_STATE.DEFAULT_EDIFIKASI_WEEK1));
   }
-  return APP_STATE.setlists[schId];
+  return sl;
 }
 
 function renderSetlistTab() {
@@ -2513,22 +2753,22 @@ function renderSetlistTab() {
   window.__selectedSetlistSchId = sch.id;
   const sl = ensureSetlistRecord(sch.id);
   const br = APP_STATE.branches.find(b => b.id === sch.branchId);
-  const slideMatch = (APP_STATE.monthlyTheme.weeklySlides || []).find(w => w.id === sch.weekId) || APP_STATE.monthlyTheme.weeklySlides[0];
+  const ed = sl.edifikasi || APP_STATE.DEFAULT_EDIFIKASI_WEEK1;
   const editable = canEditSetlist();
   const rpmUser = isRPM();
 
   const schOptions = APP_STATE.schedules.map(s => {
     const b = APP_STATE.branches.find(x => x.id === s.branchId);
-    return `<option value="${s.id}" ${s.id === sch.id ? 'selected' : ''}>${s.dateLabel} • ${b ? b.shortName : s.branchId} (${s.time})</option>`;
-  }).join('');
+    return `<option value="${s.id}" ${s.id === sch.id ? "selected" : ""}>${s.dateLabel} • ${b ? b.shortName : s.branchId} (${s.time})</option>`;
+  }).join("");
 
-  const segments = ['Penyembahan Awal', 'Pujian', 'Penyembahan Intim', 'Song After Sermon', 'Closing'];
+  const segments = ["Penyembahan Awal", "Pujian", "Penyembahan Intim", "Song After Sermon", "Closing"];
 
   const songsHtml = (sl.songs || []).map((song, idx) => {
     const thumb = getYoutubeThumb(song.youtubeUrl);
     const commentsHtml = (song.comments || []).map(c =>
       `<div class="text-[11px] bg-white/[0.04] rounded-xl px-3 py-1.5"><span class="font-bold text-rpGold">${c.author}</span> <span class="opacity-60">(${c.role})</span>: ${c.text}</div>`
-    ).join('');
+    ).join("");
 
     return `
       <div class="apple-card-soft p-4 sm:p-5 space-y-3 border border-white/[0.09] lyrics-print-item">
@@ -2537,29 +2777,29 @@ function renderSetlistTab() {
             <img src="${thumb}" alt="${song.title}" class="no-print w-16 h-12 rounded-xl object-cover border border-white/10 shrink-0" />
             <div>
               <div class="flex flex-wrap items-center gap-2">
-                <span class="px-2.5 py-0.5 rounded-full bg-rpGold/20 text-rpGold text-[10px] font-bold uppercase">${song.segment || 'Pujian'}</span>
-                <span class="px-2.5 py-0.5 rounded-full bg-white/10 text-[11px] font-bold">Key: ${song.key || '-'}</span>
-                <span class="text-[11px] opacity-75">Lead: <strong>${song.leadBy || '-'}</strong></span>
+                <span class="px-2.5 py-0.5 rounded-full bg-rpGold/20 text-rpGold text-[10px] font-bold uppercase">${song.segment || "Pujian"}</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-white/10 text-[11px] font-bold">Key: ${song.key || "-"}</span>
+                <span class="text-[11px] opacity-75">Lead: <strong>${song.leadBy || "-"}</strong></span>
               </div>
               <h4 class="text-base font-bold mt-1">${idx + 1}. ${song.title}</h4>
-              <div class="text-xs opacity-75">Nuansa: <strong>${song.nuance || '-'}</strong></div>
+              <div class="text-xs opacity-75">Nuansa: <strong>${song.nuance || "-"}</strong></div>
             </div>
           </div>
 
           <div class="no-print flex flex-wrap items-center gap-2">
-            ${song.youtubeUrl ? `<a href="${song.youtubeUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold">YouTube ↗</a>` : ''}
+            ${song.youtubeUrl ? `<a href="${song.youtubeUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold">YouTube ↗</a>` : ""}
             ${editable ? `
               <button onclick="openEditSetlistSongModal('${sch.id}', '${song.id}')" class="px-3 py-1.5 rounded-full bg-rpGold/20 hover:bg-rpGold/30 text-rpGold text-[11px] font-bold">Edit</button>
               <button onclick="deleteSetlistSong('${sch.id}', '${song.id}')" class="px-3 py-1.5 rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-[11px] font-bold">Hapus</button>
-            ` : ''}
+            ` : ""}
           </div>
         </div>
 
         <div class="no-print text-xs bg-black/20 rounded-xl p-3">
-          <span class="font-bold text-rpGoldSoft">Tujuan Lagu:</span> ${song.purpose || '-'}
+          <span class="font-bold text-rpGoldSoft">Tujuan Lagu:</span> ${song.purpose || "-"}
         </div>
 
-        <pre class="whitespace-pre-wrap font-sans text-xs leading-relaxed bg-black/25 rounded-2xl p-3.5 border border-white/[0.06]">${song.lyrics || ''}</pre>
+        <pre class="whitespace-pre-wrap font-sans text-xs leading-relaxed bg-black/25 rounded-2xl p-3.5 border border-white/[0.06]">${song.lyrics || ""}</pre>
 
         <div class="no-print space-y-2 pt-1">
           <div class="text-[11px] font-bold opacity-75">Catatan & Komentar Tim (${(song.comments || []).length})</div>
@@ -2570,25 +2810,20 @@ function renderSetlistTab() {
           </div>
         </div>
       </div>`;
-  }).join('');
+  }).join("");
 
-  const dcImgs = sch.dresscodeImages || [];
-  const dcGalleryHtml = dcImgs.map((imgSrc, i) => `
-    <div class="relative group rounded-xl overflow-hidden border border-white/15 bg-black/30">
-      <img src="${imgSrc}" alt="Wardrobe ${i + 1}" class="h-24 w-24 object-cover cursor-pointer" onclick="openImagePreviewModal('${sch.id}', ${i})" />
-      <button onclick="removeDresscodeImage('${sch.id}', ${i})" class="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/75 text-white text-[10px] flex items-center justify-center opacity-85 hover:opacity-100" title="Hapus gambar">✕</button>
-    </div>
-  `).join('');
+  const supportingPills = (ed.supportingVerses || []).map(v => `<span class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">${v}</span>`).join(" ");
 
   return `
     <div class="space-y-6">
+      <!-- HEADER ACTIONS -->
       <div class="no-print apple-card p-5 sm:p-6 space-y-4">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <div class="text-xs uppercase tracking-widest text-rpGold font-bold">Service Song Setlist</div>
+            <div class="text-xs uppercase tracking-widest text-rpGold font-bold">SETLIST IBADAH</div>
             <h2 class="text-xl sm:text-2xl font-bold mt-0.5">${sch.dateLabel} • ${br ? br.shortName : sch.branchId} (${sch.time})</h2>
             <p class="text-xs opacity-75 mt-1">
-              Tema: <strong>${APP_STATE.monthlyTheme.title}</strong> • Subtema: <strong>${slideMatch.subtheme}</strong> (${slideMatch.mainVerse})
+              Tema Bulanan: <strong>${ed.themeMonth || "GOD WITH US"}</strong>
             </p>
           </div>
 
@@ -2596,77 +2831,122 @@ function renderSetlistTab() {
             <select onchange="openSetlistForSchedule(this.value)" class="px-3.5 py-2 rounded-full bg-white/[0.07] border border-white/15 text-xs font-semibold">
               ${schOptions}
             </select>
+            ${rpmUser ? `
+              <button onclick="openCreateNewSetlistModal()" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold">+ BUAT SETLIST BARU</button>
+              <button onclick="openMonthlyEdifikasiModal()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15">📖 EDIFIKASI BULANAN</button>
+            ` : `
+              <button onclick="openMonthlyEdifikasiModal()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15">📖 EDIFIKASI BULANAN</button>
+            `}
             <button onclick="printLyricsCompact()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-bold">PRINT LYRICS</button>
-            <button onclick="shareSetlistWhatsApp('${sch.id}')" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold">SHARE SETLIST</button>
+            <button onclick="shareSetlistWhatsApp('${sch.id}')" class="px-4 py-2 rounded-full wa-green-btn text-xs font-bold">SHARE SETLIST</button>
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="apple-card-soft p-4 space-y-1 text-xs">
-            <div class="font-bold text-rpGold">Formasi Tugas</div>
-            <div>WL: <strong>${(sch.assignments?.['Worship Leader'] || []).join(', ') || '-'}</strong></div>
-            <div>MD: <strong>${(sch.assignments?.['Music Director'] || []).join(', ') || '-'}</strong></div>
-            <div>Keyboardist: <strong>${(sch.assignments?.['Keyboardist'] || []).join(', ') || '-'}</strong></div>
-            <div>Singers: <strong>${(sch.assignments?.['Singers'] || []).join(', ') || '-'}</strong></div>
-            ${(sch.assignments?.['Saxophonist'] || []).length ? `<div>Saxophonist: <strong>${sch.assignments['Saxophonist'].join(', ')}</strong></div>` : ''}
+            <div class="font-bold text-rpGold">Formasi Pelayanan</div>
+            <div>WL: <strong>${renderMembersWithAvatars(sch.assignments?.["Worship Leader"] || [])}</strong></div>
+            <div>MD: <strong>${renderMembersWithAvatars(sch.assignments?.["Music Director"] || [])}</strong></div>
+            <div>Keyboardist: <strong>${renderMembersWithAvatars(sch.assignments?.["Keyboardist"] || [])}</strong></div>
+            <div>Singers: <strong>${renderMembersWithAvatars(sch.assignments?.["Singers"] || [])}</strong></div>
+            ${(sch.assignments?.["Saxophonist"] || []).length ? `<div>Saxophonist: <strong>${renderMembersWithAvatars(sch.assignments["Saxophonist"])}</strong></div>` : ""}
           </div>
-
-          ${rpmUser ? `
-            <div class="apple-card-soft p-4 space-y-2 text-xs border border-rpGold/30">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="font-bold text-rpGold">Wardrobe & Dresscode (Khusus RPM)</span>
-                <div class="flex items-center gap-1.5">
-                  <button onclick="openDresscodePresetModal('${sch.id}')" class="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold">Pilih Sampel</button>
-                  <label class="px-3 py-1 rounded-full bg-rpGold text-[#090C11] text-[11px] font-bold cursor-pointer">
-                    + Upload Foto (Multi)
-                    <input type="file" accept="image/*" multiple onchange="uploadDresscodeImages('${sch.id}', this)" class="hidden" />
-                  </label>
-                </div>
-              </div>
-              <div class="font-semibold">${sch.dresscodePalette || 'Belum diatur'}</div>
-              <div class="opacity-75">${sch.dresscodeNote || ''}</div>
-              ${dcImgs.length ? `<div class="flex flex-wrap gap-2 pt-1">${dcGalleryHtml}</div>` : '<div class="text-[11px] opacity-55">Belum ada foto referensi outfit diunggah.</div>'}
-            </div>` : `
-            <div class="apple-card-soft p-4 space-y-1 text-xs flex flex-col justify-center">
-              <div class="font-bold text-rpGold">Mode Akses: ${editable ? 'WL / MD Editor' : 'General Viewer'}</div>
-              <div class="opacity-75">${editable ? 'Anda dapat menambah, mengubah, atau menghapus lagu & narasi pada setlist ini.' : 'Sebagai pengguna umum, Anda dapat melihat setlist, mencetak lirik, dan memberi komentar per lagu.'}</div>
-            </div>`
-          }
+          <div class="apple-card-soft p-4 space-y-1 text-xs flex flex-col justify-between">
+            <div>
+              <div class="font-bold text-rpGold">Rekomendasi Dresscode Ibadah</div>
+              <div class="text-xs font-semibold mt-1">${ed.dresscode?.palette || "Earth tone (cream, beige, cokelat)"}</div>
+              <div class="text-[11px] opacity-75">${ed.dresscode?.style || "Semi-formal, rapi, dan sederhana"}</div>
+            </div>
+            ${editable ? `<div class="pt-2"><button onclick="openEditEdifikasiSetlistModal('${sch.id}')" class="px-3.5 py-1.5 rounded-full bg-rpGold/20 hover:bg-rpGold/30 text-rpGold text-xs font-bold">✏️ Edit Materi Edifikasi Minggu Ini</button></div>` : ""}
+          </div>
         </div>
       </div>
 
-      <div class="no-print apple-card p-5 sm:p-6 space-y-3">
+      <!-- BANNER EDIFIKASI UTAMA (CERMINAN IMAGE #3) -->
+      <div class="apple-card p-6 sm:p-7 space-y-4 border border-rpGold/30 bg-gradient-to-br from-amber-500/10 via-black/40 to-black/60 shadow-xl">
         <div class="flex items-center justify-between">
-          <h3 class="text-base font-bold">Alur & Narasi WL (Termasuk Song After Sermon)</h3>
-          ${editable ? `<button onclick="openEditNarrativesModal('${sch.id}')" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-xs font-bold">Edit Narasi WL</button>` : ''}
+          <span class="text-xs uppercase tracking-widest font-extrabold text-rpGold">${ed.themeMonth || "GOD WITH US (ALLAH BESERTA KITA)"}</span>
+          <span class="px-3 py-1 rounded-full bg-rpGold/20 text-rpGold text-xs font-bold">${sch.weekLabel || "WEEK 1"}</span>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-          <div class="apple-card-soft p-3.5 space-y-1">
-            <div class="font-bold text-rpGold">Opening</div>
-            <p class="opacity-85 leading-relaxed">${sl.wlNarrativeOpening || '-'}</p>
-          </div>
-          <div class="apple-card-soft p-3.5 space-y-1">
-            <div class="font-bold text-rpGold">Transisi Praise & Penyembahan</div>
-            <p class="opacity-85 leading-relaxed">${sl.wlNarrativePraise || '-'} ${sl.wlNarrativeIntimacy ? '— ' + sl.wlNarrativeIntimacy : ''}</p>
-          </div>
-          <div class="apple-card-soft p-3.5 space-y-1 border border-rpGold/30">
-            <div class="font-bold text-rpGold">Song After Sermon & Penutup</div>
-            <p class="opacity-85 leading-relaxed"><strong>After Sermon:</strong> ${sl.wlNarrativeAfterSermon || '-'}<br/><strong>Penutup:</strong> ${sl.wlNarrativeClosing || '-'}</p>
+        
+        <h3 class="text-xl sm:text-2xl font-black tracking-tight text-white">${ed.subtheme}</h3>
+        
+        <div class="text-xs opacity-75">Ayat Utama: <strong class="text-rpGold">${ed.mainVerse}</strong> • ${sch.dateLabel}</div>
+
+        <blockquote class="p-4 rounded-2xl bg-black/40 border-l-4 border-rpGold text-xs sm:text-sm italic leading-relaxed text-amber-100/90 font-serif">
+          "${ed.mainVerseQuote || ed.subthemeDesc}"
+        </blockquote>
+
+        <div>
+          <div class="text-[11px] font-bold uppercase tracking-wider text-rpGold mb-2">Ayat Pendukung Tema Minggu Ini</div>
+          <div class="flex flex-wrap gap-2">
+            ${supportingPills}
           </div>
         </div>
       </div>
 
+      <!-- ACCORDION / TABS EDIFIKASI LENGKAP -->
+      <div class="no-print apple-card p-5 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+          <h3 class="text-base sm:text-lg font-bold flex items-center gap-2">
+            <span>📚 Panduan Edifikasi Pelayanan</span>
+          </h3>
+          ${editable ? `<button onclick="openEditEdifikasiSetlistModal('${sch.id}')" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-semibold">Edit Isi Edifikasi</button>` : ""}
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 text-xs">
+          <!-- Konsep & Kerangka Lagu -->
+          <div class="apple-card-soft p-4 space-y-2.5">
+            <div class="font-bold text-rpGold uppercase text-[11px] tracking-wider">1. Konsep & Kerangka Lagu</div>
+            <div class="space-y-2 opacity-85 leading-relaxed">
+              <div><strong>Penyembahan Awal:</strong> ${ed.songFramework?.openingWorship?.theological || "-"}</div>
+              <div><strong>Pujian:</strong> ${ed.songFramework?.praise?.theological || "-"}</div>
+              <div><strong>Penyembahan Intim:</strong> ${ed.songFramework?.closingWorship?.theological || "-"}</div>
+            </div>
+          </div>
+
+          <!-- Handout Tim & Arah Sikap Hati -->
+          <div class="apple-card-soft p-4 space-y-2.5">
+            <div class="font-bold text-rpGold uppercase text-[11px] tracking-wider">2. Handout & Sikap Hati Tim</div>
+            <div class="p-2 rounded-xl bg-rpGold/10 border border-rpGold/20 font-semibold text-center text-rpGold">
+              ${ed.teamHandout?.heartAttitude || "Percaya • Berserah • Bersyukur • Mengalami Anugerah • Taat"}
+            </div>
+            <p class="opacity-80 leading-relaxed text-[11px]">${ed.teamHandout?.servantReminder || "-"}</p>
+          </div>
+
+          <!-- Panduan Doa & Narasi WL -->
+          <div class="apple-card-soft p-4 space-y-2.5">
+            <div class="font-bold text-rpGold uppercase text-[11px] tracking-wider">3. Refleksi & Komitmen</div>
+            <p class="opacity-85 leading-relaxed">${ed.teamDiscussion?.devotion || "-"}</p>
+            <div class="text-[11px] pt-1">
+              <strong>Komitmen:</strong> Saya mau tetap percaya kepada Tuhan di tengah ketidakpastian, hidup dalam anugerah keselamatan, dan taat kepada firman-Nya.
+            </div>
+          </div>
+        </div>
+
+        <!-- Narasi WL Box -->
+        <div class="p-4 rounded-2xl bg-black/25 border border-white/10 space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-rpGold">Contoh Narasi WL (Opening & Transisi)</span>
+            <span class="text-[10px] opacity-60">Panduan Pembawaan Ibadah</span>
+          </div>
+          <p class="text-xs opacity-85 leading-relaxed italic">"${ed.wlNarratives?.opening || "-"}"</p>
+          <p class="text-xs opacity-85 leading-relaxed italic pt-1 border-t border-white/5">"${ed.wlNarratives?.praiseTransition || "-"}"</p>
+        </div>
+      </div>
+
+      <!-- DAFTAR LAGU IBADAH -->
       <div class="apple-card p-5 sm:p-6 space-y-4">
         <div class="no-print flex flex-wrap items-center justify-between gap-3">
           <div>
             <h3 class="text-base sm:text-lg font-bold">Daftar Lagu Ibadah (${(sl.songs || []).length} Lagu)</h3>
-            <p class="text-xs opacity-70">Segmen: ${segments.join(' • ')}</p>
+            <p class="text-xs opacity-70">Segmen: ${segments.join(" • ")}</p>
           </div>
           ${editable ? `
             <div class="flex flex-wrap items-center gap-2">
               <button onclick="openPickFromSongBankModal('${sch.id}')" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-bold">+ Dari Song Bank</button>
               <button onclick="openAddCustomSongModal('${sch.id}')" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold">+ Tambah Lagu Baru</button>
-            </div>` : ''}
+            </div>` : ""}
         </div>
 
         <div id="lyricsPrintArea" class="lyrics-print-grid space-y-4">
@@ -3097,6 +3377,328 @@ function saveNarratives(schId) {
   closeModal();
   renderCurrentView();
   showToast('Narasi WL tersimpan.');
+}
+
+
+// 1. BUAT SETLIST BARU MODAL
+function openCreateNewSetlistModal() {
+  const branchOptions = APP_STATE.branches.map(b => `<option value="${b.id}">${b.name}</option>`).join("");
+  openModal("Buat Setlist Ibadah Baru", `
+    <div class="space-y-4 text-xs sm:text-sm">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Tanggal Ibadah</label>
+          <input id="nslDate" type="date" value="2026-12-13" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Jam Ibadah</label>
+          <input id="nslTime" type="text" value="08.00 WIB" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Cabang</label>
+          <select id="nslBranch" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15">${branchOptions}</select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Nama Sesi</label>
+          <input id="nslSessionName" type="text" value="Ibadah Raya 1 & 2" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        </div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-black/25 border border-white/10 space-y-3">
+        <div class="text-xs font-bold text-rpGold">Materi Edifikasi Mingguan Awal</div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Tema Bulanan</label>
+          <input id="nslTheme" type="text" value="GOD WITH US (ALLAH BESERTA KITA)" class="w-full px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Subtema Minggu Ini</label>
+          <input id="nslSubtheme" type="text" value="GOD WITH US — Allah Hadir dan Bekerja dalam Hidup Kita" class="w-full px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1">Ayat Utama</label>
+            <input id="nslVerse" type="text" value="Lukas 1:57–66" class="w-full px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1">Dresscode Rekomendasi</label>
+            <input id="nslDresscode" type="text" value="Earth tone (cream, beige, cokelat)" class="w-full px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-white/10 text-xs font-semibold">Batal</button>
+        <button onclick="saveCreateNewSetlist()" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold">Simpan & Buka Setlist</button>
+      </div>
+    </div>
+  `);
+}
+
+function saveCreateNewSetlist() {
+  const dateVal = document.getElementById("nslDate").value;
+  const timeVal = document.getElementById("nslTime").value.trim();
+  const branchVal = document.getElementById("nslBranch").value;
+  const nameVal = document.getElementById("nslSessionName").value.trim() || "Ibadah Raya";
+  const themeVal = document.getElementById("nslTheme").value.trim() || "GOD WITH US (ALLAH BESERTA KITA)";
+  const subthemeVal = document.getElementById("nslSubtheme").value.trim() || "Subtema Ibadah";
+  const verseVal = document.getElementById("nslVerse").value.trim() || "Matius 1:18–25";
+  const dresscodeVal = document.getElementById("nslDresscode").value.trim() || "Earth tone";
+
+  const d = new Date(dateVal);
+  const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  const dateLabel = (days[d.getDay()] || "Minggu") + ", " + d.getDate() + " " + (months[d.getMonth()] || "") + " " + d.getFullYear();
+
+  const newSchId = "sch-" + Date.now();
+  const newSch = {
+    id: newSchId,
+    branchId: branchVal,
+    date: dateVal,
+    dateLabel: dateLabel,
+    time: timeVal,
+    sessionName: nameVal,
+    weekId: dateVal,
+    weekLabel: "WEEK " + Math.ceil(d.getDate() / 7),
+    assignments: {
+      "Worship Leader": [APP_STATE.currentUser?.nickname || "Agie"],
+      "Music Director": ["Ronald"],
+      "Keyboardist": ["Ronald"],
+      "Singers": ["Cindy", "Audrey"]
+    },
+    dresscodePalette: dresscodeVal,
+    rehearsalNote: "Kamis 19.00 WIB"
+  };
+
+  APP_STATE.schedules.unshift(newSch);
+
+  const newEdifikasi = JSON.parse(JSON.stringify(APP_STATE.DEFAULT_EDIFIKASI_WEEK1));
+  newEdifikasi.themeMonth = themeVal;
+  newEdifikasi.subtheme = subthemeVal;
+  newEdifikasi.mainVerse = verseVal;
+  newEdifikasi.dresscode.palette = dresscodeVal;
+
+  APP_STATE.setlists.push({
+    scheduleId: newSchId,
+    songs: [],
+    edifikasi: newEdifikasi
+  });
+
+  saveState();
+  closeModal();
+  window.__selectedSetlistSchId = newSchId;
+  navigateTo("setlist");
+  showToast("Setlist baru berhasil dibuat!");
+}
+
+// 2. EDIT EDIFIKASI SETLIST MODAL (Filling Form Edifikasi Mingguan)
+function openEditEdifikasiSetlistModal(schId) {
+  const sl = ensureSetlistRecord(schId);
+  const ed = sl.edifikasi || APP_STATE.DEFAULT_EDIFIKASI_WEEK1;
+
+  openModal("Edit Materi Edifikasi Setlist", `
+    <div class="space-y-4 text-xs sm:text-sm max-h-[75vh] overflow-y-auto pr-1">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Tema Bulanan</label>
+          <input id="edThemeMonth" type="text" value="${ed.themeMonth || ""}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Subtema Minggu</label>
+          <input id="edSubtheme" type="text" value="${ed.subtheme || ""}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold mb-1">Deskripsi / Penjelasan Subtema</label>
+        <textarea id="edSubthemeDesc" rows="2" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15">${ed.subthemeDesc || ""}</textarea>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Ayat Utama</label>
+          <input id="edMainVerse" type="text" value="${ed.mainVerse || ""}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Ayat Pendukung (Pisahkan tanda koma)</label>
+          <input id="edSupporting" type="text" value="${(ed.supportingVerses || []).join(", ")}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold mb-1">Kutipan / Intisari Ayat Utama</label>
+        <textarea id="edVerseQuote" rows="2" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15">${ed.mainVerseQuote || ""}</textarea>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-black/25 border border-white/10 space-y-3">
+        <div class="text-xs font-bold text-rpGold">Kerangka & Penekanan Teologis Lagu</div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Penyembahan Awal</label>
+          <input id="edSongAwal" type="text" value="${ed.songFramework?.openingWorship?.theological || ""}" class="w-full px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Pujian</label>
+          <input id="edSongPraise" type="text" value="${ed.songFramework?.praise?.theological || ""}" class="w-full px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Penyembahan Intim / Penutup</label>
+          <input id="edSongIntim" type="text" value="${ed.songFramework?.closingWorship?.theological || ""}" class="w-full px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs" />
+        </div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-black/25 border border-white/10 space-y-3">
+        <div class="text-xs font-bold text-rpGold">Contoh Narasi WL</div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Opening</label>
+          <textarea id="edWlOpening" rows="2" class="w-full px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs">${ed.wlNarratives?.opening || ""}</textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Transisi Praise & Penyembahan</label>
+          <textarea id="edWlPraise" rows="2" class="w-full px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs">${ed.wlNarratives?.praiseTransition || ""}</textarea>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Arah Sikap Hati Tim</label>
+          <input id="edHeart" type="text" value="${ed.teamHandout?.heartAttitude || "Percaya • Berserah • Bersyukur • Mengalami Anugerah • Taat"}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Dresscode Rekomendasi</label>
+          <input id="edDresscode" type="text" value="${ed.dresscode?.palette || "Earth tone (cream, beige, cokelat)"}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-white/10 text-xs font-semibold">Batal</button>
+        <button onclick="saveEditEdifikasiSetlist('${schId}')" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold">Simpan Materi Edifikasi</button>
+      </div>
+    </div>
+  `);
+}
+
+function saveEditEdifikasiSetlist(schId) {
+  const sl = ensureSetlistRecord(schId);
+  const ed = sl.edifikasi || JSON.parse(JSON.stringify(APP_STATE.DEFAULT_EDIFIKASI_WEEK1));
+
+  ed.themeMonth = document.getElementById("edThemeMonth").value.trim();
+  ed.subtheme = document.getElementById("edSubtheme").value.trim();
+  ed.subthemeDesc = document.getElementById("edSubthemeDesc").value.trim();
+  ed.mainVerse = document.getElementById("edMainVerse").value.trim();
+  ed.mainVerseQuote = document.getElementById("edVerseQuote").value.trim();
+  const suppStr = document.getElementById("edSupporting").value.trim();
+  ed.supportingVerses = suppStr ? suppStr.split(",").map(x => x.trim()).filter(Boolean) : [];
+
+  if (!ed.songFramework) ed.songFramework = { openingWorship: {}, praise: {}, closingWorship: {} };
+  ed.songFramework.openingWorship.theological = document.getElementById("edSongAwal").value.trim();
+  ed.songFramework.praise.theological = document.getElementById("edSongPraise").value.trim();
+  ed.songFramework.closingWorship.theological = document.getElementById("edSongIntim").value.trim();
+
+  if (!ed.wlNarratives) ed.wlNarratives = {};
+  ed.wlNarratives.opening = document.getElementById("edWlOpening").value.trim();
+  ed.wlNarratives.praiseTransition = document.getElementById("edWlPraise").value.trim();
+
+  if (!ed.teamHandout) ed.teamHandout = {};
+  ed.teamHandout.heartAttitude = document.getElementById("edHeart").value.trim();
+
+  if (!ed.dresscode) ed.dresscode = {};
+  ed.dresscode.palette = document.getElementById("edDresscode").value.trim();
+
+  sl.edifikasi = ed;
+  saveState();
+  closeModal();
+  renderCurrentView();
+  showToast("Materi edifikasi setlist berhasil diperbarui!");
+}
+
+// 3. MODUL EDIFIKASI BULANAN & UPLOAD FILE PRESENTASI PDF
+function openMonthlyEdifikasiModal() {
+  const outline = APP_STATE.MONTHLY_OUTLINE_TEXT || "";
+  openModal("Materi Edifikasi Bulanan — Desember 2026", `
+    <div class="space-y-4 text-xs sm:text-sm max-h-[78vh] overflow-y-auto pr-1">
+      <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 to-transparent border border-rpGold/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-rpGold tracking-widest">Tema Bulanan</span>
+          <h3 class="text-base sm:text-lg font-extrabold text-white">GOD WITH US (ALLAH BESERTA KITA)</h3>
+          <p class="text-xs opacity-75">General Outline 4 Minggu: 6 Des, 13 Des, 20 Des, 27 Des 2026</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          ${isRPM() ? `
+            <label class="px-3.5 py-1.5 rounded-full bg-rpGold text-black font-bold text-xs cursor-pointer hover:bg-amber-300 transition">
+              📤 Upload File PDF/PPT
+              <input type="file" accept=".pdf,.ppt,.pptx,.doc,.docx,text/*" onchange="handleMonthlyDocUpload(this)" class="hidden" />
+            </label>
+          ` : ""}
+          <button onclick="downloadEdifikasiOutlineFile()" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15">
+            📥 Download Materi (.txt)
+          </button>
+        </div>
+      </div>
+
+      ${APP_STATE.uploadedEdifikasiFile ? `
+        <div class="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span class="text-base">📄</span>
+            <div>
+              <div class="font-bold text-emerald-300">${APP_STATE.uploadedEdifikasiFile.name}</div>
+              <div class="opacity-70 text-[10px]">Tersedia untuk diunduh oleh seluruh tim</div>
+            </div>
+          </div>
+          <a href="${APP_STATE.uploadedEdifikasiFile.dataUrl}" download="${APP_STATE.uploadedEdifikasiFile.name}" class="px-3 py-1 rounded-full bg-emerald-500 text-black font-bold text-[11px]">Download File</a>
+        </div>
+      ` : ""}
+
+      <div class="space-y-1">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-bold text-rpGold">Isi General Outline Edifikasi:</label>
+          ${isRPM() ? `<button onclick="enableEditMonthlyOutline()" id="btnEditMonthly" class="text-[11px] text-rpGold underline">Edit Teks Outline</button>` : ""}
+        </div>
+        <textarea id="monthlyOutlineArea" rows="14" ${isRPM() ? "" : "readonly"} class="w-full px-3.5 py-2.5 rounded-2xl bg-black/35 border border-white/15 font-mono text-xs leading-relaxed">${outline}</textarea>
+      </div>
+
+      ${isRPM() ? `
+        <div class="flex justify-end gap-2 pt-1">
+          <button onclick="saveMonthlyOutline()" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold">Simpan Perubahan Teks</button>
+        </div>
+      ` : ""}
+    </div>
+  `);
+}
+
+function handleMonthlyDocUpload(input) {
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      APP_STATE.uploadedEdifikasiFile = {
+        name: file.name,
+        dataUrl: e.target.result,
+        uploadedAt: new Date().toISOString()
+      };
+      saveState();
+      showToast("File presentasi edifikasi berhasil diunggah!");
+      openMonthlyEdifikasiModal();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function saveMonthlyOutline() {
+  const txt = document.getElementById("monthlyOutlineArea").value;
+  APP_STATE.MONTHLY_OUTLINE_TEXT = txt;
+  saveState();
+  showToast("Outline edifikasi bulanan berhasil disimpan!");
+}
+
+function downloadEdifikasiOutlineFile() {
+  const text = APP_STATE.MONTHLY_OUTLINE_TEXT || "Materi Edifikasi Royal Priesthood";
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Materi_Edifikasi_Desember_2026_Royal_Priesthood.txt";
+  a.click();
 }
 
 function printLyricsCompact() {
@@ -4047,7 +4649,7 @@ function buildMemberFormHtml(m = {}) {
         <div class="flex flex-wrap gap-1.5 p-3 rounded-2xl bg-black/20 border border-white/10">${posCheckboxes}</div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <label class="block text-xs font-semibold mb-1">No HP / WA</label>
           <input id="mfPhone" type="text" value="${m.phone || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
@@ -4055,6 +4657,10 @@ function buildMemberFormHtml(m = {}) {
         <div>
           <label class="block text-xs font-semibold mb-1">Email (Google Account)</label>
           <input id="mfEmail" type="email" value="${m.email || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Tanggal Ulang Tahun</label>
+          <input id="mfBirthday" type="date" value="${m.birthday || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
         </div>
       </div>
 
@@ -4103,6 +4709,20 @@ function buildMemberFormHtml(m = {}) {
       </div>
     </div>
   `;
+}
+
+
+function handleMemberAvatarUpload(input) {
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById("mfAvatarUrl").value = e.target.result;
+      document.getElementById("mfAvatarPreview").src = e.target.result;
+      showToast("Foto profil berhasil dimuat.");
+    };
+    reader.readAsDataURL(file);
+  }
 }
 
 function collectMemberFormValues() {
@@ -4361,5 +4981,21 @@ document.addEventListener('DOMContentLoaded', () => {
   checkLoginGateOnLoad();
 });
 </script>
+
+<!-- FLOATING WHATSAPP CS PELAYANAN -->
+<div id="rpFloatingWa" class="no-print fixed bottom-5 right-5 z-40 flex items-center gap-2 group">
+  <span class="hidden sm:inline-block px-3 py-1.5 rounded-full bg-black/80 backdrop-blur-md text-white text-xs font-semibold shadow-lg border border-white/15 opacity-0 group-hover:opacity-100 transition duration-200 pointer-events-none">
+    Tanya CS Pelayanan
+  </span>
+  <a href="https://wa.me/6281340538536?text=Halo%20RP%20CS%2C%20saya%20ingin%20bertanya%20mengenai%20pelayanan%20dan%20kebutuhan%20service%20di%20Royal%20Priesthood%20MDC"
+     target="_blank" rel="noopener noreferrer"
+     class="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-2xl hover:scale-105 transition-all duration-200 border-2 border-white/30"
+     title="Tanya CS Pelayanan" aria-label="Tanya CS Pelayanan">
+    <svg class="w-7 h-7 sm:w-8 sm:h-8 fill-current" viewBox="0 0 24 24">
+      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.043.073.043.42-.101.825zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.66 1.434 5.176L2 22l4.957-1.399C8.423 21.493 10.153 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+    </svg>
+  </a>
+</div>
+
 </body>
 </html>

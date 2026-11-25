@@ -1,0 +1,11 @@
+{
+  "name": "royal-priesthood",
+  "version": "1.2.0",
+  "description": "Royal Priesthood - MDC Church Service Management System",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.758.0"
+  }
+}
