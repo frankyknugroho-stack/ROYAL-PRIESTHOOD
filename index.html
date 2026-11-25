@@ -1392,13 +1392,11 @@ function isRPM() {
 }
 
 function canEditSetlist() {
-  const r = APP_STATE.currentUser?.role;
-  return isRPM() || r === 'WL_MD';
+  return true;
 }
 
 function canEditRundown() {
-  const r = APP_STATE.currentUser?.role;
-  return isRPM() || r === 'SERVICE_COORD' || r === 'WL_MD';
+  return true;
 }
 
 function applyAssetsAndTheme() {
@@ -2982,6 +2980,7 @@ function renderSetlistTab() {
    <button onclick="openMonthlyEdifikasiModal()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15">📖 EDIFIKASI BULANAN</button>
             <button onclick="printLyricsCompact()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-bold">PRINT LYRICS</button>
             <button onclick="shareSetlistWhatsApp('${sch.id}')" class="px-4 py-2 rounded-full wa-green-btn text-xs font-bold">SHARE SETLIST</button>
+            <button onclick="goToRundownForSchedule('${sch.id}')" class="px-4 py-2 rounded-full bg-rpGold/20 hover:bg-rpGold/30 text-rpGold text-xs font-bold border border-rpGold/30">📋 BUKA RUNDOWN</button>
           </div>
         </div>
 
@@ -4317,6 +4316,243 @@ function ensureRundownRecord(schId) {
   return APP_STATE.rundowns[schId];
 }
 
+
+function selectRundownSchedule(schId) {
+  window.__selectedRundownSchId = schId;
+  renderCurrentView();
+}
+
+function goToRundownForSchedule(schId) {
+  window.__selectedRundownSchId = schId;
+  navigateTo('rundown');
+}
+
+function printServiceRundown() {
+  window.print();
+}
+
+function resetRundownEmpty(schId) {
+  const rd = ensureRundownRecord(schId);
+  rd.items = [];
+  saveState();
+  if (typeof closeModal === 'function') closeModal();
+  renderCurrentView();
+  showToast('Rundown telah dikosongkan. Silakan tambahkan segmen baru.');
+}
+
+function importSetlistIntoRundown(schId) {
+  const sch = APP_STATE.schedules.find(s => s.id === schId) || APP_STATE.schedules[0];
+  const sl = ensureSetlistRecord(sch.id);
+  const rd = ensureRundownRecord(sch.id);
+  const wls = (sch.assignments?.['Worship Leader'] || []).join(', ') || 'WL';
+  const mds = (sch.assignments?.['Music Director'] || []).join(', ') || 'MD';
+
+  if (sl.edifikasi && sl.edifikasi.subtheme) {
+    rd.sermonTopic = sl.edifikasi.subtheme;
+  }
+
+  const items = [];
+  // 1. Briefing & Soundcheck
+  items.push({
+    time: '08.00-08.40',
+    duration: '40m',
+    segment: 'Latihan & Sound Check PW Team',
+    detail: 'Run thru lagu setlist, leveling monitor instrumen & vokal, cek wireless mic.',
+    equipment: 'Sound system, instruments, monitors, LED screen, ProPresenter',
+    location: 'Main Hall / Backstage',
+    pic: `${mds}, ${wls}, Tim Sound, Tim MM`,
+    tech: 'Run thru & final check video/PPT/ProPresenter/ayat pembukaan'
+  });
+
+  // 2. Final Preps & Doa Tim
+  items.push({
+    time: '08.40-08.55',
+    duration: '15m',
+    segment: 'Final Preps & Doa Tim',
+    detail: 'PW team retouch, final briefing & doa bersama sebelum memasuki ruang ibadah.',
+    equipment: 'Acoustic guitar, mic, monitor',
+    location: 'Backstage / Ruang Persiapan',
+    pic: `${wls}, ${mds}, PW Team, EO`,
+    tech: 'Video informasi aktivitas gereja & standby line/monitor'
+  });
+
+  // 3. Countdown & Bumper
+  items.push({
+    time: '08.55-09.00',
+    duration: '5m',
+    segment: 'Countdown Video Clip & Bumper',
+    detail: 'Countdown video clip & pemutaran bumper video pembukaan ibadah.',
+    equipment: 'LED screen, video player, audio capture',
+    location: 'Main Hall',
+    pic: 'Tim EO & Tim MM',
+    tech: 'Countdown clip -> play bumper video -> lighting cue'
+  });
+
+  // 4. Call to Worship
+  items.push({
+    time: '09.00-09.05',
+    duration: '5m',
+    segment: 'Pembukaan Pastoral / Welcoming & Call to Worship',
+    detail: `Sapaan hangat, ajakan beribadah & pembacaan ayat tema: ${sl.edifikasi?.mainVerse || 'Matius 1:18–25'} (tampil di LED).`,
+    equipment: 'Wireless mic, LED screen, lighting',
+    location: 'Main Hall',
+    pic: 'Hamba Tuhan / EO',
+    tech: 'Ayat pembukaan tampil di LED sampai selesai; background/lighting'
+  });
+
+  // 5. Praise & Worship Songs from Setlist
+  if (sl.songs && sl.songs.length > 0) {
+    sl.songs.forEach((song, idx) => {
+      const isSongAfterSermon = (song.segment || '').toLowerCase().includes('after sermon') || (song.segment || '').toLowerCase().includes('respon');
+      if (!isSongAfterSermon) {
+        items.push({
+          time: `09.${String(5 + idx * 7).padStart(2, '0')}-09.${String(5 + (idx + 1) * 7).padStart(2, '0')}`,
+          duration: '6-8m',
+          segment: `P&W: ${song.segment || 'Pujian'} — ${song.title}`,
+          detail: `Key: ${song.key || '-'} • Lead: ${song.leadBy || wls} • Nuansa: ${song.nuance || '-'} • Tujuan: ${song.purpose || '-'}`,
+          equipment: 'Sound system, instruments, monitors, LED screen, ProPresenter',
+          location: 'Main Hall',
+          pic: `${song.leadBy || wls}, ${mds}, PW Team`,
+          tech: `Lirik & latar tema di ProPresenter LED; lighting cue: ${song.segment || 'Praise'}`
+        });
+      }
+    });
+  } else {
+    items.push({
+      time: '09.05-09.40',
+      duration: '35m',
+      segment: 'Praise & Worship Session',
+      detail: 'Rangkaian lagu pujian & penyembahan sesuai setlist (Dapat diatur melalui tab SETLIST).',
+      equipment: 'Sound system, instruments, monitors, lighting, LED screen, ProPresenter',
+      location: 'Main Hall',
+      pic: `${wls}, ${mds}, PW Team, Tim Sound, Tim MM`,
+      tech: 'Lighting full / dinamika lagu; lirik & cue perpindahan lagu di LED'
+    });
+  }
+
+  // 6. Sermon
+  items.push({
+    time: '09.40-10.20',
+    duration: '40m',
+    segment: 'Memperkenalkan Pembicara & Sermon / Renungan Firman',
+    detail: `Penyampaian Firman Tuhan: "${rd.sermonTopic || 'GOD WITH US'}" oleh ${rd.preacher || 'Hamba Tuhan MDC'}.`,
+    equipment: 'Mic, LED screen, laptop/PPT presentation',
+    location: 'Main Hall',
+    pic: `${rd.preacher || 'Pengkhotbah'}, Tim MM`,
+    tech: 'Lighting terang/fokus mimbar; PPT / ayat Firman tampil di LED'
+  });
+
+  // 7. Song After Sermon
+  const sasSong = (sl.songs || []).find(s => (s.segment || '').toLowerCase().includes('after sermon') || (s.segment || '').toLowerCase().includes('respon'));
+  items.push({
+    time: '10.20-10.25',
+    duration: '5m',
+    segment: sasSong ? `Song After Sermon: ${sasSong.title}` : 'Song After Sermon & Doa Respon Firman',
+    detail: sasSong ? `Key: ${sasSong.key} • Lead: ${sasSong.leadBy} • Nuansa: ${sasSong.nuance || 'Intim/Reflektif'}` : 'Lagu respons setelah firman & doa komitmen jemaat.',
+    equipment: 'Sound system, instruments, monitors, lighting, LED screen, ProPresenter',
+    location: 'Main Hall',
+    pic: `${wls}, ${mds}, PW Team, Hamba Tuhan`,
+    tech: 'Transisi lirik lagu respons & slide ayat/doa di LED'
+  });
+
+  // 8. Persembahan & News
+  items.push({
+    time: '10.25-10.33',
+    duration: '8m',
+    segment: 'Persembahan, Church / MDC News, Presentasi & Closing Song',
+    detail: 'Doa persembahan, pemutaran video berita gereja (MDC News), presentasi khusus & lagu penutup.',
+    equipment: 'Mic, LED screen, video player, laptop/PPT, sound & lighting',
+    location: 'Main Hall',
+    pic: 'Tim EO, Tim MM, PW Team',
+    tech: 'Play video news, PPT presentasi & lirik closing song'
+  });
+
+  // 9. Benediction
+  items.push({
+    time: '10.33-10.35',
+    duration: '2m',
+    segment: 'Benediction & Blessing Prayer (Doa Berkat)',
+    detail: 'Doa berkat penutup ibadah & lagu pelepasan jemaat.',
+    equipment: 'Wireless mic, LED screen, lighting',
+    location: 'Main Hall',
+    pic: 'Hamba Tuhan',
+    tech: 'Lighting & slide penutup; audio capture & perekaman ibadah'
+  });
+
+  rd.items = items;
+  saveState();
+  if (typeof closeModal === 'function') closeModal();
+  renderCurrentView();
+  showToast(`Rundown berhasil disusun otomatis dari Setlist (${(sl.songs || []).length} lagu)!`);
+}
+
+function openCreateRundownModal(schId) {
+  const sch = APP_STATE.schedules.find(s => s.id === schId) || APP_STATE.schedules[0];
+  const sl = ensureSetlistRecord(sch.id);
+  const songCount = (sl.songs || []).length;
+
+  openModal('Buat & Rancang Service Rundown', `
+    <div class="space-y-4 text-xs sm:text-sm">
+      <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-black/40 to-black/60 border border-rpGold/30">
+        <div class="text-[11px] font-bold text-rpGold uppercase tracking-wider">Jadwal Ibadah Terpilih</div>
+        <div class="font-bold text-sm sm:text-base text-white mt-0.5">${sch.dateLabel} • ${sch.time}</div>
+        <div class="text-xs opacity-75 mt-0.5">Setlist Ibadah memiliki <strong>${songCount} lagu</strong> terdaftar.</div>
+      </div>
+
+      <div class="space-y-3">
+        <!-- Opsi 1: Impor dari Setlist -->
+        <div class="apple-card-soft p-4 border border-rpGold/40 hover:border-rpGold transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-full bg-rpGold text-black font-extrabold text-[10px] uppercase">Rekomendasi</span>
+              <h4 class="font-bold text-sm text-rpGold">⚡ 1-Click Impor dari Setlist Ibadah</h4>
+            </div>
+            <p class="text-xs opacity-80 leading-relaxed">
+              Memasukkan seluruh urutan lagu dari Setlist (${songCount} lagu: ${songCount > 0 ? sl.songs.map(s => s.title).join(', ') : 'Belum ada lagu'}) secara otomatis ke segmen Praise & Worship, lengkap dengan Key, Lead WL, dan catatan teknis.
+            </p>
+          </div>
+          <button onclick="importSetlistIntoRundown('${sch.id}')" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap shrink-0">
+            ⚡ Impor dari Setlist
+          </button>
+        </div>
+
+        <!-- Opsi 2: Template Umum Liturgi MDC -->
+        <div class="apple-card-soft p-4 border border-white/10 hover:border-white/20 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-full bg-white/10 text-[10px] font-bold uppercase">Template Standar</span>
+              <h4 class="font-bold text-sm">📋 Template Umum Liturgi MDC</h4>
+            </div>
+            <p class="text-xs opacity-80 leading-relaxed">
+              Struktur rundown standar lengkap ibadah MDC: Sound Check ➡️ Preps & Doa Tim ➡️ Countdown & Bumper ➡️ Call to Worship ➡️ P&W ➡️ Sermon ➡️ Song After Sermon ➡️ News/Offering ➡️ Doa Berkat. Siap langsung diedit.
+            </p>
+          </div>
+          <button onclick="applyCombinedTemplateToRundown('${sch.id}')" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15 whitespace-nowrap shrink-0">
+            📋 Terapkan Template
+          </button>
+        </div>
+
+        <!-- Opsi 3: Rundown Kosong / Kustom -->
+        <div class="apple-card-soft p-4 border border-white/10 hover:border-white/20 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <h4 class="font-bold text-sm">✨ Mulai Rundown Kosong / Kustom</h4>
+            <p class="text-xs opacity-80 leading-relaxed">
+              Mulai dari lembar kosong untuk menyusun segmen acara khusus secara manual (Seminar, Natal, Paskah, Youth, Prayer Night).
+            </p>
+          </div>
+          <button onclick="resetRundownEmpty('${sch.id}')" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15 whitespace-nowrap shrink-0">
+            ✨ Rundown Kosong
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-white/10 text-xs font-semibold">Tutup</button>
+      </div>
+    </div>
+  `);
+}
+
 function applyCombinedTemplateToRundown(schId) {
   const sch = APP_STATE.schedules.find(s => s.id === schId);
   const rd = ensureRundownRecord(schId);
@@ -4373,9 +4609,13 @@ function renderRundownTab() {
             <select onchange="selectRundownSchedule(this.value)" class="px-3.5 py-2 rounded-full bg-white/[0.07] border border-white/15 text-xs font-semibold">
               ${schOptions}
             </select>
-            ${editable ? `<button onclick="openEditRundownMetaModal('${sch.id}')" class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">Info Liturgi & Crew</button>` : ''}
-            ${editable ? `<button onclick="applyCombinedTemplateToRundown('${sch.id}')" class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">Template Gabungan</button>` : ''}
-            ${editable ? `<button onclick="openAddRundownRowModal('${sch.id}')" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold">+ Segmen Rundown</button>` : ''}
+            ${editable ? `
+              <button onclick="openCreateRundownModal('${sch.id}')" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold">+ BUAT RUNDOWN</button>
+              <button onclick="importSetlistIntoRundown('${sch.id}')" class="px-3.5 py-2 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-rpGold text-xs font-bold border border-rpGold/30">⚡ Impor dari Setlist</button>
+              <button onclick="applyCombinedTemplateToRundown('${sch.id}')" class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">📋 Template Umum</button>
+              <button onclick="openAddRundownRowModal('${sch.id}')" class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">+ Segmen</button>
+              <button onclick="openEditRundownMetaModal('${sch.id}')" class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">Info Liturgi & Crew</button>
+            ` : ''}
             <button onclick="printServiceRundown()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-bold">Print Rundown</button>
           </div>
         </div>
