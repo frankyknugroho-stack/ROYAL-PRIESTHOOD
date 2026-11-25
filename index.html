@@ -50,6 +50,10 @@
       --border-hair: rgba(17, 19, 24, 0.09);
       --accent-gold: #9E6B24;
     }
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
     html {
       font-size: calc(15px * var(--app-font-scale));
       scroll-behavior: smooth;
@@ -221,20 +225,20 @@ const APP_ASSETS = {
       <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Prayer Wall</button>
     </nav>
 
-    <div class="flex items-center gap-2">
-      <div class="flex items-center bg-white/[0.06] border border-white/[0.1] rounded-full p-0.5" title="Ukuran Font">
+    <div class="flex items-center gap-1.5 sm:gap-2">
+      <div class="hidden sm:flex items-center bg-white/[0.06] border border-white/[0.1] rounded-full p-0.5" title="Ukuran Font">
         <button onclick="adjustFontSize(-0.08)" class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hover:bg-white/10 transition" aria-label="Perkecil Font">A-</button>
         <span id="fontScaleLabel" class="px-1.5 text-[11px] font-semibold opacity-75">100%</span>
         <button onclick="adjustFontSize(0.08)" class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hover:bg-white/10 transition" aria-label="Perbesar Font">A+</button>
       </div>
 
-      <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] flex items-center justify-center transition" title="Ganti Dark / Light Mode" aria-label="Ganti Dark / Light Mode">
-        <span id="themeIcon" class="text-sm">☀️</span>
+      <button onclick="toggleTheme()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] flex items-center justify-center transition shrink-0" title="Ganti Dark / Light Mode" aria-label="Ganti Dark / Light Mode">
+        <span id="themeIcon" class="text-xs sm:text-sm">☀️</span>
       </button>
 
-      <div id="authHeaderSlot" class="flex items-center"></div>
+      <div id="authHeaderSlot" class="flex items-center shrink-0"></div>
 
-      <button onclick="toggleMobileDrawer()" class="lg:hidden w-9 h-9 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] flex items-center justify-center transition" aria-label="Buka Navigasi">
+      <button onclick="toggleMobileDrawer()" class="lg:hidden w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] flex items-center justify-center transition shrink-0" aria-label="Buka Navigasi">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
     </div>
@@ -261,6 +265,17 @@ const APP_ASSETS = {
         <button onclick="toggleMobileDrawer()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">✕</button>
       </div>
       <div id="mobileUserCard" class="my-4"></div>
+      
+      <!-- Mobile Font Scale Controller -->
+      <div class="mb-4 p-3 apple-card-soft flex items-center justify-between">
+        <span class="text-xs font-semibold opacity-80">Ukuran Font</span>
+        <div class="flex items-center bg-white/[0.08] border border-white/[0.1] rounded-full p-0.5">
+          <button onclick="adjustFontSize(-0.08)" class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hover:bg-white/10" aria-label="Perkecil Font">A-</button>
+          <span id="fontScaleLabelMobile" class="px-2 text-[11px] font-bold text-rpGold">100%</span>
+          <button onclick="adjustFontSize(0.08)" class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hover:bg-white/10" aria-label="Perbesar Font">A+</button>
+        </div>
+      </div>
+
       <div class="space-y-1">
         <button onclick="navigateTo('weekly'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Weekly Dashboard</button>
         <button onclick="navigateTo('schedule'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10">Schedule & Swap</button>
@@ -353,6 +368,70 @@ const APP_ASSETS = {
   </div>
 </div>
 
+<!-- DEDICATED SIGN IN / LOGIN GATE MODAL -->
+<div id="loginGateModal" class="no-print fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4">
+  <div id="loginGateBackdrop" onclick="handleLoginGateBackdropClick()" class="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+  <div class="relative z-10 w-full max-w-[360px] sm:max-w-md max-h-[92vh] overflow-y-auto apple-card p-4 sm:p-7 shadow-2xl border border-rpGold/30 text-center animate-in fade-in zoom-in-95 duration-200">
+    <button id="loginGateCloseBtn" onclick="closeLoginGateModal()" class="absolute top-3 right-3 sm:top-4 sm:right-4 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-xs sm:text-sm font-semibold transition" title="Tutup">✕</button>
+
+    <div class="mx-auto w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-rpGold/40 flex items-center justify-center mb-2.5 sm:mb-3 shadow-lg">
+      <img id="loginModalLogo" alt="Royal Priesthood" class="w-8 h-8 sm:w-9 sm:h-9 object-contain" />
+    </div>
+
+    <h3 class="text-base sm:text-xl font-extrabold tracking-tight mb-0.5">Royal Priesthood MDC</h3>
+    <p class="text-[11px] sm:text-xs text-rpGold font-semibold mb-1.5 sm:mb-2">Church Service Management System</p>
+    <p class="text-[11px] sm:text-xs opacity-75 leading-relaxed mb-4 sm:mb-5">
+      Silakan masuk menggunakan akun Google Anda untuk mengakses fitur pelayanan dan jadwal ibadah.
+    </p>
+
+    <!-- Google OAuth Button -->
+    <button type="button" onclick="triggerGoogleOAuthLogin()" class="w-full flex items-center justify-center gap-2.5 sm:gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white text-gray-900 hover:bg-gray-100 font-bold text-xs sm:text-sm shadow-xl hover:shadow-2xl hover:scale-[1.01] active:scale-[0.99] transition duration-150">
+      <svg class="w-4 h-4 sm:w-5 sm:h-5 shrink-0" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+      </svg>
+      <span>Sign in with Google</span>
+    </button>
+
+    <div class="relative my-3.5 sm:my-4">
+      <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+      <div class="relative flex justify-center text-[10px] uppercase tracking-wider font-semibold">
+        <span class="bg-[var(--bg-card)] px-2.5 opacity-60">atau masuk via akun tim</span>
+      </div>
+    </div>
+
+    <!-- Quick Team Member Select -->
+    <div class="space-y-2 text-left mb-3.5 sm:mb-4">
+      <label class="block text-[10px] sm:text-[11px] font-semibold opacity-75">Pilih Akun Terdaftar di Database Tim</label>
+      <select id="loginGateSelect" onchange="syncRoleFromLoginGateSelect()" class="w-full max-w-full px-3 py-2 rounded-xl bg-black/25 border border-white/15 text-xs text-white overflow-hidden text-ellipsis">
+        <!-- populated dynamically -->
+      </select>
+      <div class="flex items-center justify-between text-[10px] sm:text-[11px] px-1 text-rpGold font-medium">
+        <span id="loginGateRolePreview" class="truncate">Peran: General Member</span>
+        <label class="flex items-center gap-1.5 cursor-pointer opacity-80 hover:opacity-100 shrink-0">
+          <input id="loginGateGcal" type="checkbox" checked class="w-3.5 h-3.5 accent-amber-400" />
+          <span>GCal Sync</span>
+        </label>
+      </div>
+      <button type="button" onclick="confirmLoginGateSignIn()" class="w-full py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 font-semibold text-xs text-white transition">
+        Masuk dengan Akun Tim
+      </button>
+    </div>
+
+    <div class="pt-2.5 sm:pt-3 border-t border-white/10 flex flex-col gap-1.5 sm:gap-2">
+      <button type="button" onclick="continueAsGuest()" class="w-full py-2 sm:py-2.5 rounded-xl text-xs font-semibold text-rpGold hover:text-rpGoldSoft hover:bg-white/5 border border-rpGold/25 hover:border-rpGold/50 transition flex items-center justify-center gap-1.5">
+        <span>👀</span>
+        <span>Lanjut sebagai Tamu (Mode Lihat Jadwal)</span>
+      </button>
+      <div class="text-[10px] opacity-50">
+        Mode Tamu hanya memiliki akses lihat tanpa izin edit.
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div id="toastBanner" class="no-print fixed bottom-5 right-5 z-50 hidden max-w-sm apple-card-soft px-4 py-3 shadow-xl border border-rpGold/40 text-xs sm:text-sm font-medium"></div>
 
@@ -373,13 +452,14 @@ const DEFAULT_STATE = {
   teamFilterPos: 'ALL',
   teamSearch: '',
   currentUser: {
-    email: 'franky.k.nugroho@gmail.com',
-    name: 'Franky K. Nugroho',
-    nickname: 'Franky',
+    email: '',
+    name: 'Tamu',
+    nickname: 'Tamu',
     photo: APP_ASSETS.FAVICON_LOGO,
-    role: 'RPM',
-    calendarConnected: true,
-    calendarEmail: 'franky.k.nugroho@gmail.com'
+    role: 'GUEST',
+    isLoggedIn: false,
+    calendarConnected: false,
+    calendarEmail: ''
   },
   rpmEmails: [
     'franky.k.nugroho@gmail.com'
@@ -1119,6 +1199,9 @@ function loadState() {
         ...(parsed.currentUser || {})
       }
     };
+    if (!merged.currentUser?.isLoggedIn || !merged.currentUser?.email) {
+      merged.currentUser = structuredClone(DEFAULT_STATE.currentUser);
+    }
     // Remove Cabang Manukan if present in legacy saved state
     merged.branches = (merged.branches || []).filter(
       b => b.id !== 'manukan' && !(b.name || '').toLowerCase().includes('manukan')
@@ -1186,6 +1269,8 @@ function applyAssetsAndTheme() {
   document.getElementById('heroBannerImg').src = APP_ASSETS.HERO_BANNER;
   document.getElementById('footerMdcLogo').src = APP_ASSETS.MDC_LOGO;
   document.getElementById('footerElevateLogo').src = APP_ASSETS.ELEVATE_LOGO;
+  const loginModalLogo = document.getElementById('loginModalLogo');
+  if (loginModalLogo) loginModalLogo.src = APP_ASSETS.RP_CROWN_LOGO;
 
   const htmlEl = document.documentElement;
   if (APP_STATE.theme === 'light') {
@@ -1199,7 +1284,11 @@ function applyAssetsAndTheme() {
   }
 
   document.documentElement.style.setProperty('--app-font-scale', APP_STATE.fontScale);
-  document.getElementById('fontScaleLabel').textContent = `${Math.round(APP_STATE.fontScale * 100)}%`;
+  const scaleText = `${Math.round(APP_STATE.fontScale * 100)}%`;
+  const fLabel = document.getElementById('fontScaleLabel');
+  if (fLabel) fLabel.textContent = scaleText;
+  const fLabelMobile = document.getElementById('fontScaleLabelMobile');
+  if (fLabelMobile) fLabelMobile.textContent = scaleText;
 
   renderAuthHeader();
   renderHeroSlide();
@@ -1244,22 +1333,48 @@ function renderAuthHeader() {
   const slot = document.getElementById('authHeaderSlot');
   const mobileSlot = document.getElementById('mobileUserCard');
   const u = APP_STATE.currentUser;
+  const isLogged = !!(u && u.isLoggedIn && u.email);
   const roleBadge = isRPM()
     ? 'RPM'
-    : (u.role === 'WL_MD' ? 'WL / MD' : (u.role === 'SERVICE_COORD' ? 'Service Coord' : 'General'));
+    : (u?.role === 'WL_MD' ? 'WL / MD' : (u?.role === 'SERVICE_COORD' ? 'Service Coord' : (u?.role === 'GUEST' ? 'Tamu' : 'General')));
 
-  if (!u || !u.email) {
+  if (!isLogged) {
     slot.innerHTML = `
-      <button onclick="openGoogleSignInModal()" class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-gray-900 hover:bg-gray-100 text-xs font-bold shadow transition">
-        <span>G</span> <span>Sign in Google</span>
+      <button onclick="openLoginGateModal(true)" class="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white text-gray-900 hover:bg-gray-100 text-xs font-bold shadow transition shrink-0">
+        <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span class="hidden sm:inline">Sign in Google</span>
+        <span class="sm:hidden text-[11px]">Sign in</span>
       </button>`;
-    if (mobileSlot) mobileSlot.innerHTML = '';
+
+    if (mobileSlot) {
+      mobileSlot.innerHTML = `
+        <div class="apple-card-soft p-3 space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="opacity-75 font-medium">Mode Tamu (Read-Only)</span>
+            <span class="text-[10px] text-rpGold font-semibold">Belum Sign In</span>
+          </div>
+          <button onclick="openLoginGateModal(true); toggleMobileDrawer();" class="w-full py-2 rounded-xl bg-white text-gray-900 font-bold text-xs flex items-center justify-center gap-2 shadow">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Sign in Google</span>
+          </button>
+        </div>`;
+    }
     return;
   }
 
   slot.innerHTML = `
     <div class="flex items-center gap-2">
-      <button onclick="openGoogleSignInModal()" class="flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-white/[0.07] hover:bg-white/[0.13] border border-white/[0.12] transition text-left">
+      <button onclick="openProfileModal()" class="flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-white/[0.07] hover:bg-white/[0.13] border border-white/[0.12] transition text-left" title="Buka Profil">
         <img src="${u.photo || APP_ASSETS.FAVICON_LOGO}" alt="${u.nickname}" class="w-6 h-6 rounded-full object-cover" />
         <div class="hidden md:block leading-tight">
           <div class="text-xs font-semibold">${u.nickname}</div>
@@ -1279,7 +1394,7 @@ function renderAuthHeader() {
             <div class="text-[10px] text-rpGold font-semibold">${roleBadge}</div>
           </div>
         </div>
-        <button onclick="openGoogleSignInModal(); toggleMobileDrawer();" class="px-2.5 py-1 rounded-lg bg-white/10 text-[11px] font-semibold">Akun</button>
+        <button onclick="openProfileModal(); toggleMobileDrawer();" class="px-2.5 py-1 rounded-lg bg-white/10 text-[11px] font-semibold">Akun</button>
       </div>`;
   }
 }
@@ -1321,7 +1436,7 @@ function initGoogleOAuth() {
           const member = (APP_STATE.teamMembers || []).find(
             m => (m.email || '').toLowerCase() === email
           );
-          const gcalEl = document.getElementById('gcalToggleInput');
+          const gcalEl = document.getElementById('loginGateGcal');
           const gcal = gcalEl ? gcalEl.checked : true;
 
           APP_STATE.currentUser = {
@@ -1330,14 +1445,17 @@ function initGoogleOAuth() {
             nickname: member?.nickname || profile.given_name || email.split('@')[0],
             photo: profile.picture || APP_ASSETS.FAVICON_LOGO,
             role,
+            isLoggedIn: true,
             calendarConnected: gcal,
             calendarEmail: email,
             authProvider: 'google_oauth'
           };
+          sessionStorage.removeItem('RP_GUEST_DISMISSED');
           saveState();
           applyAssetsAndTheme();
           renderCurrentView();
-          closeModal();
+          closeLoginGateModal();
+          if (typeof closeModal === 'function') closeModal();
           showToast(`Berhasil login Google OAuth sebagai ${APP_STATE.currentUser.nickname}`);
         } catch (e) {
           showToast('Gagal memverifikasi profil Google OAuth.');
@@ -1357,61 +1475,168 @@ function triggerGoogleOAuthLogin() {
   googleTokenClient.requestAccessToken({ prompt: 'select_account' });
 }
 
+function openLoginGateModal(allowClose = false) {
+  const modal = document.getElementById('loginGateModal');
+  if (!modal) return;
+  modal.__allowClose = allowClose;
+
+  const closeBtn = document.getElementById('loginGateCloseBtn');
+  if (closeBtn) {
+    if (allowClose) {
+      closeBtn.classList.remove('hidden');
+    } else {
+      closeBtn.classList.add('hidden');
+    }
+  }
+
+  const logo = document.getElementById('loginModalLogo');
+  if (logo && APP_ASSETS?.RP_CROWN_LOGO) {
+    logo.src = APP_ASSETS.RP_CROWN_LOGO;
+  }
+
+  const sel = document.getElementById('loginGateSelect');
+  if (sel && Array.isArray(APP_STATE.teamMembers)) {
+    const curEmail = (APP_STATE.currentUser?.email || '').toLowerCase();
+    sel.innerHTML = APP_STATE.teamMembers.map(m =>
+      `<option value="${m.email}" ${curEmail === (m.email || '').toLowerCase() ? 'selected' : ''}>${m.nickname} (${m.fullName}) — ${m.email}</option>`
+    ).join('');
+    syncRoleFromLoginGateSelect();
+  }
+
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeLoginGateModal() {
+  const modal = document.getElementById('loginGateModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+function handleLoginGateBackdropClick() {
+  const modal = document.getElementById('loginGateModal');
+  if (modal && modal.__allowClose) {
+    closeLoginGateModal();
+  } else {
+    showToast('Silakan Sign in Google atau klik Lanjut sebagai Tamu.');
+  }
+}
+
+function syncRoleFromLoginGateSelect() {
+  const sel = document.getElementById('loginGateSelect');
+  if (!sel) return;
+  const email = sel.value;
+  const role = resolveRoleByEmail(email);
+  const preview = document.getElementById('loginGateRolePreview');
+  if (preview) {
+    preview.textContent = 'Peran: ' + getRoleDisplayName(role);
+  }
+}
+
+function confirmLoginGateSignIn() {
+  const sel = document.getElementById('loginGateSelect');
+  if (!sel || !sel.value) return showToast('Pilih akun terlebih dahulu.');
+  const email = sel.value.trim();
+  const role = resolveRoleByEmail(email);
+  const member = APP_STATE.teamMembers.find(m => (m.email || '').toLowerCase() === email.toLowerCase());
+  const gcal = document.getElementById('loginGateGcal')?.checked ?? true;
+
+  APP_STATE.currentUser = {
+    email,
+    name: member ? member.fullName : email.split('@')[0],
+    nickname: member ? member.nickname : email.split('@')[0],
+    photo: APP_ASSETS.FAVICON_LOGO,
+    role,
+    isLoggedIn: true,
+    calendarConnected: gcal,
+    calendarEmail: email
+  };
+  sessionStorage.removeItem('RP_GUEST_DISMISSED');
+  saveState();
+  applyAssetsAndTheme();
+  renderCurrentView();
+  closeLoginGateModal();
+  showToast(`Selamat datang, ${APP_STATE.currentUser.nickname}`);
+}
+
+function continueAsGuest() {
+  sessionStorage.setItem('RP_GUEST_DISMISSED', 'true');
+  APP_STATE.currentUser = {
+    email: '',
+    name: 'Tamu',
+    nickname: 'Tamu',
+    photo: APP_ASSETS.FAVICON_LOGO,
+    role: 'GUEST',
+    isLoggedIn: false,
+    calendarConnected: false,
+    calendarEmail: ''
+  };
+  saveState();
+  applyAssetsAndTheme();
+  renderCurrentView();
+  closeLoginGateModal();
+  showToast('Masuk dalam Mode Tamu (Akses lihat jadwal).');
+}
+
+function checkLoginGateOnLoad() {
+  const isGuestDismissed = sessionStorage.getItem('RP_GUEST_DISMISSED') === 'true';
+  const isLogged = !!(APP_STATE.currentUser?.isLoggedIn && APP_STATE.currentUser?.email);
+  if (!isLogged && !isGuestDismissed) {
+    openLoginGateModal(false);
+  }
+}
+
 function openGoogleSignInModal() {
+  const u = APP_STATE.currentUser;
+  if (u && u.isLoggedIn && u.email) {
+    openProfileModal();
+  } else {
+    openLoginGateModal(true);
+  }
+}
+
+function openProfileModal() {
   const u = APP_STATE.currentUser || {};
-  const memberOptions = APP_STATE.teamMembers.map(m =>
-    `<option value="${m.email}" ${u.email === m.email ? 'selected' : ''}>${m.nickname} (${m.fullName}) — ${m.email}</option>`
-  ).join('');
+  const roleBadge = isRPM()
+    ? 'Royal Priesthood Manager (RPM)'
+    : getRoleDisplayName(u.role);
 
-  openModal('Google OAuth Account Sign-In', `
+  openModal('Profil & Sesi Akun', `
     <div class="space-y-4 text-xs sm:text-sm">
-      <div class="apple-card-soft p-4 space-y-2">
-        <div class="font-bold text-rpGold">Login Google OAuth (royal-priesthood-c43d4)</div>
-        <p class="opacity-80 text-xs">
-          Masuk langsung menggunakan akun Google terautentikasi pada origin <strong>https://royalpriesthood-phi.vercel.app</strong>. Hak akses otomatis menyesuaikan peran yang ditetapkan oleh <strong>Royal Priesthood Manager (RPM)</strong> (<strong>${RPM_PRIMARY_EMAIL}</strong>).
-        </p>
-        <button type="button" onclick="triggerGoogleOAuthLogin()" class="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-full bg-white text-gray-900 hover:bg-gray-100 text-xs sm:text-sm font-bold shadow transition">
-          <span>G</span>
-          <span>Sign in with Google OAuth</span>
-        </button>
-      </div>
-
-      <div class="pt-1 border-t border-white/10 space-y-3">
-        <div class="text-[11px] uppercase tracking-wider opacity-65 font-semibold">Atau Pilih / Uji Akun Terdaftar di Database Tim</div>
-        <div>
-          <label class="block text-xs font-semibold mb-1.5 opacity-80">Pilih Akun Gmail Terdaftar</label>
-          <select id="googleAccountSelect" onchange="syncRoleFromSelectedEmail()" class="w-full px-3.5 py-2.5 rounded-xl bg-black/25 border border-white/15 text-xs sm:text-sm">
-            ${memberOptions}
-          </select>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold mb-1.5 opacity-80">Email Gmail</label>
-            <input id="googleEmailInput" type="email" value="${u.email || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15 text-xs sm:text-sm" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1.5 opacity-80">Peran Terdaftar</label>
-            <input id="googleRolePreview" type="text" readonly value="${getRoleDisplayName(resolveRoleByEmail(u.email))}" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs sm:text-sm text-rpGold font-semibold" />
-          </div>
+      <div class="apple-card-soft p-4 flex items-center gap-3.5">
+        <img src="${u.photo || APP_ASSETS.FAVICON_LOGO}" alt="${u.nickname}" class="w-12 h-12 rounded-full object-cover border border-rpGold/40 shrink-0" />
+        <div class="min-w-0 flex-1">
+          <div class="text-base font-bold truncate">${u.name}</div>
+          <div class="text-xs opacity-70 truncate">${u.email}</div>
+          <div class="inline-block mt-1 px-2.5 py-0.5 rounded-full bg-rpGold/20 text-rpGold font-bold text-[11px]">${roleBadge}</div>
         </div>
       </div>
 
       <div class="apple-card-soft p-3.5 flex items-center justify-between gap-3">
         <div>
           <div class="text-xs font-bold">Google Calendar Sync</div>
-          <div class="text-[11px] opacity-70">Tambahkan tugas ibadah langsung ke kalender Gmail</div>
+          <div class="text-[11px] opacity-70">Sinkronkan jadwal tugas pelayanan ke Google Calendar Anda</div>
         </div>
-        <input id="gcalToggleInput" type="checkbox" ${u.calendarConnected !== false ? 'checked' : ''} class="w-4 h-4 accent-amber-400" />
+        <input id="gcalToggleProfile" type="checkbox" onchange="toggleProfileGcal(this.checked)" ${u.calendarConnected !== false ? 'checked' : ''} class="w-4 h-4 accent-amber-400" />
       </div>
 
-      <div class="flex items-center justify-between pt-2">
-        <button onclick="signOutGoogle()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">Keluar</button>
-        <button onclick="confirmGoogleSignIn()" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold">Simpan / Masuk Akun</button>
+      <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+        <button onclick="closeModal(); openLoginGateModal(true);" class="w-full sm:w-auto px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold text-center">Ganti Akun / Sign In Ulang</button>
+        <button onclick="closeModal(); signOutGoogle();" class="w-full sm:w-auto px-4 py-2 rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-bold text-center">Keluar (Sign Out)</button>
       </div>
     </div>
   `);
-  initGoogleOAuth();
+}
+
+function toggleProfileGcal(checked) {
+  if (APP_STATE.currentUser) {
+    APP_STATE.currentUser.calendarConnected = checked;
+    saveState();
+    renderAuthHeader();
+    showToast(`Google Calendar Sync ${checked ? 'diaktifkan' : 'dinonaktifkan'}.`);
+  }
 }
 
 function resolveRoleByEmail(email) {
@@ -1426,58 +1651,35 @@ function getRoleDisplayName(role) {
   if (role === 'RPM') return 'Royal Priesthood Manager (RPM)';
   if (role === 'WL_MD') return 'Worship Leader & Music Director';
   if (role === 'SERVICE_COORD') return 'Service Coordinator';
+  if (role === 'GUEST') return 'Tamu (Read-Only)';
   return 'General Member';
-}
-
-function syncRoleFromSelectedEmail() {
-  const sel = document.getElementById('googleAccountSelect').value;
-  document.getElementById('googleEmailInput').value = sel;
-  document.getElementById('googleRolePreview').value = getRoleDisplayName(resolveRoleByEmail(sel));
-}
-
-function confirmGoogleSignIn() {
-  const email = document.getElementById('googleEmailInput').value.trim();
-  if (!email) return showToast('Masukkan alamat email Gmail terlebih dahulu.');
-  const role = resolveRoleByEmail(email);
-  const member = APP_STATE.teamMembers.find(m => (m.email || '').toLowerCase() === email.toLowerCase());
-  const gcal = document.getElementById('gcalToggleInput').checked;
-
-  APP_STATE.currentUser = {
-    email,
-    name: member ? member.fullName : email.split('@')[0],
-    nickname: member ? member.nickname : email.split('@')[0],
-    photo: APP_ASSETS.FAVICON_LOGO,
-    role,
-    calendarConnected: gcal,
-    calendarEmail: email
-  };
-  saveState();
-  applyAssetsAndTheme();
-  renderCurrentView();
-  closeModal();
-  showToast(`Selamat datang, ${APP_STATE.currentUser.nickname}`);
 }
 
 function signOutGoogle() {
   const emailToRevoke = APP_STATE.currentUser?.email;
   if (window.google?.accounts?.oauth2 && emailToRevoke && APP_STATE.currentUser?.authProvider === 'google_oauth') {
-    window.google.accounts.oauth2.revoke(emailToRevoke, () => {});
+    try {
+      window.google.accounts.oauth2.revoke(emailToRevoke, () => {});
+    } catch(e) {}
   }
   googleAccessToken = null;
+  sessionStorage.removeItem('RP_GUEST_DISMISSED');
   APP_STATE.currentUser = {
     email: '',
     name: 'Tamu',
     nickname: 'Tamu',
     photo: APP_ASSETS.FAVICON_LOGO,
-    role: 'GENERAL',
+    role: 'GUEST',
+    isLoggedIn: false,
     calendarConnected: false,
     calendarEmail: ''
   };
   saveState();
   applyAssetsAndTheme();
   renderCurrentView();
-  closeModal();
+  if (typeof closeModal === 'function') closeModal();
   showToast('Sesi akun keluar.');
+  openLoginGateModal(false);
 }
 
 // HERO SLIDE
@@ -1603,46 +1805,68 @@ function getUserAssignments(nickname) {
 
 function renderWeeklyDashboard() {
   const u = APP_STATE.currentUser || {};
-  const nick = u.nickname || 'Franky';
-  const myDuties = getUserAssignments(nick);
+  const isLogged = !!(u && u.isLoggedIn && u.email);
+  const nick = isLogged ? (u.nickname || 'Pelayan') : 'Tamu';
+  const myDuties = isLogged ? getUserAssignments(nick) : [];
   const slides = APP_STATE.monthlyTheme.weeklySlides || [];
   const activeSlide = slides.find(s => s.id === APP_STATE.activeWeekId) || slides[0];
   const weekSchedules = APP_STATE.schedules.filter(s => s.weekId === activeSlide.id || (activeSlide.id === '2026-12-27' && s.date === '2026-12-25'));
 
-  const isWlOrMd = (u.role === 'WL_MD' || isRPM() || myDuties.some(d => d.positions.includes('Worship Leader') || d.positions.includes('Music Director')));
-  const greetingText = isWlOrMd
-    ? `Halo ${nick}, untuk ${APP_STATE.monthlyTheme.monthLabel} ini kamu ada tugas pelayanan ini — sudah siap Setlist-nya? Yuk!`
-    : `Halo ${nick}, untuk ${APP_STATE.monthlyTheme.monthLabel} ini kamu ada tugas pelayanan ini — cek jadwal & setlist ibadahmu di bawah.`;
+  const isWlOrMd = isLogged && (u.role === 'WL_MD' || isRPM() || myDuties.some(d => d.positions.includes('Worship Leader') || d.positions.includes('Music Director')));
+  const greetingText = isLogged
+    ? (isWlOrMd
+        ? `Halo ${nick}, untuk ${APP_STATE.monthlyTheme.monthLabel} ini kamu ada tugas pelayanan ini — sudah siap Setlist-nya? Yuk!`
+        : `Halo ${nick}, untuk ${APP_STATE.monthlyTheme.monthLabel} ini kamu ada tugas pelayanan ini — cek jadwal & setlist ibadahmu di bawah.`)
+    : `Selamat datang di Royal Priesthood MDC — Anda masuk dalam Mode Tamu. Masuk dengan akun Google untuk melihat jadwal tugas pelayanan pribadi Anda.`;
 
-  const myDutyCardsHtml = myDuties.length > 0
-    ? myDuties.map(({ schedule, positions }) => {
-        const br = APP_STATE.branches.find(b => b.id === schedule.branchId);
-        const hasSetlist = !!APP_STATE.setlists[schedule.id];
-        const gcalHref = buildGoogleCalendarUrl(schedule, positions.join(', '));
-        return `
-          <div class="apple-card-soft p-4 flex flex-col justify-between gap-3 border border-rpGold/25">
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-1.5">
-                <span class="px-2.5 py-0.5 rounded-full bg-rpGold/20 text-rpGold text-[11px] font-bold">${schedule.weekLabel}</span>
-                <span class="text-sm font-extrabold text-rpGold">${schedule.dateLabel}</span>
-              </div>
-              <div class="text-sm font-bold">${br ? br.shortName : schedule.branchId} • ${schedule.sessionName}</div>
-              <div class="mt-2 flex flex-wrap gap-1.5">
-                ${positions.map(p => `<span class="px-2.5 py-0.5 rounded-full bg-white/10 text-[11px] font-semibold">${p}</span>`).join('')}
-              </div>
-              <div class="mt-2 text-[11px] opacity-75">Latihan: ${schedule.rehearsalNote || '-'}</div>
-            </div>
-            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-white/10">
-              <button onclick="openSetlistForSchedule('${schedule.id}')" class="px-3 py-1.5 rounded-full bg-rpGold text-[#090C11] text-[11px] font-bold transition">
-                ${hasSetlist ? 'Lihat / Kelola Setlist' : '+ Siapkan Setlist'}
-              </button>
-              <a href="${gcalHref}" target="_blank" rel="noopener noreferrer" onclick="showToast('Membuka Google Calendar untuk ${schedule.dateLabel}')" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold transition">
-                + Google Calendar
-              </a>
-            </div>
-          </div>`;
-      }).join('')
-    : `<div class="apple-card-soft p-4 text-xs opacity-75">Belum ada jadwal spesifik tercatat untuk <strong>${nick}</strong> di bulan ${APP_STATE.monthlyTheme.monthLabel}.</div>`;
+  const myDutyCardsHtml = isLogged
+    ? (myDuties.length > 0
+        ? myDuties.map(({ schedule, positions }) => {
+            const br = APP_STATE.branches.find(b => b.id === schedule.branchId);
+            const hasSetlist = !!APP_STATE.setlists[schedule.id];
+            const gcalHref = buildGoogleCalendarUrl(schedule, positions.join(', '));
+            return `
+              <div class="apple-card-soft p-4 flex flex-col justify-between gap-3 border border-rpGold/25">
+                <div>
+                  <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="px-2.5 py-0.5 rounded-full bg-rpGold/20 text-rpGold text-[11px] font-bold">${schedule.weekLabel}</span>
+                    <span class="text-sm font-extrabold text-rpGold">${schedule.dateLabel}</span>
+                  </div>
+                  <div class="text-sm font-bold">${br ? br.shortName : schedule.branchId} • ${schedule.sessionName}</div>
+                  <div class="mt-2 flex flex-wrap gap-1.5">
+                    ${positions.map(p => `<span class="px-2.5 py-0.5 rounded-full bg-white/10 text-[11px] font-semibold">${p}</span>`).join('')}
+                  </div>
+                  <div class="mt-2 text-[11px] opacity-75">Latihan: ${schedule.rehearsalNote || '-'}</div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-white/10">
+                  <button onclick="openSetlistForSchedule('${schedule.id}')" class="px-3 py-1.5 rounded-full bg-rpGold text-[#090C11] text-[11px] font-bold transition">
+                    ${hasSetlist ? 'Lihat / Kelola Setlist' : '+ Siapkan Setlist'}
+                  </button>
+                  <a href="${gcalHref}" target="_blank" rel="noopener noreferrer" onclick="showToast('Membuka Google Calendar untuk ${schedule.dateLabel}')" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold transition">
+                    + Google Calendar
+                  </a>
+                </div>
+              </div>`;
+          }).join('')
+        : `<div class="apple-card-soft p-4 text-xs opacity-75">Belum ada jadwal spesifik tercatat untuk <strong>${nick}</strong> di bulan ${APP_STATE.monthlyTheme.monthLabel}.</div>`)
+    : `
+      <div class="apple-card-soft p-4 sm:p-5 border border-rpGold/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-left space-y-1">
+          <div class="text-xs font-bold text-rpGold flex items-center gap-1.5">
+            <span>👀</span> <span>Mode Tamu Aktif (Read-Only)</span>
+          </div>
+          <div class="text-xs opacity-80 leading-relaxed">Masuk dengan Akun Google untuk melihat kartu tugas pelayanan Anda dan sinkronisasi otomatis ke Google Calendar.</div>
+        </div>
+        <button onclick="openLoginGateModal(true)" class="shrink-0 flex items-center gap-2 px-4 py-2 rounded-full bg-white text-gray-900 font-bold text-xs shadow hover:bg-gray-100 transition">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Sign In Sekarang</span>
+        </button>
+      </div>`;
 
   const weekSelectorHtml = slides.map(sl => `
     <button onclick="selectWeekDashboard('${sl.id}')" class="px-3.5 py-2 rounded-2xl text-left transition border ${sl.id === activeSlide.id ? 'bg-rpGold text-[#090C11] border-rpGold font-bold shadow' : 'bg-white/[0.04] hover:bg-white/[0.09] border-white/10'}">
@@ -4128,6 +4352,7 @@ document.addEventListener('DOMContentLoaded', () => {
   applyAssetsAndTheme();
   renderCurrentView();
   initGoogleOAuth();
+  checkLoginGateOnLoad();
 });
 </script>
 </body>
