@@ -4,11 +4,10 @@
  */
 
 // Super Admin yang berhak memodifikasi whitelist
-const SUPER_ADMIN_EMAIL = 'fahmi.xmarks@gmail.com';
+const SUPER_ADMIN_EMAIL = 'franky.k.nugroho@gmail.com';
 
 // Default master fallback whitelist jika Cloudflare R2 belum disetup
 const DEFAULT_WHITELIST = [
-  { email: 'fahmi.xmarks@gmail.com', name: 'Fahmi', role: 'RPM', addedAt: '2026-11-01' },
   { email: 'franky.k.nugroho@gmail.com', name: 'Franky K. Nugroho', role: 'RPM', addedAt: '2026-11-01' },
   { email: 'agie@mdcsurabaya.org', name: 'Agie', role: 'WL_MD', addedAt: '2026-11-01' },
   { email: 'ronald@mdcsurabaya.org', name: 'Ronald', role: 'WL_MD', addedAt: '2026-11-01' },
