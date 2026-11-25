@@ -2859,6 +2859,31 @@ function openSetlistForSchedule(schId) {
   navigateTo('setlist');
 }
 
+function getSongVersions(song) {
+  if (song && Array.isArray(song.versions) && song.versions.length > 0) {
+    return song.versions;
+  }
+  if (song && song.youtubeUrl) {
+    return [{ label: song.versionLabel || 'Versi Utama', url: song.youtubeUrl }];
+  }
+  return [];
+}
+
+function addSongVersionInputRow(containerId, label = '', url = '') {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const div = document.createElement('div');
+  div.className = 'grid grid-cols-1 sm:grid-cols-3 gap-2 version-row items-center';
+  div.innerHTML = `
+    <input type="text" placeholder="Label (misal: JPCC / Akustik)" value="${label}" class="px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs ver-label" />
+    <div class="sm:col-span-2 flex items-center gap-1.5">
+      <input type="url" placeholder="https://youtu.be/..." value="${url}" class="flex-1 px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs ver-url" />
+      <button type="button" onclick="this.closest('.version-row').remove()" class="px-2.5 py-1.5 rounded-xl bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 font-bold text-xs shrink-0" title="Hapus Versi Ini">✕</button>
+    </div>
+  `;
+  container.appendChild(div);
+}
+
 function extractYoutubeId(url) {
   if (!url) return '';
   const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([A-Za-z0-9_-]{6,})/);
@@ -2931,8 +2956,14 @@ function renderSetlistTab() {
             </div>
           </div>
 
-          <div class="no-print flex flex-wrap items-center gap-2">
-            ${song.youtubeUrl ? `<a href="${song.youtubeUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold">YouTube ↗</a>` : ""}
+          <div class="no-print flex flex-wrap items-center gap-1.5">
+            ${(function() {
+              const vers = getSongVersions(song);
+              if (vers.length > 0) {
+                return vers.map(v => `<a href="${v.url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-[11px] font-semibold text-amber-200 flex items-center gap-1 border border-white/10"><span class="text-rpGold font-bold">▶</span> ${v.label} ↗</a>`).join('');
+              }
+              return song.youtubeUrl ? `<a href="${song.youtubeUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold">YouTube ↗</a>` : '';
+            })()}
             ${editable ? `
               <button onclick="openEditSetlistSongModal('${sch.id}', '${song.id}')" class="px-3 py-1.5 rounded-full bg-rpGold/20 hover:bg-rpGold/30 text-rpGold text-[11px] font-bold">Edit</button>
               <button onclick="deleteSetlistSong('${sch.id}', '${song.id}')" class="px-3 py-1.5 rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-[11px] font-bold">Hapus</button>
@@ -3181,20 +3212,64 @@ function applyDresscodePreset(schId, idx) {
   showToast('Sampel dresscode ditambahkan.');
 }
 
-function openPickFromSongBankModal(schId) {
-  const rows = APP_STATE.songBank.map(sb => `
-    <div class="apple-card-soft p-3.5 flex items-center justify-between gap-3">
-      <div class="flex items-center gap-3 min-w-0">
-        <img src="${getYoutubeThumb(sb.youtubeUrl)}" class="w-12 h-9 rounded-lg object-cover shrink-0" />
-        <div class="min-w-0">
-          <div class="text-xs sm:text-sm font-bold truncate">${sb.title}</div>
-          <div class="text-[11px] opacity-70 truncate">${sb.artist || '-'} • <span class="text-rpGold font-semibold">${sb.tempoCategory}</span></div>
+function renderPickSongBankRows(schId, query) {
+  const q = (query || '').toLowerCase().trim();
+  const filtered = APP_STATE.songBank.filter(sb => {
+    return !q ||
+      sb.title.toLowerCase().includes(q) ||
+      (sb.artist || '').toLowerCase().includes(q) ||
+      (sb.lyrics || '').toLowerCase().includes(q) ||
+      (getSongVersions(sb).some(v => v.label.toLowerCase().includes(q)));
+  });
+
+  if (!filtered.length) {
+    return '<div class="p-6 text-center text-xs opacity-60">Tidak ada lagu yang cocok dengan kata kunci pencarian.</div>';
+  }
+
+  return filtered.map(sb => {
+    const vers = getSongVersions(sb);
+    const verPills = vers.length > 1
+      ? `<div class="flex flex-wrap gap-1 mt-1">${vers.map(v => `<span class="px-2 py-0.5 rounded-full bg-white/10 text-[10px] text-amber-200">▶ ${v.label}</span>`).join('')}</div>`
+      : '';
+
+    return `
+      <div class="apple-card-soft p-3.5 flex items-center justify-between gap-3 hover:border-rpGold/40 transition">
+        <div class="flex items-center gap-3 min-w-0">
+          <img src="${getYoutubeThumb(sb.youtubeUrl)}" class="w-12 h-9 rounded-lg object-cover shrink-0" />
+          <div class="min-w-0">
+            <div class="text-xs sm:text-sm font-bold truncate">${sb.title}</div>
+            <div class="text-[11px] opacity-70 truncate">${sb.artist || '-'} • <span class="text-rpGold font-semibold">${sb.tempoCategory}</span></div>
+            ${verPills}
+          </div>
         </div>
+        <button onclick="selectSongFromBank('${schId}', '${sb.id}')" class="px-3.5 py-1.5 rounded-full bg-rpGold text-[#090C11] text-xs font-bold shrink-0 hover:bg-amber-300 transition">Pilih</button>
       </div>
-      <button onclick="selectSongFromBank('${schId}', '${sb.id}')" class="px-3.5 py-1.5 rounded-full bg-rpGold text-[#090C11] text-xs font-bold shrink-0">Pilih</button>
+    `;
+  }).join('');
+}
+
+function filterPickSongBankModal(query, schId) {
+  const container = document.getElementById('pickSongListContainer');
+  if (container) {
+    container.innerHTML = renderPickSongBankRows(schId, query);
+  }
+}
+
+function openPickFromSongBankModal(schId) {
+  openModal('Pilih Lagu dari Song Bank', `
+    <div class="space-y-3 text-xs sm:text-sm">
+      <div class="relative">
+        <input type="text" id="pickSongSearchInput" oninput="filterPickSongBankModal(this.value, '${schId}')" placeholder="🔍 Cari judul lagu, artis, versi aransemen, atau lirik..." class="w-full px-4 py-2.5 rounded-full bg-black/35 border border-white/20 text-xs focus:border-rpGold focus:outline-none transition" />
+      </div>
+      <div id="pickSongListContainer" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+        ${renderPickSongBankRows(schId, '')}
+      </div>
     </div>
-  `).join('');
-  openModal('Pilih Lagu dari Song Bank', `<div class="space-y-2.5">${rows}</div>`);
+  `);
+  setTimeout(() => {
+    const el = document.getElementById('pickSongSearchInput');
+    if (el) el.focus();
+  }, 100);
 }
 
 function selectSongFromBank(schId, songBankId) {
@@ -3284,11 +3359,11 @@ function confirmAddBankSongToSetlist(schId, songBankId) {
 
 function openAddCustomSongModal(schId) {
   openModal('Tambah Lagu Baru ke Setlist & Song Bank', `
-    <div class="space-y-3 text-xs sm:text-sm">
+    <div class="space-y-3.5 text-xs sm:text-sm max-h-[78vh] overflow-y-auto pr-1">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-semibold mb-1">Judul Lagu</label>
-          <input id="newSongTitle" type="text" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+          <input id="newSongTitle" type="text" placeholder="Contoh: KebaikanMu / Goodness of God" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
         </div>
         <div>
           <label class="block text-xs font-semibold mb-1">Kategori Tempo di Song Bank</label>
@@ -3318,23 +3393,35 @@ function openAddCustomSongModal(schId) {
           <input id="newSongKey" type="text" placeholder="G / A / F - G" class="w-full px-3 py-2 rounded-xl bg-black/25 border border-white/15" />
         </div>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-semibold mb-1">Nuansa Lagu</label>
-          <input id="newSongNuance" type="text" placeholder="Teduh, intim, atau penuh sukacita" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold mb-1">Link YouTube</label>
-          <input id="newSongYt" type="url" placeholder="https://youtu.be/..." class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
-        </div>
+      <div>
+        <label class="block text-xs font-semibold mb-1">Nuansa Lagu</label>
+        <input id="newSongNuance" type="text" placeholder="Teduh, intim, atau penuh sukacita & deklaratif" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
       </div>
+
+      <!-- MULTI-VERSION YOUTUBE BUILDER -->
+      <div class="p-3.5 rounded-2xl bg-black/30 border border-white/15 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-bold text-rpGold">Link YouTube & Pilihan Versi Lagu</label>
+          <button type="button" onclick="addSongVersionInputRow('addCustomSongVersionsList')" class="text-[11px] text-rpGold font-bold hover:underline">+ Tambah Versi Lain</button>
+        </div>
+        <div id="addCustomSongVersionsList" class="space-y-2">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 version-row items-center">
+            <input type="text" placeholder="Label (misal: Versi Utama)" value="Versi Utama" class="px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs ver-label" />
+            <div class="sm:col-span-2 flex items-center gap-1.5">
+              <input type="url" placeholder="https://youtu.be/..." class="flex-1 px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs ver-url" />
+            </div>
+          </div>
+        </div>
+        <p class="text-[10px] opacity-60">Satu judul lagu bisa memiliki beberapa versi aransemen (misal: Original, JPCC, Akustik, dll). Tidak perlu mengunggah ulang dengan judul sama.</p>
+      </div>
+
       <div>
         <label class="block text-xs font-semibold mb-1">Tujuan Lagu</label>
-        <input id="newSongPurpose" type="text" placeholder="Tujuan lagu untuk ibadah minggu ini" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        <input id="newSongPurpose" type="text" placeholder="Tujuan lagu untuk ibadah minggu ini..." class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
       </div>
       <div>
         <label class="block text-xs font-semibold mb-1">Lirik Lengkap</label>
-        <textarea id="newSongLyrics" rows="5" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15"></textarea>
+        <textarea id="newSongLyrics" rows="5" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15 font-mono text-xs"></textarea>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-white/10 text-xs font-semibold">Batal</button>
@@ -3352,9 +3439,16 @@ function saveCustomSongToSetlist(schId) {
   const leadBy = document.getElementById('newSongLead').value.trim() || 'WL';
   const key = document.getElementById('newSongKey').value.trim() || 'C';
   const nuance = document.getElementById('newSongNuance').value.trim() || '-';
-  const youtubeUrl = document.getElementById('newSongYt').value.trim();
   const purpose = document.getElementById('newSongPurpose').value.trim() || '-';
   const lyrics = document.getElementById('newSongLyrics').value;
+
+  const versions = [];
+  document.querySelectorAll('#addCustomSongVersionsList .version-row').forEach(row => {
+    const lbl = row.querySelector('.ver-label').value.trim() || 'Versi';
+    const url = row.querySelector('.ver-url').value.trim();
+    if (url) versions.push({ label: lbl, url });
+  });
+  const primaryYt = versions.length > 0 ? versions[0].url : '';
 
   const sch = APP_STATE.schedules.find(s => s.id === schId);
   const sl = ensureSetlistRecord(schId);
@@ -3365,7 +3459,8 @@ function saveCustomSongToSetlist(schId) {
     title,
     artist: 'MDC Worship',
     tempoCategory,
-    youtubeUrl,
+    youtubeUrl: primaryYt,
+    versions: versions,
     lyrics,
     usageHistory: [
       {
@@ -3386,7 +3481,8 @@ function saveCustomSongToSetlist(schId) {
     key,
     nuance,
     purpose,
-    youtubeUrl,
+    youtubeUrl: primaryYt,
+    versions: versions,
     lyrics,
     comments: []
   });
@@ -3871,21 +3967,31 @@ function shareSetlistWhatsApp(schId) {
 
 
 // 4. SONG BANK (LAGU CEPAT / LAGU LAMBAT, NO FIXED KEY, HISTORY OF WL + KEY USED)
-function renderSongBankTab() {
+function getFilteredSongBank() {
   const filter = APP_STATE.songBankFilter || 'ALL';
-  const q = (APP_STATE.songBankSearch || '').toLowerCase();
+  const q = (APP_STATE.songBankSearch || '').toLowerCase().trim();
 
-  const filtered = APP_STATE.songBank.filter(sb => {
+  return APP_STATE.songBank.filter(sb => {
     const matchCat = filter === 'ALL' || sb.tempoCategory === filter;
     const matchQ = !q ||
       sb.title.toLowerCase().includes(q) ||
       (sb.artist || '').toLowerCase().includes(q) ||
-      (sb.lyrics || '').toLowerCase().includes(q);
+      (sb.lyrics || '').toLowerCase().includes(q) ||
+      getSongVersions(sb).some(v => v.label.toLowerCase().includes(q));
     return matchCat && matchQ;
   });
+}
 
-  const cardsHtml = filtered.map(sb => {
+function renderSongBankCardsHtml() {
+  const filtered = getFilteredSongBank();
+  if (!filtered.length) {
+    return '<div class="col-span-full apple-card p-8 text-center text-xs opacity-70">Tidak ada lagu yang cocok dengan kata kunci pencarian.</div>';
+  }
+
+  return filtered.map(sb => {
     const thumb = getYoutubeThumb(sb.youtubeUrl);
+    const versions = getSongVersions(sb);
+
     const histHtml = (sb.usageHistory || []).length
       ? sb.usageHistory.map(h =>
           `<span class="px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/10 text-[11px]">
@@ -3894,20 +4000,31 @@ function renderSongBankTab() {
         ).join('')
       : '<span class="text-[11px] opacity-55">Belum ada riwayat pemakaian WL.</span>';
 
+    const versionPills = versions.length > 0
+      ? `<div class="flex flex-wrap gap-1.5 pt-1">
+          ${versions.map(v => `
+            <a href="${v.url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-full bg-white/[0.08] hover:bg-white/20 text-white text-[11px] font-semibold border border-white/10 flex items-center gap-1 transition">
+              <span class="text-rpGold font-bold">▶</span> ${v.label} ↗
+            </a>
+          `).join('')}
+        </div>`
+      : '';
+
     return `
-      <div class="apple-card-soft p-4 sm:p-5 flex flex-col justify-between gap-3 border border-white/[0.08]">
+      <div class="apple-card-soft p-4 sm:p-5 flex flex-col justify-between gap-3 border border-white/[0.08] hover:border-rpGold/30 transition">
         <div class="space-y-3">
           <div class="relative rounded-2xl overflow-hidden aspect-video bg-black/40 border border-white/10">
             <img src="${thumb}" alt="${sb.title}" class="w-full h-full object-cover" />
             <span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${sb.tempoCategory === 'Lagu Cepat' ? 'bg-amber-400 text-black' : 'bg-sky-400 text-black'}">
               ${sb.tempoCategory}
             </span>
-            ${sb.youtubeUrl ? `<a href="${sb.youtubeUrl}" target="_blank" rel="noopener noreferrer" class="absolute bottom-2.5 right-2.5 px-3 py-1 rounded-full bg-black/80 hover:bg-black text-white text-[11px] font-bold">▶ Preview</a>` : ''}
+            ${versions.length === 1 && sb.youtubeUrl ? `<a href="${sb.youtubeUrl}" target="_blank" rel="noopener noreferrer" class="absolute bottom-2.5 right-2.5 px-3 py-1 rounded-full bg-black/80 hover:bg-black text-white text-[11px] font-bold">▶ Preview</a>` : ''}
           </div>
 
           <div>
             <h3 class="text-base font-bold leading-snug">${sb.title}</h3>
             <div class="text-xs opacity-70">${sb.artist || 'MDC Worship'}</div>
+            ${versionPills}
           </div>
 
           <div class="space-y-1.5">
@@ -3918,10 +4035,22 @@ function renderSongBankTab() {
 
         <div class="flex items-center justify-between gap-2 pt-3 border-t border-white/10">
           <button onclick="openSongBankLyricsModal('${sb.id}')" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">Lihat Lirik</button>
-          ${canEditSetlist() ? `<button onclick="openEditSongBankModal('${sb.id}')" class="px-3.5 py-1.5 rounded-full bg-rpGold/20 hover:bg-rpGold/30 text-rpGold text-xs font-bold">Edit Master</button>` : ''}
+          ${canEditSetlist() ? `<button onclick="openEditSongBankModal('${sb.id}')" class="px-3.5 py-1.5 rounded-full bg-rpGold/20 hover:bg-rpGold/30 text-rpGold text-xs font-bold">Edit Master & Versi</button>` : ''}
         </div>
       </div>`;
   }).join('');
+}
+
+function onSongBankSearchInput(val) {
+  APP_STATE.songBankSearch = val;
+  const grid = document.getElementById('songBankCardsGrid');
+  if (grid) {
+    grid.innerHTML = renderSongBankCardsHtml();
+  }
+}
+
+function renderSongBankTab() {
+  const filter = APP_STATE.songBankFilter || 'ALL';
 
   return `
     <div class="space-y-6">
@@ -3930,7 +4059,7 @@ function renderSongBankTab() {
           <div class="text-xs uppercase tracking-widest text-rpGold font-bold">Song Bank</div>
           <h2 class="text-xl sm:text-2xl font-bold mt-0.5">Master Song Bank & Riwayat Pemakaian WL</h2>
           <p class="text-xs sm:text-sm opacity-75 mt-1">
-            Lagu dikategorikan menjadi <strong>Lagu Cepat</strong> & <strong>Lagu Lambat</strong> tanpa mengunci Key tetap — sistem mencatat historis siapa WL dan Key apa yang dipakai pada tiap ibadah.
+            Lagu dikategorikan menjadi <strong>Lagu Cepat</strong> & <strong>Lagu Lambat</strong> serta mendukung <strong>Multi-Versi / Multi-Link YouTube</strong> (Original, JPCC, Akustik, dll).
           </p>
         </div>
         ${canEditSetlist() ? `<button onclick="openNewSongBankModal()" class="gold-pill-btn px-4 py-2.5 rounded-full text-xs font-bold shrink-0">+ Tambah ke Song Bank</button>` : ''}
@@ -3942,11 +4071,13 @@ function renderSongBankTab() {
           <button onclick="setSongBankFilter('Lagu Cepat')" class="px-4 py-2 rounded-full text-xs font-bold transition ${filter === 'Lagu Cepat' ? 'bg-rpGold text-[#090C11]' : 'bg-white/[0.06] hover:bg-white/10'}">Lagu Cepat</button>
           <button onclick="setSongBankFilter('Lagu Lambat')" class="px-4 py-2 rounded-full text-xs font-bold transition ${filter === 'Lagu Lambat' ? 'bg-rpGold text-[#090C11]' : 'bg-white/[0.06] hover:bg-white/10'}">Lagu Lambat</button>
         </div>
-        <input type="text" value="${APP_STATE.songBankSearch || ''}" oninput="setSongBankSearch(this.value)" placeholder="Cari judul lagu, artis, atau lirik..." class="px-4 py-2 rounded-full bg-white/[0.06] border border-white/15 text-xs sm:w-72" />
+        <div class="relative sm:w-80">
+          <input type="text" id="songBankSearchInput" value="${APP_STATE.songBankSearch || ''}" oninput="onSongBankSearchInput(this.value)" placeholder="🔍 Cari judul, artis, lirik, atau versi..." class="w-full pl-4 pr-4 py-2 rounded-full bg-white/[0.06] border border-white/15 text-xs focus:border-rpGold focus:outline-none transition" />
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        ${cardsHtml || '<div class="apple-card p-6 text-xs opacity-70">Tidak ada lagu yang cocok dengan filter pencarian.</div>'}
+      <div id="songBankCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        ${renderSongBankCardsHtml()}
       </div>
     </div>
   `;
@@ -3955,11 +4086,6 @@ function renderSongBankTab() {
 function setSongBankFilter(f) {
   APP_STATE.songBankFilter = f;
   saveState();
-  renderCurrentView();
-}
-
-function setSongBankSearch(val) {
-  APP_STATE.songBankSearch = val;
   renderCurrentView();
 }
 
@@ -3978,11 +4104,11 @@ function openSongBankLyricsModal(id) {
 
 function openNewSongBankModal() {
   openModal('Tambah Lagu ke Song Bank', `
-    <div class="space-y-3 text-xs sm:text-sm">
+    <div class="space-y-3.5 text-xs sm:text-sm max-h-[78vh] overflow-y-auto pr-1">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-semibold mb-1">Judul Lagu</label>
-          <input id="sbNewTitle" type="text" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+          <input id="sbNewTitle" type="text" placeholder="Contoh: Immanuel / KebaikanMu" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
         </div>
         <div>
           <label class="block text-xs font-semibold mb-1">Kategori Tempo</label>
@@ -3992,19 +4118,31 @@ function openNewSongBankModal() {
           </select>
         </div>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-semibold mb-1">Artis / Versi Referensi</label>
-          <input id="sbNewArtist" type="text" placeholder="JPCC / LOJ / MDC Worship" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold mb-1">Link YouTube</label>
-          <input id="sbNewYt" type="url" placeholder="https://youtu.be/..." class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
-        </div>
+      <div>
+        <label class="block text-xs font-semibold mb-1">Artis / Penulis</label>
+        <input id="sbNewArtist" type="text" placeholder="JPCC / LOJ / MDC Worship" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
       </div>
+
+      <!-- MULTI-VERSION YOUTUBE BUILDER -->
+      <div class="p-3.5 rounded-2xl bg-black/30 border border-white/15 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-bold text-rpGold">Link YouTube & Pilihan Versi Lagu</label>
+          <button type="button" onclick="addSongVersionInputRow('sbNewVersionsList')" class="text-[11px] text-rpGold font-bold hover:underline">+ Tambah Versi Lain</button>
+        </div>
+        <div id="sbNewVersionsList" class="space-y-2">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 version-row items-center">
+            <input type="text" placeholder="Label (misal: Versi Utama)" value="Versi Utama" class="px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs ver-label" />
+            <div class="sm:col-span-2 flex items-center gap-1.5">
+              <input type="url" placeholder="https://youtu.be/..." class="flex-1 px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs ver-url" />
+            </div>
+          </div>
+        </div>
+        <p class="text-[10px] opacity-60">Satu judul lagu bisa memiliki beberapa versi (misal: Original, JPCC, Akustik, dll). Tidak perlu membuat lagu baru untuk versi berbeda.</p>
+      </div>
+
       <div>
         <label class="block text-xs font-semibold mb-1">Lirik Lengkap</label>
-        <textarea id="sbNewLyrics" rows="6" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15"></textarea>
+        <textarea id="sbNewLyrics" rows="6" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15 font-mono text-xs"></textarea>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-white/10 text-xs font-semibold">Batal</button>
@@ -4017,12 +4155,22 @@ function openNewSongBankModal() {
 function saveNewSongBank() {
   const title = document.getElementById('sbNewTitle').value.trim();
   if (!title) return showToast('Judul lagu wajib diisi.');
+
+  const versions = [];
+  document.querySelectorAll('#sbNewVersionsList .version-row').forEach(row => {
+    const lbl = row.querySelector('.ver-label').value.trim() || 'Versi';
+    const url = row.querySelector('.ver-url').value.trim();
+    if (url) versions.push({ label: lbl, url });
+  });
+  const primaryYt = versions.length > 0 ? versions[0].url : '';
+
   APP_STATE.songBank.unshift({
     id: 'song-' + Date.now(),
     title,
     artist: document.getElementById('sbNewArtist').value.trim() || 'MDC Worship',
     tempoCategory: document.getElementById('sbNewTempo').value,
-    youtubeUrl: document.getElementById('sbNewYt').value.trim(),
+    youtubeUrl: primaryYt,
+    versions: versions,
     lyrics: document.getElementById('sbNewLyrics').value,
     usageHistory: []
   });
@@ -4035,8 +4183,20 @@ function saveNewSongBank() {
 function openEditSongBankModal(id) {
   const sb = APP_STATE.songBank.find(x => x.id === id);
   if (!sb) return;
+  const versions = getSongVersions(sb);
+
+  const versionRowsHtml = (versions.length ? versions : [{ label: 'Versi Utama', url: sb.youtubeUrl || '' }]).map((v, i) => `
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 version-row items-center">
+      <input type="text" placeholder="Label (misal: JPCC / Akustik)" value="${v.label}" class="px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs ver-label" />
+      <div class="sm:col-span-2 flex items-center gap-1.5">
+        <input type="url" placeholder="https://youtu.be/..." value="${v.url}" class="flex-1 px-3 py-1.5 rounded-xl bg-black/25 border border-white/15 text-xs ver-url" />
+        ${i > 0 ? `<button type="button" onclick="this.closest('.version-row').remove()" class="px-2.5 py-1.5 rounded-xl bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 font-bold text-xs shrink-0">✕</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+
   openModal(`Edit Master Lagu — ${sb.title}`, `
-    <div class="space-y-3 text-xs sm:text-sm">
+    <div class="space-y-3.5 text-xs sm:text-sm max-h-[78vh] overflow-y-auto pr-1">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-semibold mb-1">Judul Lagu</label>
@@ -4050,19 +4210,26 @@ function openEditSongBankModal(id) {
           </select>
         </div>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-semibold mb-1">Artis / Versi</label>
-          <input id="sbEdArtist" type="text" value="${sb.artist || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold mb-1">Link YouTube</label>
-          <input id="sbEdYt" type="url" value="${sb.youtubeUrl || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
-        </div>
+      <div>
+        <label class="block text-xs font-semibold mb-1">Artis / Versi</label>
+        <input id="sbEdArtist" type="text" value="${sb.artist || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
       </div>
+
+      <!-- MULTI-VERSION YOUTUBE BUILDER -->
+      <div class="p-3.5 rounded-2xl bg-black/30 border border-white/15 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-bold text-rpGold">Link YouTube & Versi Lagu</label>
+          <button type="button" onclick="addSongVersionInputRow('sbEdVersionsList')" class="text-[11px] text-rpGold font-bold hover:underline">+ Tambah Versi Lain</button>
+        </div>
+        <div id="sbEdVersionsList" class="space-y-2">
+          ${versionRowsHtml}
+        </div>
+        <p class="text-[10px] opacity-60">Satu lagu bisa memiliki banyak link/versi (Original, JPCC, Akustik, dll). Tim bisa memilih versi mana yang dipakai.</p>
+      </div>
+
       <div>
         <label class="block text-xs font-semibold mb-1">Lirik Lengkap</label>
-        <textarea id="sbEdLyrics" rows="6" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15">${sb.lyrics || ''}</textarea>
+        <textarea id="sbEdLyrics" rows="6" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15 font-mono text-xs">${sb.lyrics || ''}</textarea>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-white/10 text-xs font-semibold">Batal</button>
@@ -4078,12 +4245,21 @@ function saveEditedSongBank(id) {
   sb.title = document.getElementById('sbEdTitle').value.trim() || sb.title;
   sb.tempoCategory = document.getElementById('sbEdTempo').value;
   sb.artist = document.getElementById('sbEdArtist').value.trim();
-  sb.youtubeUrl = document.getElementById('sbEdYt').value.trim();
   sb.lyrics = document.getElementById('sbEdLyrics').value;
+
+  const versions = [];
+  document.querySelectorAll('#sbEdVersionsList .version-row').forEach(row => {
+    const lbl = row.querySelector('.ver-label').value.trim() || 'Versi';
+    const url = row.querySelector('.ver-url').value.trim();
+    if (url) versions.push({ label: lbl, url });
+  });
+  sb.versions = versions;
+  sb.youtubeUrl = versions.length > 0 ? versions[0].url : sb.youtubeUrl;
+
   saveState();
   closeModal();
   renderCurrentView();
-  showToast('Data Song Bank diperbarui.');
+  showToast('Master lagu diperbarui.');
 }
 
 // 5. SERVICE RUNDOWN (SERVICE COORDINATOR, MULTIMEDIA, SOUND SYSTEM, EO + PRINTABLE RUNDOWN)
@@ -4885,47 +5061,51 @@ function deleteRundownRow(schId, idx) {
 
 
 // 6. TEAM DATABASE (CLEAN LIST: NAME + MULTI-POSITIONS, SELF-EDIT PROFILE, RPM ROLE & POSITION MANAGER)
-function renderTeamTab() {
+function getFilteredTeamMembers() {
   const posFilter = APP_STATE.teamFilterPos || 'ALL';
-  const q = (APP_STATE.teamSearch || '').toLowerCase();
-  const uEmail = (APP_STATE.currentUser?.email || '').toLowerCase();
+  const q = (APP_STATE.teamSearch || '').toLowerCase().trim();
 
-  const filtered = APP_STATE.teamMembers.filter(m => {
+  return APP_STATE.teamMembers.filter(m => {
     const matchPos = posFilter === 'ALL' || (Array.isArray(m.positions) && m.positions.includes(posFilter));
     const matchQ = !q ||
       (m.nickname || '').toLowerCase().includes(q) ||
       (m.fullName || '').toLowerCase().includes(q) ||
+      (m.phone || '').toLowerCase().includes(q) ||
       (m.positions || []).join(' ').toLowerCase().includes(q);
     return matchPos && matchQ;
   });
+}
 
-  const posChips = [
-    `<button onclick="setTeamFilterPos('ALL')" class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition ${posFilter === 'ALL' ? 'bg-rpGold text-[#090C11]' : 'bg-white/[0.06] hover:bg-white/10'}">Semua (${APP_STATE.teamMembers.length})</button>`,
-    ...APP_STATE.servicePositions.map(p =>
-      `<button onclick="setTeamFilterPos('${p}')" class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition ${posFilter === p ? 'bg-rpGold text-[#090C11]' : 'bg-white/[0.06] hover:bg-white/10'}">${p}</button>`
-    )
-  ].join('');
+function renderTeamListHtml() {
+  const filtered = getFilteredTeamMembers();
+  const uEmail = (APP_STATE.currentUser?.email || '').toLowerCase();
 
-  // Simple clean list: Name + Service Positions (supporting multiple roles per person)
-  const listHtml = filtered.map(m => {
+  if (!filtered.length) {
+    return '<div class="apple-card p-8 text-center text-xs opacity-70">Tidak ada anggota tim yang cocok dengan kata kunci pencarian.</div>';
+  }
+
+  return filtered.map(m => {
     const isSelf = uEmail && (m.email || '').toLowerCase() === uEmail;
     const canEdit = isRPM() || isSelf;
     const posBadges = (m.positions || []).map(p =>
       `<span class="px-2.5 py-0.5 rounded-full bg-white/[0.08] border border-white/10 text-[11px] font-semibold">${p}</span>`
     ).join('');
 
+    const photoHtml = m.photo
+      ? `<img src="${m.photo}" alt="${m.nickname}" class="w-9 h-9 rounded-full object-cover border border-rpGold/40 shrink-0" />`
+      : `<div class="w-9 h-9 rounded-full bg-rpGold/20 text-rpGold font-extrabold text-xs flex items-center justify-center shrink-0">${(m.nickname || 'RP').slice(0, 2).toUpperCase()}</div>`;
+
     return `
       <div onclick="openMemberDetailModal('${m.id}')" class="apple-card-soft px-4 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:border-rpGold/40 cursor-pointer transition">
         <div class="flex items-center gap-3 min-w-0">
-          <div class="w-9 h-9 rounded-full bg-rpGold/20 text-rpGold font-extrabold text-xs flex items-center justify-center shrink-0">
-            ${(m.nickname || 'RP').slice(0, 2).toUpperCase()}
-          </div>
+          ${photoHtml}
           <div class="min-w-0">
             <div class="flex items-center gap-2">
               <span class="text-sm font-bold truncate">${m.nickname}</span>
               <span class="text-xs opacity-60 truncate">(${m.fullName})</span>
               ${isSelf ? '<span class="px-2 py-0.5 rounded-full bg-rpGold text-[#090C11] text-[10px] font-extrabold">Saya</span>' : ''}
             </div>
+            ${m.birthday ? `<div class="text-[10px] opacity-60">🎂 Ultah: ${m.birthday}</div>` : ''}
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-1.5">
@@ -4934,6 +5114,25 @@ function renderTeamTab() {
         </div>
       </div>`;
   }).join('');
+}
+
+function onTeamSearchInput(val) {
+  APP_STATE.teamSearch = val;
+  const list = document.getElementById('teamMemberListContainer');
+  if (list) {
+    list.innerHTML = renderTeamListHtml();
+  }
+}
+
+function renderTeamTab() {
+  const posFilter = APP_STATE.teamFilterPos || 'ALL';
+
+  const posChips = [
+    `<button onclick="setTeamFilterPos('ALL')" class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition ${posFilter === 'ALL' ? 'bg-rpGold text-[#090C11]' : 'bg-white/[0.06] hover:bg-white/10'}">Semua (${APP_STATE.teamMembers.length})</button>`,
+    ...APP_STATE.servicePositions.map(p =>
+      `<button onclick="setTeamFilterPos('${p}')" class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition ${posFilter === p ? 'bg-rpGold text-[#090C11]' : 'bg-white/[0.06] hover:bg-white/10'}">${p}</button>`
+    )
+  ].join('');
 
   return `
     <div class="space-y-6">
@@ -4956,11 +5155,13 @@ function renderTeamTab() {
         <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
           ${posChips}
         </div>
-        <input type="text" value="${APP_STATE.teamSearch || ''}" oninput="setTeamSearch(this.value)" placeholder="Cari nama atau posisi..." class="px-4 py-2 rounded-full bg-white/[0.06] border border-white/15 text-xs sm:w-64 shrink-0" />
+        <div class="relative sm:w-72 shrink-0">
+          <input type="text" id="teamSearchInput" value="${APP_STATE.teamSearch || ''}" oninput="onTeamSearchInput(this.value)" placeholder="🔍 Cari nama, posisi (WL, Sound, dll)..." class="w-full pl-4 pr-4 py-2 rounded-full bg-white/[0.06] border border-white/15 text-xs focus:border-rpGold focus:outline-none transition" />
+        </div>
       </div>
 
-      <div class="space-y-2">
-        ${listHtml || '<div class="apple-card p-6 text-xs opacity-70">Tidak ada anggota tim ditemukan.</div>'}
+      <div id="teamMemberListContainer" class="space-y-2">
+        ${renderTeamListHtml()}
       </div>
     </div>
   `;
@@ -4969,11 +5170,6 @@ function renderTeamTab() {
 function setTeamFilterPos(pos) {
   APP_STATE.teamFilterPos = pos;
   saveState();
-  renderCurrentView();
-}
-
-function setTeamSearch(val) {
-  APP_STATE.teamSearch = val;
   renderCurrentView();
 }
 
