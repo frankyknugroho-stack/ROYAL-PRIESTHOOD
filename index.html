@@ -231,7 +231,7 @@ const APP_ASSETS = {
     </div>
 
     <nav class="hidden lg:flex items-center gap-1 nav-pill-group p-1 rounded-full">
-      <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Weekly Dashboard</button>
+      <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition" title="POV Royal Priesthood Manager Service Pipeline">Service Pipeline</button>
       <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SCHEDULE</button>
       <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SETLIST</button>
       <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Song Bank</button>
@@ -263,7 +263,7 @@ const APP_ASSETS = {
   </div>
 
   <div class="lg:hidden flex items-center gap-1 px-2.5 py-1.5 overflow-x-auto no-scrollbar border-t border-current/10">
-    <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Weekly</button>
+    <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Pipeline</button>
     <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SCHEDULE</button>
     <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SETLIST</button>
     <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Song Bank</button>
@@ -313,7 +313,7 @@ const APP_ASSETS = {
       <!-- Nav Links -->
       <div class="space-y-1">
         <button onclick="navigateTo('weekly'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Weekly Dashboard</span>
+          <span>Service Pipeline Hub</span>
           <span class="text-xs opacity-50">→</span>
         </button>
         <button onclick="navigateTo('schedule'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
@@ -372,7 +372,7 @@ const APP_ASSETS = {
           <p id="heroSlideCaption" class="text-sm text-gray-200/90 max-w-xl leading-relaxed"></p>
           <div class="flex flex-wrap items-center gap-3 pt-1">
             <button onclick="navigateTo('weekly')" class="gold-pill-btn px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold tracking-wide transition">
-              Buka Weekly Dashboard →
+              Buka Service Pipeline →
             </button>
             <button onclick="prevHeroSlide()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-xs font-bold transition" title="Slide Sebelumnya">‹</button>
             <button onclick="nextHeroSlide()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-xs font-bold transition" title="Slide Berikutnya">›</button>
@@ -2226,8 +2226,8 @@ function renderWeeklyDashboard() {
   const isWlOrMd = isLogged && (u.role === 'WL_MD' || isRPM() || myDuties.some(d => d.positions.includes('Worship Leader') || d.positions.includes('Music Director')));
   const greetingText = isLogged
     ? (isWlOrMd
-        ? `Halo ${nick}, untuk ${APP_STATE.monthlyTheme.monthLabel} ini kamu ada tugas pelayanan ini — sudah siap Setlist-nya? Yuk!`
-        : `Halo ${nick}, untuk ${APP_STATE.monthlyTheme.monthLabel} ini kamu ada tugas pelayanan ini — cek jadwal & setlist ibadahmu di bawah.`)
+        ? `Halo ${nick}, kamu terdaftar melayani di ${APP_STATE.monthlyTheme.monthLabel} ini. Cek status pipeline kesiapan ibadah di bawah ini!`
+        : `Halo ${nick}, selamat melayani di ${APP_STATE.monthlyTheme.monthLabel}. Pantau jadwal dan briefing ibadahmu di bawah.`)
     : `Selamat datang di Royal Priesthood MDC — Anda masuk dalam Mode Tamu. Masuk dengan akun Google untuk melihat jadwal tugas pelayanan pribadi Anda.`;
 
   const myDutyCardsHtml = isLogged
@@ -2253,8 +2253,11 @@ function renderWeeklyDashboard() {
                   <button onclick="openSetlistForSchedule('${schedule.id}')" class="px-3 py-1.5 rounded-full bg-rpGold text-[#090C11] text-[11px] font-bold transition">
                     ${hasSetlist ? 'Lihat / Kelola Setlist' : '+ Siapkan Setlist'}
                   </button>
+                  <button onclick="openWhatsAppBriefingModal('${schedule.id}')" class="px-3 py-1.5 rounded-full wa-green-btn text-[11px] font-bold transition flex items-center gap-1">
+                    <span>📢</span> <span>Briefing WA</span>
+                  </button>
                   <a href="${gcalHref}" target="_blank" rel="noopener noreferrer" onclick="showToast('Membuka Google Calendar untuk ${schedule.dateLabel}')" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold transition">
-                    + Google Calendar
+                    + GCal
                   </a>
                 </div>
               </div>`;
@@ -2286,63 +2289,189 @@ function renderWeeklyDashboard() {
     </button>
   `).join('');
 
-  const upcomingSessionsHtml = weekSchedules.map(sch => {
+  // ----------------------------------------------------
+  // 5-STAGE SERVICE PIPELINE SESSION CARDS (POV RPM)
+  // ----------------------------------------------------
+  const pipelineSessionsHtml = weekSchedules.map(sch => {
     const br = APP_STATE.branches.find(b => b.id === sch.branchId);
-    const wlList = (sch.assignments?.['Worship Leader'] || []).join(', ') || '-';
-    const mdList = (sch.assignments?.['Music Director'] || []).join(', ') || '-';
-    const kbList = (sch.assignments?.['Keyboardist'] || []).join(', ') || '-';
-    const sgList = (sch.assignments?.['Singers'] || []).join(', ') || '-';
-    const saxList = (sch.assignments?.['Saxophonist'] || []);
+    const sl = ensureSetlistRecord(sch.id);
+    const rd = ensureRundownRecord(sch.id);
+    const ed = sl.edifikasi || APP_STATE.DEFAULT_EDIFIKASI_WEEK1;
+
+    const wls = (sch.assignments?.['Worship Leader'] || []).join(', ') || '-';
+    const mds = (sch.assignments?.['Music Director'] || []).join(', ') || '-';
+    const kbs = (sch.assignments?.['Keyboardist'] || []).join(', ') || '-';
+    const sgs = (sch.assignments?.['Singers'] || []).join(', ') || '-';
+    const totalAssigned = Object.values(sch.assignments || {}).reduce((acc, curr) => acc + (Array.isArray(curr) ? curr.length : 0), 0);
+    const songCount = (sl.songs || []).length;
+    const itemCount = (rd.items || []).length;
+    const totalMins = (rd.items || []).reduce((acc, item) => {
+      const m = parseInt(item.duration);
+      return acc + (isNaN(m) ? 5 : m);
+    }, 0);
+
+    const isStage1Done = true; // Edifikasi selalu ada dari master pastoral
+    const isStage2Done = totalAssigned >= 5;
+    const isStage3Done = songCount >= 3;
+    const isStage4Done = itemCount >= 4;
+
     return `
-      <div class="apple-card-soft p-4 space-y-2.5">
-        <div class="flex items-start justify-between gap-2">
+      <div class="apple-card p-5 sm:p-6 space-y-4 border border-white/10 shadow-lg">
+        <!-- Session Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
           <div>
-            <span class="text-[10px] font-bold uppercase tracking-wider text-rpGold">${sch.weekLabel} • ${br ? br.shortName : sch.branchId}</span>
-            <div class="text-lg sm:text-xl font-extrabold tracking-tight">${sch.dateLabel}</div>
-            <div class="text-xs font-semibold opacity-85">${sch.sessionName}</div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-rpGold/20 text-rpGold text-[11px] font-extrabold uppercase">${sch.weekLabel}</span>
+              <span class="text-xs font-bold text-gray-300">${br ? br.name : sch.branchId}</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-extrabold text-white mt-1">${sch.dateLabel} • ${sch.sessionName} (${sch.time})</h3>
           </div>
-          <button onclick="openSetlistForSchedule('${sch.id}')" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-[11px] font-bold shrink-0">
-            Setlist →
-          </button>
+
+          <div class="flex items-center gap-2">
+            <button onclick="openWhatsAppBriefingModal('${sch.id}')" class="px-3.5 py-2 rounded-full wa-green-btn text-xs font-bold transition flex items-center gap-1.5 shadow">
+              <span>📢</span> <span>Briefing WA (3-Pintu)</span>
+            </button>
+            <button onclick="openSetlistForSchedule('${sch.id}')" class="px-3.5 py-2 rounded-full bg-rpGold text-black font-extrabold text-xs transition">
+              <span>🎵</span> <span>Buka Setlist</span>
+            </button>
+            <button onclick="goToRundownForSchedule('${sch.id}')" class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold transition">
+              <span>⏱️</span> <span>Rundown</span>
+            </button>
+          </div>
         </div>
-        <div class="text-xs space-y-1 pt-2 border-t border-white/10">
-          <div><span class="opacity-65">WL:</span> <strong>${wlList}</strong> • <span class="opacity-65">MD:</span> <strong>${mdList}</strong></div>
-          <div><span class="opacity-65">Keyboardist:</span> ${kbList} • <span class="opacity-65">Singers:</span> ${sgList}</div>
-          ${saxList.length ? `<div><span class="opacity-65">Saxophonist:</span> <strong class="text-rpGoldSoft">${saxList.join(', ')}</strong></div>` : ''}
+
+        <!-- 5-STAGE BAN BERJALAN ORKESTRASI PIPELINE -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+          <!-- STAGE 1: VISI & EDIFIKASI -->
+          <div class="p-3.5 rounded-2xl apple-card-soft border border-emerald-500/30 flex flex-col justify-between space-y-2">
+            <div>
+              <div class="flex items-center justify-between text-[11px] font-bold text-emerald-400">
+                <span>1. EDIFIKASI</span>
+                <span>✅ MASTER SIAP</span>
+              </div>
+              <div class="text-xs font-bold mt-1.5 line-clamp-2" title="${activeSlide.subtheme}">${activeSlide.subtheme}</div>
+              <div class="text-[10px] opacity-70 mt-1">Ayat: ${activeSlide.mainVerse}</div>
+            </div>
+            <button onclick="openMonthlyEdifikasiModal()" class="w-full py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-[11px] font-bold transition text-center">
+              📖 Buka Edifikasi
+            </button>
+          </div>
+
+          <!-- STAGE 2: FORMASI JADWAL -->
+          <div class="p-3.5 rounded-2xl apple-card-soft border ${isStage2Done ? 'border-emerald-500/30' : 'border-amber-500/30'} flex flex-col justify-between space-y-2">
+            <div>
+              <div class="flex items-center justify-between text-[11px] font-bold ${isStage2Done ? 'text-emerald-400' : 'text-amber-400'}">
+                <span>2. FORMASI JADWAL</span>
+                <span>${isStage2Done ? '✅ ROSTER SIAP' : '⏳ PERLU DIISI'}</span>
+              </div>
+              <div class="text-xs font-bold mt-1.5 truncate">WL: ${wls}</div>
+              <div class="text-[10px] opacity-70 mt-1">MD: ${mds} • ${totalAssigned} Pelayan</div>
+            </div>
+            <button onclick="navigateTo('schedule')" class="w-full py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-[11px] font-bold transition text-center">
+              📅 Atur Formasi
+            </button>
+          </div>
+
+          <!-- STAGE 3: PERANGKAIAN LAGU -->
+          <div class="p-3.5 rounded-2xl apple-card-soft border ${isStage3Done ? 'border-emerald-500/30' : 'border-amber-500/30'} flex flex-col justify-between space-y-2">
+            <div>
+              <div class="flex items-center justify-between text-[11px] font-bold ${isStage3Done ? 'text-emerald-400' : 'text-amber-400'}">
+                <span>3. SETLIST LAGU</span>
+                <span>${songCount > 0 ? `✅ ${songCount} LAGU` : '⏳ DRAFT WL/MD'}</span>
+              </div>
+              <div class="text-xs font-bold mt-1.5 truncate" title="${songCount > 0 ? sl.songs.map(s => s.title).join(', ') : 'Belum ada lagu'}">
+                ${songCount > 0 ? sl.songs[0].title + (songCount > 1 ? ` (+${songCount - 1} lagu)` : '') : 'Pilih dari Song Bank'}
+              </div>
+              <div class="text-[10px] opacity-70 mt-1">Multi-Versi Audio & Key Ready</div>
+            </div>
+            <button onclick="openSetlistForSchedule('${sch.id}')" class="w-full py-1.5 rounded-xl bg-rpGold text-black font-extrabold text-[11px] hover:brightness-105 transition text-center">
+              🎵 Buka Setlist
+            </button>
+          </div>
+
+          <!-- STAGE 4: LITURGI RUNDOWN -->
+          <div class="p-3.5 rounded-2xl apple-card-soft border ${isStage4Done ? 'border-emerald-500/30' : 'border-amber-500/30'} flex flex-col justify-between space-y-2">
+            <div>
+              <div class="flex items-center justify-between text-[11px] font-bold ${isStage4Done ? 'text-emerald-400' : 'text-amber-400'}">
+                <span>4. SERVICE RUNDOWN</span>
+                <span>${itemCount > 0 ? `✅ ${itemCount} SEGMEN` : '⏳ DRAFT'}</span>
+              </div>
+              <div class="text-xs font-bold mt-1.5 truncate">Total ~${totalMins} Menit Liturgi</div>
+              <div class="text-[10px] opacity-70 mt-1">Topik: ${rd.sermonTopic || '-'}</div>
+            </div>
+            <button onclick="goToRundownForSchedule('${sch.id}')" class="w-full py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-[11px] font-bold transition text-center">
+              ⏱️ Kelola Rundown
+            </button>
+          </div>
+
+          <!-- STAGE 5: BRIEFING TIM -->
+          <div class="p-3.5 rounded-2xl apple-card-soft border border-rpGold/40 bg-gradient-to-b from-rpGold/15 to-transparent flex flex-col justify-between space-y-2">
+            <div>
+              <div class="flex items-center justify-between text-[11px] font-bold text-rpGold">
+                <span>5. BRIEFING TIM</span>
+                <span>🚀 3-PINTU SIAP</span>
+              </div>
+              <div class="text-xs font-bold mt-1.5 text-rpGoldSoft">WA Broadcast Otomatis</div>
+              <div class="text-[10px] opacity-70 mt-1">Soundman • MM • All Team</div>
+            </div>
+            <button onclick="openWhatsAppBriefingModal('${sch.id}')" class="w-full py-1.5 rounded-xl wa-green-btn font-extrabold text-[11px] shadow transition text-center">
+              📢 Kirim Briefing
+            </button>
+          </div>
         </div>
-      </div>`;
+
+        <!-- Quick Summary Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/10 text-xs opacity-85">
+          <div class="flex items-center gap-3">
+            <span><strong>Keyboard:</strong> ${kbs}</span>
+            <span>•</span>
+            <span><strong>Singers:</strong> ${sgs}</span>
+            <span>•</span>
+            <span><strong>Latihan:</strong> ${sch.rehearsalNote || '-'}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="printLyricsCompact()" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold transition">🖨️ Cetak Lirik</button>
+            <button onclick="printServiceRundown()" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold transition">📋 Cetak Rundown</button>
+          </div>
+        </div>
+      </div>
+    `;
   }).join('');
 
   return `
-    <div class="space-y-7">
-      <section class="apple-card p-5 sm:p-6 space-y-4">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div class="space-y-1">
-            <div class="text-[11px] font-bold uppercase tracking-widest text-rpGold">1 • Pelayanan Pribadi (${nick})</div>
-            <h2 class="text-lg sm:text-2xl font-bold tracking-tight">${greetingText}</h2>
-          </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <button onclick="navigateTo('schedule')" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">Lihat Semua Jadwal & Tukar</button>
-            <button onclick="navigateTo('setlist')" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold">Buka SETLIST</button>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          ${myDutyCardsHtml}
-        </div>
-      </section>
-
-      <section class="apple-card p-5 sm:p-6 space-y-5">
+    <div class="space-y-8">
+      <!-- 1. RPM SERVICE PIPELINE HUB (MAIN FOCAL POINT) -->
+      <section class="space-y-5">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <div class="text-[11px] font-bold uppercase tracking-widest text-rpGold">2 • Tema Bulanan & Mingguan + Jadwal Ibadah Terdekat</div>
-            <h2 class="text-xl sm:text-2xl font-bold mt-0.5">${APP_STATE.monthlyTheme.monthLabel} — ${APP_STATE.monthlyTheme.title}</h2>
-            <p class="text-xs sm:text-sm opacity-80 mt-1 max-w-3xl">${APP_STATE.monthlyTheme.summary}</p>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rpGold/15 border border-rpGold/30 text-rpGold text-[11px] font-extrabold uppercase tracking-wider mb-1">
+              <span>⚡</span> <span>POV Royal Priesthood Manager (RPM)</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">Service Pipeline Hub • ${APP_STATE.monthlyTheme.monthLabel}</h2>
+            <p class="text-xs sm:text-sm opacity-80 mt-1 max-w-3xl">
+              Alur orkestrasi berkesinambungan: <strong>Visi Pastoral ➔ Formasi Jadwal ➔ Setlist Lagu ➔ Service Rundown ➔ Briefing Tim (Soundman/MM)</strong>.
+            </p>
           </div>
-          <div class="flex flex-wrap gap-2">
-            ${weekSelectorHtml}
+
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openMonthlyEdifikasiModal()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15 transition flex items-center gap-1.5">
+              <span>📖</span> <span>Edifikasi Bulanan</span>
+            </button>
+            <button onclick="navigateTo('schedule')" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15 transition flex items-center gap-1.5">
+              <span>📅</span> <span>Buka Schedule</span>
+            </button>
+            <button onclick="navigateTo('setlist')" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold transition flex items-center gap-1.5">
+              <span>🎵</span> <span>Buka SETLIST</span>
+            </button>
           </div>
         </div>
 
+        <!-- Week Selector Tabs -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          ${weekSelectorHtml}
+        </div>
+
+        <!-- Active Week Theme Card -->
         <div class="apple-card-soft p-4 sm:p-5 border-l-4 border-rpGold space-y-2">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <span class="text-xs font-extrabold uppercase tracking-wider text-rpGold">${activeSlide.weekLabel} • ${activeSlide.dateText}</span>
@@ -2352,8 +2481,26 @@ function renderWeeklyDashboard() {
           <div class="text-xs opacity-80">Ayat Pendukung: ${(activeSlide.supportingVerses || []).join(' • ')}</div>
         </div>
 
+        <!-- Session Pipelines in Active Week -->
+        <div class="space-y-4">
+          ${pipelineSessionsHtml}
+        </div>
+      </section>
+
+      <!-- 2. PERSONAL MINISTRY DUTIES (TUGAS PRIBADI MEMBER / WL / MD) -->
+      <section class="apple-card p-5 sm:p-6 space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="text-[11px] font-bold uppercase tracking-widest text-rpGold">Tugas Pelayanan Pribadi (${nick})</div>
+            <h3 class="text-lg sm:text-xl font-bold tracking-tight">${greetingText}</h3>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="navigateTo('schedule')" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">Lihat Semua Jadwal & Tukar</button>
+            <button onclick="navigateTo('setlist')" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold">Buka SETLIST</button>
+          </div>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          ${upcomingSessionsHtml}
+          ${myDutyCardsHtml}
         </div>
       </section>
     </div>
@@ -3086,9 +3233,10 @@ function renderSetlistTab() {
               ${schOptions}
             </select>
             <button onclick="openCreateNewSetlistModal()" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold">+ BUAT SETLIST BARU</button>
-   <button onclick="openMonthlyEdifikasiModal()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15">📖 EDIFIKASI BULANAN</button>
+            <button onclick="openMonthlyEdifikasiModal()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15">📖 EDIFIKASI BULANAN</button>
+            <button onclick="openWhatsAppBriefingModal('${sch.id}')" class="px-4 py-2 rounded-full wa-green-btn text-xs font-bold flex items-center gap-1.5 shadow"><span>📢</span> <span>Briefing WA (3-Pintu)</span></button>
             <button onclick="printLyricsCompact()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-bold">PRINT LYRICS</button>
-            <button onclick="shareSetlistWhatsApp('${sch.id}')" class="px-4 py-2 rounded-full wa-green-btn text-xs font-bold">SHARE SETLIST</button>
+            <button onclick="shareSetlistWhatsApp('${sch.id}')" class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-semibold">SHARE SETLIST</button>
             <button onclick="goToRundownForSchedule('${sch.id}')" class="px-4 py-2 rounded-full bg-rpGold/20 hover:bg-rpGold/30 text-rpGold text-xs font-bold border border-rpGold/30">📋 BUKA RUNDOWN</button>
           </div>
         </div>
@@ -4043,6 +4191,293 @@ function shareSetlistWhatsApp(schId) {
   window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank', 'noopener,noreferrer');
 }
 
+// ----------------------------------------------------
+// PUSAT BRIEFING WHATSAPP 3-PINTU (SOUND • MULTIMEDIA • TIM)
+// ----------------------------------------------------
+function buildSoundBriefingText(schId) {
+  const sch = APP_STATE.schedules.find(s => s.id === schId) || APP_STATE.schedules[0];
+  const sl = ensureSetlistRecord(sch.id);
+  const rd = ensureRundownRecord(sch.id);
+  const br = APP_STATE.branches.find(b => b.id === sch.branchId);
+  const ed = sl.edifikasi || APP_STATE.DEFAULT_EDIFIKASI_WEEK1;
+
+  const wls = (sch.assignments?.['Worship Leader'] || []).join(', ') || '-';
+  const mds = (sch.assignments?.['Music Director'] || []).join(', ') || '-';
+  const kbs = (sch.assignments?.['Keyboardist'] || []).join(', ') || '-';
+  const sgs = (sch.assignments?.['Singers'] || []).join(', ') || '-';
+  const sax = (sch.assignments?.['Saxophonist'] || []).join(', ') || '';
+  const soundCrew = (sch.assignments?.['Sound System'] || [rd.crewSummary?.soundLight || 'Tim Sound']).join(', ');
+
+  let txt = `*BRIEFING KHUSUS SOUNDMAN & AUDIO — ROYAL PRIESTHOOD MDC*\n`;
+  txt += `━━━━━━━━━━━━━━━━━━━━━\n`;
+  txt += `📍 *Ibadah:* ${sch.dateLabel} • ${br ? br.name : sch.branchId} (${sch.time})\n`;
+  txt += `📖 *Tema Bulanan:* ${APP_STATE.monthlyTheme.title}\n`;
+  txt += `🕊️ *Subtema:* ${ed.subtheme || '-'}\n`;
+  txt += `🎙️ *WL:* ${wls} | *MD:* ${mds}\n`;
+  txt += `🎛️ *Sound Engineer on Duty:* ${soundCrew}\n\n`;
+
+  txt += `*DAFTAR LAGU, KEY & LEAD VOCAL:*\n`;
+  if ((sl.songs || []).length === 0) {
+    txt += `_(Belum ada lagu terdaftar di Setlist)_\n`;
+  } else {
+    sl.songs.forEach((s, idx) => {
+      txt += `${idx + 1}. *${s.title}* [${s.segment || 'P&W'}]\n`;
+      txt += `   • Nada Dasar (Key): *${s.key || '-'}*\n`;
+      txt += `   • Lead Vocal Mic: *${s.leadBy || wls}*\n`;
+      txt += `   • Karakter/Nuansa: ${s.nuance || '-'}\n`;
+      const vers = getSongVersions(s);
+      if (vers.length > 0) {
+        txt += `   • Ref Versi: ${vers.map(v => `${v.label} (${v.url})`).join(' | ')}\n`;
+      } else if (s.youtubeUrl) {
+        txt += `   • Ref Link: ${s.youtubeUrl}\n`;
+      }
+      txt += `\n`;
+    });
+  }
+
+  txt += `*LINE-UP MUSISI & VOKAL:*\n`;
+  txt += `• Keyboard: ${kbs}\n`;
+  txt += `• Singers: ${sgs}\n`;
+  if (sax) txt += `• Saxophone: ${sax}\n`;
+  txt += `\n`;
+
+  txt += `*JADWAL SOUNDCHECK & BRIEFING:*\n`;
+  txt += `⏰ ${sch.rehearsalNote || 'Hadir 45 menit sebelum ibadah untuk line check & sound balancing.'}\n\n`;
+  txt += `_Royal Priesthood MDC • Excellence in Sound & Worship_`;
+  return txt;
+}
+
+function buildMultimediaBriefingText(schId) {
+  const sch = APP_STATE.schedules.find(s => s.id === schId) || APP_STATE.schedules[0];
+  const sl = ensureSetlistRecord(sch.id);
+  const rd = ensureRundownRecord(sch.id);
+  const br = APP_STATE.branches.find(b => b.id === sch.branchId);
+  const ed = sl.edifikasi || APP_STATE.DEFAULT_EDIFIKASI_WEEK1;
+  const mmCrew = (sch.assignments?.['Multimedia'] || [rd.crewSummary?.media || 'Tim MM']).join(', ');
+
+  let txt = `*BRIEFING MULTIMEDIA, SLIDE & VIDEO — ROYAL PRIESTHOOD MDC*\n`;
+  txt += `━━━━━━━━━━━━━━━━━━━━━\n`;
+  txt += `📍 *Ibadah:* ${sch.dateLabel} • ${br ? br.name : sch.branchId} (${sch.time})\n`;
+  txt += `📖 *Tema:* ${APP_STATE.monthlyTheme.title}\n`;
+  txt += `🕊️ *Subtema:* ${ed.subtheme || '-'}\n`;
+  txt += `🖥️ *Operator Multimedia:* ${mmCrew}\n`;
+  txt += `🎙️ *Khotbah / Sermon:* ${rd.sermonTopic || APP_STATE.monthlyTheme.title} (Oleh: ${rd.preacher || 'Hamba Tuhan'})\n\n`;
+
+  txt += `*CUE PRESENTASI, VIDEO & LITURGI:*\n`;
+  txt += `1. 07.55 (T-5 min): Countdown Video 5 Menit di Layar LED Utama\n`;
+  txt += `2. 08.00: Opening Bumper Video Tema Bulanan\n`;
+  txt += `3. Praise & Worship: Lirik Lagu Live Projection\n`;
+  txt += `4. Khotbah: Slide Ayat Alkitab & Poin Khotbah Hamba Tuhan\n`;
+  txt += `5. Church / MDC News: Video Pengumuman & Slide Rekening Persembahan\n`;
+  txt += `6. Benediction & Closing: Slide Tema & Info Ibadah Minggu Depan\n\n`;
+
+  txt += `*URUTAN LAGU & TEKS LIRIK UNTUK PROPRESENTER:*\n`;
+  if ((sl.songs || []).length === 0) {
+    txt += `_(Belum ada lagu di Setlist)_\n`;
+  } else {
+    sl.songs.forEach((s, idx) => {
+      txt += `━━━━━━━━━━━━━━━━━━━━━\n`;
+      txt += `*Lagu #${idx + 1}: ${s.title.toUpperCase()}* [${s.segment || 'Pujian'}]\n`;
+      txt += `Lead Voice: ${s.leadBy || '-'} | Key: ${s.key || '-'}\n\n`;
+      if (s.lyrics && s.lyrics.trim()) {
+        txt += `${s.lyrics.trim()}\n\n`;
+      } else {
+        txt += `(Lirik silakan cek di Song Bank aplikasi)\n\n`;
+      }
+    });
+  }
+
+  txt += `*PANDUAN OPERATOR MM:*\n`;
+  txt += `• Cek seluruh slide lirik & video sebelum ibadah dimulai.\n`;
+  txt += `• Pastikan transisi lirik mengalir sinkron dengan arahan WL.\n\n`;
+  txt += `_Royal Priesthood MDC • Visual & Media Team_`;
+  return txt;
+}
+
+function buildTeamBriefingText(schId) {
+  const sch = APP_STATE.schedules.find(s => s.id === schId) || APP_STATE.schedules[0];
+  const sl = ensureSetlistRecord(sch.id);
+  const rd = ensureRundownRecord(sch.id);
+  const br = APP_STATE.branches.find(b => b.id === sch.branchId);
+  const ed = sl.edifikasi || APP_STATE.DEFAULT_EDIFIKASI_WEEK1;
+
+  const wls = (sch.assignments?.['Worship Leader'] || []).join(', ') || '-';
+  const mds = (sch.assignments?.['Music Director'] || []).join(', ') || '-';
+  const kbs = (sch.assignments?.['Keyboardist'] || []).join(', ') || '-';
+  const sgs = (sch.assignments?.['Singers'] || []).join(', ') || '-';
+  const sax = (sch.assignments?.['Saxophonist'] || []).join(', ') || '';
+  const mm = (sch.assignments?.['Multimedia'] || [rd.crewSummary?.media || 'Tim MM']).join(', ');
+  const sound = (sch.assignments?.['Sound System'] || [rd.crewSummary?.soundLight || 'Tim Sound']).join(', ');
+  const usher = rd.crewSummary?.usher || 'Tim Usher';
+
+  const dresscode = ed.dresscode || 'Earth tone (cream, beige, cokelat, atau warna natural) • Semi-formal, rapi, dan sopan';
+
+  let txt = `*BRIEFING LENGKAP TIM PELAYAN — ROYAL PRIESTHOOD MDC*\n`;
+  txt += `━━━━━━━━━━━━━━━━━━━━━\n`;
+  txt += `📍 *Ibadah:* ${sch.dateLabel} • ${br ? br.name : sch.branchId} (${sch.time})\n`;
+  txt += `📖 *Tema Bulanan:* ${APP_STATE.monthlyTheme.title}\n`;
+  txt += `🕊️ *Subtema Mingguan:* ${ed.subtheme || '-'}\n`;
+  txt += `📜 *Ayat Utama:* ${ed.mainVerse || 'Matius 1:18–25'}\n`;
+  if (ed.heartDirection) txt += `❤️ *Arah Sikap Hati:* ${ed.heartDirection}\n`;
+  txt += `\n`;
+
+  txt += `👔 *PANDUAN DRESSCODE:*\n`;
+  txt += `${dresscode}\n\n`;
+
+  txt += `👥 *FORMASI PELAYANAN:*\n`;
+  txt += `• Worship Leader (WL): *${wls}*\n`;
+  txt += `• Music Director (MD): *${mds}*\n`;
+  txt += `• Keyboardist: *${kbs}*\n`;
+  txt += `• Singers: *${sgs}*\n`;
+  if (sax) txt += `• Saxophonist: *${sax}*\n`;
+  txt += `• Service Coordinator: *${rd.coordinator || 'Service Coord'}*\n`;
+  txt += `• Multimedia: *${mm}*\n`;
+  txt += `• Sound System: *${sound}*\n`;
+  txt += `• Usher: *${usher}*\n\n`;
+
+  txt += `⏰ *JADWAL LATIHAN & DOA BERSAMA:*\n`;
+  txt += `${sch.rehearsalNote || 'Briefing dan doa bersama dimulai 30 menit sebelum ibadah.'}\n\n`;
+
+  txt += `🎵 *RINGKASAN LAGU IBADAH:*\n`;
+  (sl.songs || []).forEach((s, idx) => {
+    txt += `${idx + 1}. *${s.title}* [Key: ${s.key}] — Lead: ${s.leadBy}\n`;
+  });
+  txt += `\n`;
+
+  txt += `⏱️ *RUNDOWN IBADAH SINGKAT:*\n`;
+  (rd.items || []).slice(0, 8).forEach(item => {
+    txt += `• ${item.time}: ${item.segment} (${item.pic})\n`;
+  });
+  txt += `\n`;
+
+  txt += `🔗 *Buka Aplikasi Royal Priesthood:*\n${window.location.href}\n\n`;
+  txt += `_Mari melayani Tuhan dan jemaat dengan sukacita dan urapan Roh Kudus! Sampai bertemu di ibadah._`;
+  return txt;
+}
+
+window.__activeBriefingChannel = 'sound';
+window.__activeBriefingSchId = null;
+
+function switchBriefingChannel(channel) {
+  window.__activeBriefingChannel = channel;
+  const schId = window.__activeBriefingSchId;
+  const txtArea = document.getElementById('briefingTextOutput');
+  const previewTitle = document.getElementById('briefingPreviewTitle');
+  if (!txtArea) return;
+
+  let text = '';
+  let title = '';
+  if (channel === 'sound') {
+    text = buildSoundBriefingText(schId);
+    title = '🎛️ Paket Briefing Khusus Soundman & Audio (Key, Lead Vocal Mic, Nuansa, Line Check)';
+  } else if (channel === 'multimedia') {
+    text = buildMultimediaBriefingText(schId);
+    title = '🖥️ Paket Briefing Multimedia & Slide (Urutan Lagu, Lirik Bersih, Countdown & Video Cues)';
+  } else {
+    text = buildTeamBriefingText(schId);
+    title = '👥 Paket Briefing Seluruh Tim Pelayan (Formasi Roster, Dresscode, Jam Doa & Rundown)';
+  }
+
+  txtArea.value = text;
+  if (previewTitle) previewTitle.textContent = title;
+
+  ['sound', 'multimedia', 'team'].forEach(c => {
+    const btn = document.getElementById(`briefingTabBtn_${c}`);
+    if (btn) {
+      if (c === channel) {
+        btn.className = 'px-3.5 py-2 rounded-xl bg-rpGold text-black font-extrabold text-xs transition shadow flex items-center gap-1.5 shrink-0';
+      } else {
+        btn.className = 'px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white/80 text-xs font-semibold transition flex items-center gap-1.5 shrink-0';
+      }
+    }
+  });
+}
+
+function copyCurrentBriefingText() {
+  const txtArea = document.getElementById('briefingTextOutput');
+  if (!txtArea) return;
+  navigator.clipboard.writeText(txtArea.value).then(() => {
+    showToast('Teks briefing berhasil disalin ke clipboard!');
+  }).catch(() => {
+    txtArea.select();
+    document.execCommand('copy');
+    showToast('Teks briefing berhasil disalin!');
+  });
+}
+
+function sendCurrentBriefingWhatsApp() {
+  const txtArea = document.getElementById('briefingTextOutput');
+  if (!txtArea || !txtArea.value) return;
+  const url = `https://wa.me/?text=${encodeURIComponent(txtArea.value)}`;
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function openWhatsAppBriefingModal(schId, activeTab = 'sound') {
+  const sch = APP_STATE.schedules.find(s => s.id === schId) || APP_STATE.schedules[0];
+  window.__activeBriefingSchId = sch.id;
+  window.__activeBriefingChannel = activeTab || 'sound';
+  const br = APP_STATE.branches.find(b => b.id === sch.branchId);
+
+  const initialText = activeTab === 'multimedia'
+    ? buildMultimediaBriefingText(sch.id)
+    : (activeTab === 'team' ? buildTeamBriefingText(sch.id) : buildSoundBriefingText(sch.id));
+
+  const initialTitle = activeTab === 'multimedia'
+    ? '🖥️ Paket Briefing Multimedia & Slide (Urutan Lagu, Lirik Bersih, Countdown & Video Cues)'
+    : (activeTab === 'team'
+      ? '👥 Paket Briefing Seluruh Tim Pelayan (Formasi Roster, Dresscode, Jam Doa & Rundown)'
+      : '🎛️ Paket Briefing Khusus Soundman & Audio (Key, Lead Vocal Mic, Nuansa, Line Check)');
+
+  openModal('📢 Pusat Briefing WhatsApp (Sound • Multimedia • Tim)', `
+    <div class="space-y-4 text-xs sm:text-sm">
+      <div class="apple-card-soft p-4 border border-rpGold/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div>
+          <div class="text-[10px] font-bold text-rpGold uppercase tracking-widest">Target Jadwal Pelayanan</div>
+          <div class="font-extrabold text-sm sm:text-base text-white mt-0.5">${sch.dateLabel} • ${br ? br.shortName : sch.branchId} (${sch.time})</div>
+          <div class="text-xs opacity-75 mt-0.5">Tema: <strong>${APP_STATE.monthlyTheme.title}</strong></div>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button onclick="copyCurrentBriefingText()" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition flex items-center gap-1">
+            <span>📋</span> <span>Salin Teks</span>
+          </button>
+          <button onclick="sendCurrentBriefingWhatsApp()" class="px-4 py-2 rounded-xl wa-green-btn text-xs font-bold transition shadow flex items-center gap-1.5">
+            <span>📲</span> <span>Kirim via WA</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3 Channels Tabs -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+        <button id="briefingTabBtn_sound" onclick="switchBriefingChannel('sound')" class="px-3.5 py-2 rounded-xl ${activeTab === 'sound' ? 'bg-rpGold text-black font-extrabold' : 'bg-white/10 text-white/80'} text-xs transition shadow flex items-center gap-1.5 shrink-0">
+          <span>🎛️</span> <span>1. Tim Soundman</span>
+        </button>
+        <button id="briefingTabBtn_multimedia" onclick="switchBriefingChannel('multimedia')" class="px-3.5 py-2 rounded-xl ${activeTab === 'multimedia' ? 'bg-rpGold text-black font-extrabold' : 'bg-white/10 text-white/80'} text-xs transition shadow flex items-center gap-1.5 shrink-0">
+          <span>🖥️</span> <span>2. Tim Multimedia</span>
+        </button>
+        <button id="briefingTabBtn_team" onclick="switchBriefingChannel('team')" class="px-3.5 py-2 rounded-xl ${activeTab === 'team' ? 'bg-rpGold text-black font-extrabold' : 'bg-white/10 text-white/80'} text-xs transition shadow flex items-center gap-1.5 shrink-0">
+          <span>👥</span> <span>3. Grup Tim Pelayan</span>
+        </button>
+      </div>
+
+      <div>
+        <div id="briefingPreviewTitle" class="text-xs font-bold text-rpGoldSoft mb-1.5">${initialTitle}</div>
+        <textarea id="briefingTextOutput" rows="12" class="w-full p-3.5 rounded-2xl bg-black/40 border border-white/15 font-mono text-xs leading-relaxed text-gray-200 focus:outline-none focus:border-rpGold resize-y" readonly>${initialText}</textarea>
+        <div class="text-[11px] opacity-60 mt-1">Format pesan di atas sudah disesuaikan dengan standar markdown WhatsApp (*tebal*, _miring_). Anda dapat langsung mengklik tombol Kirim via WA atau Salin Teks.</div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-white/10">
+        <span class="text-xs opacity-60">Royal Priesthood MDC Service Orchestration</span>
+        <div class="flex items-center gap-2">
+          <button onclick="closeModal()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold">Tutup</button>
+          <button onclick="sendCurrentBriefingWhatsApp()" class="px-5 py-2 rounded-xl wa-green-btn text-xs font-bold flex items-center gap-1.5 shadow">
+            <span>📲</span> <span>Buka WhatsApp Sekarang</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  `);
+}
+
 
 // 4. SONG BANK (LAGU CEPAT / LAGU LAMBAT, NO FIXED KEY, HISTORY OF WL + KEY USED)
 function getFilteredSongBank() {
@@ -4870,6 +5305,9 @@ function renderRundownTab() {
               <button onclick="openAddRundownRowModal('${sch.id}')" class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">+ Segmen</button>
               <button onclick="openEditRundownMetaModal('${sch.id}')" class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold">Info Liturgi & Crew</button>
             ` : ''}
+            <button onclick="openWhatsAppBriefingModal('${sch.id}')" class="px-4 py-2 rounded-full wa-green-btn text-xs font-bold transition flex items-center gap-1.5 shadow">
+              <span>📢</span> <span>Kirim Briefing WA (Sound/MM/Tim)</span>
+            </button>
             <button onclick="printServiceRundown()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 text-xs font-bold">Print Rundown</button>
           </div>
         </div>
