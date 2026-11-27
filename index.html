@@ -454,27 +454,27 @@ const APP_ASSETS = {
     <div class="absolute inset-0 bg-gradient-to-b from-[#070A0F]/85 via-[#070A0F]/75 to-[#070A0F]/95"></div>
 
     <!-- 0. DEDICATED WIDESCREEN IMAGE SLIDESHOW BANNER (1920 × 600 PX) -->
-    <div class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-5 pb-2">
-      <div id="widescreenBannerWrapper" class="relative rounded-3xl overflow-hidden border border-rpGold/40 shadow-2xl bg-black/70 aspect-[1920/600] min-h-[190px] sm:min-h-[260px] md:min-h-[340px] lg:min-h-[400px] flex items-center justify-center group">
-        <img id="widescreenBannerImg" src="" alt="Royal Priesthood Banner" class="w-full h-full object-cover object-center transition-opacity duration-700 select-none" />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 pointer-events-none"></div>
+    <div class="relative z-10 max-w-7xl mx-auto w-full px-3 sm:px-6 pt-3 sm:pt-5 pb-2">
+      <div id="widescreenBannerWrapper" class="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-rpGold/40 shadow-2xl bg-black/80 aspect-[16/9] sm:aspect-[21/9] lg:aspect-[1920/600] w-full min-h-[180px] sm:min-h-[250px] md:min-h-[320px] lg:min-h-[380px] max-h-[460px] flex items-center justify-center group touch-pan-y">
+        <img id="widescreenBannerImg" src="" alt="Royal Priesthood Banner" onerror="if (this.src !== APP_ASSETS.HERO_BANNER) this.src = APP_ASSETS.HERO_BANNER;" class="w-full h-full object-cover object-center transition-opacity duration-700 select-none" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/35 pointer-events-none"></div>
         
-        <div id="widescreenBannerCaption" class="absolute bottom-3 left-4 right-4 sm:bottom-6 sm:left-8 sm:right-8 text-white z-10 pointer-events-none space-y-0.5">
-          <div id="wsBannerTitle" class="text-base sm:text-2xl md:text-3xl font-extrabold tracking-tight drop-shadow-lg text-rpGold"></div>
-          <div id="wsBannerSubtitle" class="text-xs sm:text-sm md:text-base opacity-90 drop-shadow font-medium text-gray-200"></div>
+        <div id="widescreenBannerCaption" class="absolute bottom-2.5 left-3 right-3 sm:bottom-6 sm:left-8 sm:right-8 text-white z-10 pointer-events-none space-y-0.5">
+          <div id="wsBannerTitle" class="text-sm sm:text-2xl md:text-3xl font-extrabold tracking-tight drop-shadow-lg text-rpGold"></div>
+          <div id="wsBannerSubtitle" class="text-[10px] sm:text-xs md:text-base opacity-90 drop-shadow font-medium text-gray-200 line-clamp-1 sm:line-clamp-none"></div>
         </div>
 
         <!-- Navigation Buttons -->
-        <button onclick="prevBannerSlide()" class="absolute left-2.5 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/25 text-white flex items-center justify-center text-sm sm:text-lg font-bold transition opacity-80 hover:opacity-100 shadow-xl z-20 cursor-pointer" title="Slide Sebelumnya">‹</button>
-        <button onclick="nextBannerSlide()" class="absolute right-2.5 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/25 text-white flex items-center justify-center text-sm sm:text-lg font-bold transition opacity-80 hover:opacity-100 shadow-xl z-20 cursor-pointer" title="Slide Berikutnya">›</button>
+        <button onclick="prevBannerSlide()" class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/25 text-white flex items-center justify-center text-xs sm:text-lg font-bold transition opacity-80 hover:opacity-100 shadow-xl z-20 cursor-pointer" title="Slide Sebelumnya" aria-label="Slide Sebelumnya">‹</button>
+        <button onclick="nextBannerSlide()" class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/25 text-white flex items-center justify-center text-xs sm:text-lg font-bold transition opacity-80 hover:opacity-100 shadow-xl z-20 cursor-pointer" title="Slide Berikutnya" aria-label="Slide Berikutnya">›</button>
 
         <!-- Dot Indicators -->
-        <div id="widescreenBannerDots" class="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20"></div>
+        <div id="widescreenBannerDots" class="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20"></div>
 
         <!-- RPM Upload Button -->
-        <div class="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 z-20">
-          <button onclick="openManageBannersModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/75 hover:bg-black/95 backdrop-blur-md border border-rpGold/40 text-rpGold text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-2xl transition hover:scale-105">
-            <span>📷</span> <span>Kelola / Upload Slide (1920×600)</span>
+        <div class="absolute top-2 right-2 sm:top-4 sm:right-4 z-20">
+          <button onclick="openManageBannersModal()" class="px-2.5 py-1 sm:px-4 sm:py-2 rounded-full bg-black/80 hover:bg-black/95 backdrop-blur-md border border-rpGold/40 text-rpGold text-[9px] sm:text-xs font-bold flex items-center gap-1.5 shadow-2xl transition hover:scale-105 cursor-pointer">
+            <span>📷</span> <span class="hidden sm:inline">Kelola / Upload Slide (1920×600)</span><span class="sm:hidden">Upload Slide</span>
           </button>
         </div>
       </div>
@@ -7699,7 +7699,14 @@ function openModal(title, bodyHtml) {
   m.classList.add('flex');
 }
 
-function clo
+function closeModal() {
+  const m = document.getElementById('appModal');
+  if (m) {
+    m.classList.add('hidden');
+    m.classList.remove('flex');
+  }
+}
+
 // ==========================================
 // SMART CALENDAR GENERATOR & CHRISTIAN FEASTS
 // ==========================================
@@ -8158,13 +8165,46 @@ function getWidescreenBanners() {
       }
     ];
   }
+  // Sanitize banner image URLs so none is empty or invalid
+  APP_STATE.widescreenBanners.forEach(b => {
+    if (!b.imageUrl || typeof b.imageUrl !== 'string' || b.imageUrl.trim() === '') {
+      b.imageUrl = APP_ASSETS.HERO_BANNER;
+    }
+  });
   return APP_STATE.widescreenBanners;
 }
 
 let __wsBannerIdx = 0;
 let __wsBannerTimer = null;
+let __wsTouchInitDone = false;
+
+function initBannerTouchSwipe() {
+  if (__wsTouchInitDone) return;
+  const wrapper = document.getElementById('widescreenBannerWrapper');
+  if (!wrapper) return;
+  __wsTouchInitDone = true;
+  let startX = 0;
+  let startY = 0;
+  wrapper.addEventListener('touchstart', (e) => {
+    if (e.touches && e.touches[0]) {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }
+  }, { passive: true });
+  wrapper.addEventListener('touchend', (e) => {
+    if (e.changedTouches && e.changedTouches[0]) {
+      const diffX = e.changedTouches[0].clientX - startX;
+      const diffY = e.changedTouches[0].clientY - startY;
+      if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX < 0) nextBannerSlide();
+        else prevBannerSlide();
+      }
+    }
+  }, { passive: true });
+}
 
 function renderWidescreenBanner() {
+  initBannerTouchSwipe();
   const banners = getWidescreenBanners();
   if (!banners.length) return;
   __wsBannerIdx = (__wsBannerIdx + banners.length) % banners.length;
@@ -8175,12 +8215,13 @@ function renderWidescreenBanner() {
   const subEl = document.getElementById('wsBannerSubtitle');
   const dotsEl = document.getElementById('widescreenBannerDots');
 
-  if (imgEl && cur.imageUrl) {
+  const bannerImgSrc = cur.imageUrl || APP_ASSETS.HERO_BANNER;
+  if (imgEl) {
     imgEl.style.opacity = '0.4';
     setTimeout(() => {
-      imgEl.src = cur.imageUrl;
+      imgEl.src = bannerImgSrc;
       imgEl.style.opacity = '1';
-    }, 150);
+    }, 120);
   }
 
   if (titleEl) titleEl.textContent = cur.title || '';
@@ -8188,7 +8229,7 @@ function renderWidescreenBanner() {
 
   if (dotsEl) {
     dotsEl.innerHTML = banners.map((b, i) => `
-      <button onclick="setBannerSlide(${i})" class="h-2 rounded-full transition-all cursor-pointer ${i === __wsBannerIdx ? 'w-6 bg-rpGold' : 'w-2 bg-white/40 hover:bg-white/70'}" aria-label="Slide ${i + 1}"></button>
+      <button onclick="setBannerSlide(${i})" class="h-1.5 sm:h-2 rounded-full transition-all cursor-pointer ${i === __wsBannerIdx ? 'w-5 sm:w-6 bg-rpGold' : 'w-1.5 sm:w-2 bg-white/40 hover:bg-white/70'}" aria-label="Slide ${i + 1}"></button>
     `).join('');
   }
 }
@@ -8358,12 +8399,6 @@ function removeBannerSlide(idx) {
   renderWidescreenBanner();
   openManageBannersModal();
   showToast('Slide banner dihapus.');
-}
-
-seModal() {
-  const m = document.getElementById('appModal');
-  m.classList.add('hidden');
-  m.classList.remove('flex');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
