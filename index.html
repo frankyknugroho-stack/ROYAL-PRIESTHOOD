@@ -2330,18 +2330,50 @@ function checkSessionExpiry() {
 }
 
 async function fetchCloudWhitelist() {
+  let list = [];
   try {
-    const res = await fetch(WHITELIST_API_URL);
+    const res = await fetch(`${WHITELIST_API_URL}?t=${Date.now()}`, {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache, no-store" }
+    });
     if (res.ok) {
       const data = await res.json();
       if (data && Array.isArray(data.whitelist)) {
-        return data.whitelist;
+        list = data.whitelist;
       }
     }
   } catch (err) {
     console.warn("Cloud Whitelist API not reachable:", err.message);
   }
-  return (APP_STATE.rpmEmails || []).map(function(e) { return { email: e.toLowerCase(), role: "RPM" }; });
+
+  // Ensure default fallback list if API is unreachable
+  if (!list.length) {
+    list = (APP_STATE.rpmEmails || []).map(function(e) { return { email: e.toLowerCase(), role: "RPM" }; });
+  }
+
+  // Optimistic Merge: Always merge with APP_STATE.teamMembers so newly added members appear instantly
+  (APP_STATE.teamMembers || []).forEach(m => {
+    if (m.email) {
+      const lower = m.email.toLowerCase();
+      const existing = list.find(x => x.email.toLowerCase() === lower);
+      if (existing) {
+        if (!existing.nickname && m.nickname) existing.nickname = m.nickname;
+        if (!existing.positions && m.positions) existing.positions = m.positions;
+        if (!existing.branches && m.branches) existing.branches = m.branches;
+      } else {
+        list.push({
+          email: lower,
+          name: m.fullName || m.nickname,
+          nickname: m.nickname,
+          role: m.role || 'GENERAL',
+          positions: m.positions || ['Singers'],
+          branches: m.branches || ['putat']
+        });
+      }
+    }
+  });
+
+  return list;
 }
 
 async function openWhitelistManagerModal() {
@@ -2518,7 +2550,11 @@ async function addWhitelistEmail() {
   }
   saveState();
 
-  // 2. Sync to Cloud API
+  // 2. Clear input fields immediately so user knows it's submitted
+  if (emailInput) emailInput.value = "";
+  if (nameInput) nameInput.value = "";
+
+  // 3. Sync to Cloud API
   try {
     const res = await fetch(WHITELIST_API_URL, {
       method: "POST",
@@ -2530,7 +2566,7 @@ async function addWhitelistEmail() {
         nickname: name,
         positions: finalPositions,
         branches: finalBranches,
-        requesterEmail: MASTER_SUPER_ADMIN
+        requesterEmail: APP_STATE.currentUser?.email || MASTER_SUPER_ADMIN
       })
     });
     const data = await res.json();
@@ -2545,7 +2581,9 @@ async function addWhitelistEmail() {
 
   syncStateToCloud();
   renderCurrentView();
-  openInviteWhatsAppModal(email);
+
+  // 4. Immediately RE-OPEN / REFRESH the whitelist modal so the newly added email is visible in the list below!
+  await openWhitelistManagerModal();
 }
 
 async function removeWhitelistEmail(email) {

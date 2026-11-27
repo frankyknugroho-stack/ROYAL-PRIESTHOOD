@@ -15,7 +15,7 @@ const DEFAULT_WHITELIST = [
 ];
 
 export default async function handler(req, res) {
-  // CORS Headers
+  // CORS & Anti-Cache Headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -23,6 +23,9 @@ export default async function handler(req, res) {
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
   );
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -92,12 +95,13 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { action, email, name, role, requesterEmail } = req.body || {};
 
-    // Validasi otorisasi Super Admin
-    if (!requesterEmail || requesterEmail.toLowerCase() !== SUPER_ADMIN_EMAIL.toLowerCase()) {
-      return res.status(403).json({ success: false, message: 'Hanya Super Admin (' + SUPER_ADMIN_EMAIL + ') yang berhak mengelola whitelist.' });
-    }
-
+    // Validasi otorisasi Super Admin atau RPM
     let list = await getWhitelistData();
+    const isSuper = requesterEmail && requesterEmail.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+    const isRpm = requesterEmail && list.some(x => x.email && x.email.toLowerCase() === requesterEmail.toLowerCase() && (x.role === 'RPM' || x.role === 'SUPER_ADMIN'));
+    if (!isSuper && !isRpm) {
+      return res.status(403).json({ success: false, message: 'Hanya Super Admin (' + SUPER_ADMIN_EMAIL + ') atau RPM yang berhak mengelola whitelist.' });
+    }
 
     if (action === 'add') {
       if (!email) return res.status(400).json({ success: false, message: 'Email wajib diisi.' });
