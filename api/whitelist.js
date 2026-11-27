@@ -101,17 +101,28 @@ export default async function handler(req, res) {
 
     if (action === 'add') {
       if (!email) return res.status(400).json({ success: false, message: 'Email wajib diisi.' });
+      const { nickname, positions, branches } = req.body || {};
       const lower = email.trim().toLowerCase();
-      if (!list.some(x => x.email.toLowerCase() === lower)) {
+      const existing = list.find(x => x.email.toLowerCase() === lower);
+      if (existing) {
+        if (name) existing.name = name.trim();
+        if (nickname) existing.nickname = nickname.trim();
+        if (role) existing.role = role;
+        if (positions) existing.positions = Array.isArray(positions) ? positions : [positions];
+        if (branches) existing.branches = Array.isArray(branches) ? branches : [branches];
+      } else {
         list.push({
           email: lower,
           name: name ? name.trim() : lower.split('@')[0],
+          nickname: nickname ? nickname.trim() : (name ? name.trim().split(' ')[0] : lower.split('@')[0]),
           role: role || 'GENERAL',
+          positions: Array.isArray(positions) ? positions : (positions ? [positions] : ['Singers']),
+          branches: Array.isArray(branches) ? branches : (branches ? [branches] : ['putat', 'cw']),
           addedAt: new Date().toISOString()
         });
-        await saveWhitelistData(list);
       }
-      return res.status(200).json({ success: true, message: `Email ${lower} berhasil ditambahkan.`, whitelist: list });
+      await saveWhitelistData(list);
+      return res.status(200).json({ success: true, message: `Email ${lower} berhasil ditambahkan ke Cloud Whitelist.`, whitelist: list });
     }
 
     if (action === 'remove') {

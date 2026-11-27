@@ -42,13 +42,101 @@
       --accent-gold: #E5B567;
     }
     html.light {
-      --bg-page: #F5F5F7;
+      --bg-page: #F1F4F9;
       --bg-card: #FFFFFF;
-      --bg-elevated: #ECEEF2;
-      --text-main: #111318;
-      --text-muted: #5C6472;
-      --border-hair: rgba(17, 19, 24, 0.09);
-      --accent-gold: #9E6B24;
+      --bg-elevated: #F8FAFC;
+      --text-main: #0B0F19;
+      --text-muted: #475569;
+      --border-hair: rgba(15, 23, 42, 0.12);
+      --accent-gold: #B45309;
+    }
+    /* Comprehensive Light Mode Contrast Overrides */
+    html.light .text-white {
+      color: #0B0F19 !important;
+    }
+    html.light .text-gray-200, html.light .text-gray-300, html.light .text-gray-400 {
+      color: #334155 !important;
+    }
+    html.light .text-amber-100, html.light .text-amber-200 {
+      color: #78350F !important;
+    }
+    html.light .text-amber-300 {
+      color: #92400E !important;
+    }
+    html.light .text-rpGold {
+      color: #B45309 !important;
+    }
+    html.light .text-rpGoldSoft {
+      color: #92400E !important;
+    }
+    html.light .opacity-70, html.light .opacity-75, html.light .opacity-80, html.light .opacity-85 {
+      color: #334155 !important;
+      opacity: 0.95 !important;
+    }
+    html.light .bg-white\/10, 
+    html.light .bg-white\/\[0\.04\], 
+    html.light .bg-white\/\[0\.06\],
+    html.light .bg-white\/\[0\.07\],
+    html.light .bg-white\/\[0\.08\],
+    html.light .bg-white\/20 {
+      background-color: rgba(15, 23, 42, 0.05) !important;
+      color: #0B0F19 !important;
+    }
+    html.light .border-white\/10,
+    html.light .border-white\/15,
+    html.light .border-white\/20,
+    html.light .border-white\/\[0\.08\],
+    html.light .border-white\/\[0\.09\],
+    html.light .border-white\/\[0\.12\] {
+      border-color: rgba(15, 23, 42, 0.14) !important;
+    }
+    html.light .bg-black\/20,
+    html.light .bg-black\/25,
+    html.light .bg-black\/30,
+    html.light .bg-black\/40,
+    html.light .bg-black\/50,
+    html.light .bg-black\/60 {
+      background-color: #F8FAFC !important;
+      color: #0B0F19 !important;
+      border: 1px solid rgba(15, 23, 42, 0.10) !important;
+    }
+    html.light .apple-glass {
+      background-color: rgba(255, 255, 255, 0.92) !important;
+      border: 1px solid rgba(15, 23, 42, 0.14) !important;
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08) !important;
+    }
+    html.light .apple-card {
+      background-color: #FFFFFF !important;
+      border: 1px solid rgba(15, 23, 42, 0.10) !important;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06) !important;
+    }
+    html.light .apple-card-soft {
+      background-color: #F8FAFC !important;
+      border: 1px solid rgba(15, 23, 42, 0.10) !important;
+    }
+    html.light .bg-gradient-to-r.from-rpGold\/20.via-black\/50.to-black\/70 {
+      background-image: linear-gradient(to right, rgba(245, 158, 11, 0.18), #FFFFFF, #F8FAFC) !important;
+      border: 1px solid rgba(180, 83, 9, 0.25) !important;
+    }
+    html.light .bg-gradient-to-br.from-rpGold\/10.via-black\/40.to-black\/60 {
+      background-image: linear-gradient(135deg, rgba(245, 158, 11, 0.15), #FFFFFF, #F1F5F9) !important;
+      border: 1px solid rgba(180, 83, 9, 0.25) !important;
+    }
+    html.light input, html.light select, html.light textarea {
+      background-color: #FFFFFF !important;
+      color: #0B0F19 !important;
+      border: 1px solid rgba(15, 23, 42, 0.22) !important;
+    }
+    html.light #modalBox {
+      background-color: #FFFFFF !important;
+      color: #0B0F19 !important;
+      border: 1px solid rgba(15, 23, 42, 0.15) !important;
+    }
+    html.light #modalBox .text-white {
+      color: #0B0F19 !important;
+    }
+    html.light .gold-pill-btn {
+      color: #000000 !important;
     }
     html, body {
       max-width: 100%;
@@ -223,10 +311,10 @@ const APP_ASSETS = {
 
 <!-- TOP NAVIGATION BAR -->
 <header class="no-print top-header-bar">
-  <div class="max-w-7xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-3">
-    <div class="flex items-center min-w-0 shrink">
-      <button onclick="navigateTo('weekly'); handleTripleTapAdmin();" class="flex items-center text-left group focus:outline-none" title="Royal Priesthood (Triple Tap: Whitelist)">
-        <img id="navRpLogo" alt="Royal Priesthood" class="h-7 sm:h-9 max-w-[145px] sm:max-w-[230px] w-auto object-contain adapt-logo-png" />
+  <div class="max-w-7xl mx-auto px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between gap-3 sm:gap-6">
+    <div class="flex items-center min-w-0 shrink mr-3 sm:mr-8">
+      <button onclick="navigateTo('weekly'); handleTripleTapAdmin();" class="flex items-center text-left group focus:outline-none p-1.5 sm:p-2 rounded-2xl hover:bg-white/[0.05] transition" title="Royal Priesthood (Triple Tap: Whitelist)">
+        <img id="navRpLogo" alt="Royal Priesthood" class="h-8 sm:h-11 max-w-[165px] sm:max-w-[270px] w-auto object-contain adapt-logo-png" />
       </button>
     </div>
 
@@ -359,29 +447,51 @@ const APP_ASSETS = {
   </div>
 </div>
 
-<!-- HERO WEBSITE HEADER WITH THEME SLIDE -->
-<section class="no-print relative overflow-hidden border-b border-white/[0.08]">
-  <div class="relative min-h-[340px] sm:min-h-[390px] flex items-center">
-    <img id="heroBannerImg" alt="Royal Priesthood Worship Collective" class="absolute inset-0 w-full h-full object-cover object-center opacity-45" />
-    <div class="absolute inset-0 bg-gradient-to-r from-[#070A0F]/95 via-[#070A0F]/80 to-[#070A0F]/65"></div>
+<!-- HERO WEBSITE HEADER WITH DEDICATED SLIDESHOW STAGE & LOWERED TEXT -->
+<section class="no-print relative overflow-hidden border-b border-white/[0.08] pt-16 sm:pt-20">
+  <div class="relative min-h-[460px] sm:min-h-[520px] flex flex-col justify-between">
+    <img id="heroBannerImg" alt="Royal Priesthood Worship Collective" class="absolute inset-0 w-full h-full object-cover object-center opacity-40" />
+    <div class="absolute inset-0 bg-gradient-to-b from-[#070A0F]/85 via-[#070A0F]/75 to-[#070A0F]/95"></div>
 
-    <div class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-        <div class="lg:col-span-6 space-y-4">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-semibold tracking-wider uppercase text-rpGoldSoft">
-            <span>●</span> <span id="heroSlideIndicator">Slide 1 / 4 • Tema Bulanan</span>
+    <!-- 1. DEDICATED PROMINENT VISUAL SLIDESHOW / EVENT CAROUSEL STAGE -->
+    <div class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-5 pb-3">
+      <div id="heroVisualStage" class="relative rounded-3xl overflow-hidden border border-rpGold/30 shadow-2xl bg-gradient-to-r from-rpGold/15 via-black/40 to-black/60 p-4 sm:p-7 min-h-[200px] sm:min-h-[250px] flex flex-col justify-between">
+        <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rpGold text-black font-extrabold text-[10px] tracking-wider uppercase shadow">
+              <span>🌟</span> <span id="heroSlideBadge">EVENT & AGENDA PELAYANAN</span>
+            </span>
+            <span id="heroSlideSubBadge" class="text-xs font-semibold text-amber-200 hidden sm:inline">GKPB Masa Depan Cerah</span>
           </div>
-
-          <p id="heroSlideCaption" class="text-sm text-gray-200/90 max-w-xl leading-relaxed"></p>
-          <div class="flex flex-wrap items-center gap-3 pt-1">
-            <button onclick="prevHeroSlide()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-xs font-bold transition" title="Slide Sebelumnya">‹</button>
-            <button onclick="nextHeroSlide()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-xs font-bold transition" title="Slide Berikutnya">›</button>
-            <div id="heroDots" class="flex items-center gap-1.5 ml-1"></div>
+          <div class="flex items-center gap-2">
+            <button onclick="prevHeroSlide()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-xs font-bold transition" title="Slide Sebelumnya">‹</button>
+            <button onclick="nextHeroSlide()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-xs font-bold transition" title="Slide Berikutnya">›</button>
           </div>
         </div>
 
-        <div class="lg:col-span-6">
-          <div id="heroThemeSlideCard" class="apple-glass bg-white/[0.07] border border-white/15 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-3"></div>
+        <div id="heroVisualContent" class="py-3 sm:py-5">
+          <!-- Dynamic visual slide content rendered by renderHeroSlide() -->
+        </div>
+
+        <div class="flex items-center justify-between gap-3 pt-2 border-t border-white/10 text-xs">
+          <div id="heroDots" class="flex items-center gap-1.5"></div>
+          <div id="heroSlideTimerText" class="text-[11px] opacity-75">Slide Otomatis • Tema & Event</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. LOWERED DESCRIPTIVE TEXT & METADATA SECTION -->
+    <div class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 pb-6 pt-2">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+        <div class="lg:col-span-5 space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-semibold tracking-wider uppercase text-rpGoldSoft">
+            <span>●</span> <span id="heroSlideIndicator">Slide 1 / 4 • Tema Bulanan</span>
+          </div>
+          <p id="heroSlideCaption" class="text-xs sm:text-sm text-gray-200/90 leading-relaxed"></p>
+        </div>
+
+        <div class="lg:col-span-7">
+          <div id="heroThemeSlideCard" class="apple-glass bg-white/[0.07] border border-white/15 rounded-3xl p-4 sm:p-5 shadow-xl space-y-2.5"></div>
         </div>
       </div>
     </div>
@@ -658,9 +768,15 @@ const DEFAULT_STATE = {
     'Service Coordinator'
   ],
   branches: [
-    { id: 'putat', name: 'Graha Pemulihan (Putat)', shortName: 'Putat', defaultTimes: ['08.00 WIB', '10.30 WIB', '16.30 WIB'] },
-    { id: 'cw', name: 'Ballroom 89 Ciputra World', shortName: 'Ciputra World', defaultTimes: ['09.00 WIB', '11.00 WIB'] },
-    { id: 'doa-selasa', name: 'Doa Malam Selasa', shortName: 'Doa Selasa', defaultTimes: ['19.00 WIB'] }
+    { id: 'putat', name: 'Graha Pemulihan (Putat)', shortName: 'Putat', defaultTimes: ['08.00 & 10.30 WIB (Raya 1 & 2)', '16.30 WIB (Sore)'] },
+    { id: 'cw', name: 'Ballroom 89 Ciputra World', shortName: 'Ciputra World', defaultTimes: ['09.00 & 11.00 WIB (Raya 1 & 2)'] },
+    { id: 'glx', name: 'MDC Galaxy Mall (GLX)', shortName: 'GLX', defaultTimes: ['09.00 WIB', '11.00 WIB'] },
+    { id: 'manukan', name: 'MDC Manukan', shortName: 'Manukan', defaultTimes: ['08.30 WIB', '16.30 WIB'] },
+    { id: 'krian', name: 'MDC Citra Harmoni Krian', shortName: 'Krian', defaultTimes: ['08.30 WIB'] },
+    { id: 'mojokerto', name: 'MDC Mojokerto', shortName: 'Mojokerto', defaultTimes: ['09.00 WIB'] },
+    { id: 'bali', name: 'MDC Kuta Bali', shortName: 'Kuta Bali', defaultTimes: ['10.00 WITA'] },
+    { id: 'doa-selasa', name: 'Doa Malam Selasa', shortName: 'Doa Selasa', defaultTimes: ['18.30 WIB'] },
+    { id: 'doa-sabtu', name: 'Doa Pagi Sabtu', shortName: 'Doa Pagi', defaultTimes: ['06.00 WIB'] }
   ],
   monthlyTheme: {
     monthLabel: 'Desember 2026',
@@ -1409,16 +1525,29 @@ function loadState() {
     if (!merged.currentUser?.isLoggedIn || !merged.currentUser?.email) {
       merged.currentUser = structuredClone(DEFAULT_STATE.currentUser);
     }
-    // Remove Cabang Manukan if present in legacy saved state
-    merged.branches = (merged.branches || []).filter(
-      b => b.id !== 'manukan' && !(b.name || '').toLowerCase().includes('manukan')
-    );
-    if (merged.activeBranch === 'manukan') {
-      merged.activeBranch = 'ALL';
-    }
-    merged.schedules = (merged.schedules || []).filter(s => s.branchId !== 'manukan');
-    merged.rundowns = (merged.rundowns || []).filter(r => r.branchId !== 'manukan');
-    merged.setlists = (merged.setlists || []).filter(sl => sl.branchId !== 'manukan');
+    // Ensure all 9 official branches exist and retain any custom branches
+    const officialBranches = [
+      { id: 'putat', name: 'Graha Pemulihan (Putat)', shortName: 'Putat', defaultTimes: ['08.00 & 10.30 WIB (Raya 1 & 2)', '16.30 WIB (Sore)'] },
+      { id: 'cw', name: 'Ballroom 89 Ciputra World', shortName: 'Ciputra World', defaultTimes: ['09.00 & 11.00 WIB (Raya 1 & 2)'] },
+      { id: 'glx', name: 'MDC Galaxy Mall (GLX)', shortName: 'GLX', defaultTimes: ['09.00 WIB', '11.00 WIB'] },
+      { id: 'manukan', name: 'MDC Manukan', shortName: 'Manukan', defaultTimes: ['08.30 WIB', '16.30 WIB'] },
+      { id: 'krian', name: 'MDC Citra Harmoni Krian', shortName: 'Krian', defaultTimes: ['08.30 WIB'] },
+      { id: 'mojokerto', name: 'MDC Mojokerto', shortName: 'Mojokerto', defaultTimes: ['09.00 WIB'] },
+      { id: 'bali', name: 'MDC Kuta Bali', shortName: 'Kuta Bali', defaultTimes: ['10.00 WITA'] },
+      { id: 'doa-selasa', name: 'Doa Malam Selasa', shortName: 'Doa Selasa', defaultTimes: ['18.30 WIB'] },
+      { id: 'doa-sabtu', name: 'Doa Pagi Sabtu', shortName: 'Doa Pagi', defaultTimes: ['06.00 WIB'] }
+    ];
+    if (!Array.isArray(merged.branches)) merged.branches = [];
+    officialBranches.forEach(ob => {
+      const idx = merged.branches.findIndex(b => b.id === ob.id);
+      if (idx < 0) {
+        merged.branches.push(ob);
+      } else {
+        merged.branches[idx].defaultTimes = ob.defaultTimes;
+        merged.branches[idx].name = ob.name;
+        merged.branches[idx].shortName = ob.shortName;
+      }
+    });
 
     // Migrate legacy single dresscodeImage to dresscodeImages array if present
     (merged.schedules || []).forEach(s => {
@@ -2182,49 +2311,117 @@ async function openWhitelistManagerModal() {
   const curUser = (APP_STATE.currentUser?.email || "").toLowerCase();
   const isSuperAdmin = curUser === MASTER_SUPER_ADMIN.toLowerCase() || isRPM();
   
-  // Access granted to RPM & Super Admin
   if (!isSuperAdmin && curUser !== "" && curUser !== "tamu") {
     console.log("Super Admin whitelist manager opened");
   }
 
   const cloudList = await fetchCloudWhitelist();
+
+  const allPositions = APP_STATE.servicePositions || [
+    'Worship Leader', 'Music Director', 'Singers', 'Keyboardist', 'Guitarist',
+    'Bassist', 'Drummer', 'Saxophonist', 'Multimedia', 'Sound System',
+    'Event Organizer', 'Service Coordinator'
+  ];
+
+  const churchBranches = [
+    { id: 'putat', name: 'Putat' },
+    { id: 'cw', name: 'Ciputra World' },
+    { id: 'glx', name: 'GLX' },
+    { id: 'manukan', name: 'Manukan' },
+    { id: 'krian', name: 'Krian' },
+    { id: 'mojokerto', name: 'Mojokerto' },
+    { id: 'bali', name: 'Kuta Bali' },
+    { id: 'doa-selasa', name: 'Doa Selasa' },
+    { id: 'doa-sabtu', name: 'Doa Pagi' }
+  ];
+
+  const posBoxesHtml = allPositions.map(p => `
+    <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/10 text-[11px] cursor-pointer hover:bg-white/10 transition">
+      <input type="checkbox" name="wlPosBox" value="${p}" class="accent-amber-400" />
+      <span>${p}</span>
+    </label>
+  `).join('');
+
+  const branchBoxesHtml = churchBranches.map(b => `
+    <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/10 text-[11px] cursor-pointer hover:bg-white/10 transition">
+      <input type="checkbox" name="wlBranchBox" value="${b.id}" class="accent-amber-400" />
+      <span>${b.name}</span>
+    </label>
+  `).join('');
+
   const listRows = cloudList.map(function(item) {
     const isMaster = item.email.toLowerCase() === MASTER_SUPER_ADMIN.toLowerCase();
     const actionBtn = !isMaster 
       ? `<button onclick="removeWhitelistEmail('${item.email}')" class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 font-bold text-[10px]">Hapus</button>`
       : '<span class="text-[10px] text-rpGold font-bold px-2">Super Admin</span>';
 
-    return '<div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-xs">' +
-      '<div>' +
-        '<div class="font-bold text-white">' + item.email + '</div>' +
-        '<div class="opacity-60 text-[10px]">Role: <span class="text-rpGold font-semibold">' + (item.role || 'GENERAL') + '</span> ' + (item.name ? '• ' + item.name : '') + '</div>' +
+    const mem = (APP_STATE.teamMembers || []).find(m => (m.email || '').toLowerCase() === item.email.toLowerCase());
+    const memPositions = (mem && mem.positions && mem.positions.length) ? mem.positions : (item.positions || []);
+    const memBranches = (mem && mem.branches && mem.branches.length) ? mem.branches : (item.branches || []);
+
+    const posBadges = memPositions.slice(0, 4).map(p => `<span class="px-1.5 py-0.5 rounded bg-white/[0.08] text-[9px] font-semibold">${p}</span>`).join(' ');
+    const morePos = memPositions.length > 4 ? `<span class="text-[9px] opacity-60">+${memPositions.length - 4}</span>` : '';
+    
+    const branchBadges = memBranches.map(b => {
+      const brObj = (APP_STATE.branches || []).find(x => x.id === b);
+      const label = brObj ? brObj.shortName : b;
+      return `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[9px] font-bold uppercase">${label}</span>`;
+    }).join(' ');
+
+    return '<div class="p-2.5 rounded-xl bg-white/[0.05] border border-white/10 space-y-1.5 text-xs">' +
+      '<div class="flex items-center justify-between">' +
+        '<div>' +
+          '<div class="font-bold text-white flex items-center gap-1.5">' +
+            item.email +
+            (item.name || (mem && mem.nickname) ? '<span class="text-rpGold font-normal text-[11px]">(' + (item.name || mem.nickname) + ')</span>' : '') +
+          '</div>' +
+          '<div class="opacity-60 text-[10px]">Role: <span class="text-rpGold font-semibold">' + (item.role || 'GENERAL') + '</span></div>' +
+        '</div>' +
+        actionBtn +
       '</div>' +
-      actionBtn +
+      '<div class="flex flex-wrap items-center gap-1 pt-1 border-t border-white/[0.06]">' +
+        '<span class="text-[9px] opacity-60 mr-1">Posisi:</span>' + (posBadges || '<span class="text-[9px] opacity-40">-</span>') + morePos +
+        '<span class="text-[9px] opacity-60 ml-2 mr-1">Cabang:</span>' + (branchBadges || '<span class="text-[9px] opacity-40">-</span>') +
+      '</div>' +
     '</div>';
   }).join("");
 
   openModal("🛡️ Cloud Whitelist Gatekeeper Manager", 
-    '<div class="space-y-4 text-xs sm:text-sm">' +
+    '<div class="space-y-4 text-xs sm:text-sm max-h-[82vh] overflow-y-auto pr-1">' +
       '<div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs leading-relaxed text-amber-200">' +
-        'Kelola email Google yang diizinkan masuk ke sistem Royal Priesthood. Data tersinkronisasi ke Cloud API.' +
+        'Kelola email Google yang diizinkan masuk ke sistem Royal Priesthood. Mengisi posisi & cabang pelayanan akan langsung menyinkronkan data ke Team Database agar siap dijadwalkan secara inline.' +
       '</div>' +
-      '<div class="p-3.5 rounded-2xl bg-black/30 border border-white/10 space-y-3">' +
-        '<div class="text-xs font-bold text-rpGold">Tambah Email Whitelist Baru</div>' +
-        '<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">' +
-          '<input id="wlNewEmail" type="email" placeholder="nama@gmail.com" class="sm:col-span-2 px-3 py-1.5 rounded-xl bg-black/30 border border-white/15 text-xs" />' +
-          '<select id="wlNewRole" class="px-3 py-1.5 rounded-xl bg-black/30 border border-white/15 text-xs">' +
+      '<div class="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-3">' +
+        '<div class="text-xs font-bold text-rpGold">Tambah Email Whitelist & Kategori Pelayanan</div>' +
+        '<div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">' +
+          '<input id="wlNewEmail" type="email" placeholder="nama@gmail.com *" class="px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs focus:border-rpGold focus:outline-none" />' +
+          '<input id="wlNewName" type="text" placeholder="Nama Panggilan / Lengkap" class="px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs focus:border-rpGold focus:outline-none" />' +
+          '<select id="wlNewRole" class="px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs">' +
             '<option value="GENERAL">General Member</option>' +
             '<option value="WL_MD">WL / MD</option>' +
+            '<option value="SERVICE_COORD">Service Coordinator</option>' +
             '<option value="RPM">RPM Admin</option>' +
           '</select>' +
         '</div>' +
-        '<div class="flex justify-end">' +
-          '<button onclick="addWhitelistEmail()" class="gold-pill-btn px-4 py-1.5 rounded-full text-xs font-bold">+ Tambah ke Cloud</button>' +
+        '<div>' +
+          '<label class="block text-[11px] font-bold text-white/80 mb-1.5">Kategori / Posisi Pelayanan (Tick box):</label>' +
+          '<div class="flex flex-wrap gap-1.5 p-2.5 rounded-xl bg-black/25 border border-white/10">' +
+            posBoxesHtml +
+          '</div>' +
+        '</div>' +
+        '<div>' +
+          '<label class="block text-[11px] font-bold text-white/80 mb-1.5">Cabang Pelayanan (Tick box):</label>' +
+          '<div class="flex flex-wrap gap-1.5 p-2.5 rounded-xl bg-black/25 border border-white/10">' +
+            branchBoxesHtml +
+          '</div>' +
+        '</div>' +
+        '<div class="flex justify-end pt-1">' +
+          '<button onclick="addWhitelistEmail()" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold shadow-md">+ Tambah & Sinkronkan ke Team</button>' +
         '</div>' +
       '</div>' +
       '<div class="space-y-2">' +
         '<div class="font-bold text-xs opacity-75">Daftar Whitelist Aktif (' + cloudList.length + ' Akun)</div>' +
-        '<div class="space-y-1.5 max-h-56 overflow-y-auto pr-1">' +
+        '<div class="space-y-2 max-h-60 overflow-y-auto pr-1">' +
           listRows +
         '</div>' +
       '</div>' +
@@ -2234,11 +2431,56 @@ async function openWhitelistManagerModal() {
 
 async function addWhitelistEmail() {
   const emailInput = document.getElementById("wlNewEmail");
+  const nameInput = document.getElementById("wlNewName");
   const roleInput = document.getElementById("wlNewRole");
   if (!emailInput || !emailInput.value.trim()) return showToast("Email wajib diisi.");
   const email = emailInput.value.trim().toLowerCase();
-  const role = roleInput.value;
+  const name = nameInput ? nameInput.value.trim() : "";
+  const role = roleInput ? roleInput.value : "GENERAL";
 
+  const selectedPositions = Array.from(document.querySelectorAll('input[name="wlPosBox"]:checked')).map(x => x.value);
+  const selectedBranches = Array.from(document.querySelectorAll('input[name="wlBranchBox"]:checked')).map(x => x.value);
+
+  const finalPositions = selectedPositions.length ? selectedPositions : ["Singers"];
+  const finalBranches = selectedBranches.length ? selectedBranches : ["putat"];
+
+  // 1. Sync directly with local APP_STATE.teamMembers immediately
+  let member = (APP_STATE.teamMembers || []).find(m => (m.email || "").toLowerCase() === email);
+  if (!member) {
+    member = {
+      id: "mem-" + Date.now() + "-" + Math.random().toString(36).substr(2, 4),
+      fullName: name || email.split("@")[0],
+      nickname: name || email.split("@")[0],
+      email: email,
+      role: role,
+      positions: finalPositions,
+      branches: finalBranches,
+      phone: "",
+      birthday: "",
+      instagram: "",
+      tiktok: "",
+      altContact: "",
+      hobby: "",
+      favoriteSong: "",
+      notes: "Ditambahkan via Cloud Whitelist Gatekeeper"
+    };
+    APP_STATE.teamMembers.unshift(member);
+  } else {
+    if (name) {
+      member.fullName = member.fullName || name;
+      member.nickname = name;
+    }
+    member.role = role;
+    if (selectedPositions.length) member.positions = selectedPositions;
+    if (selectedBranches.length) member.branches = selectedBranches;
+  }
+
+  if (role === "RPM" && !APP_STATE.rpmEmails.includes(email)) {
+    APP_STATE.rpmEmails.push(email);
+  }
+  saveState();
+
+  // 2. Sync to Cloud API
   try {
     const res = await fetch(WHITELIST_API_URL, {
       method: "POST",
@@ -2247,23 +2489,25 @@ async function addWhitelistEmail() {
         action: "add",
         email: email,
         role: role,
+        nickname: name,
+        positions: finalPositions,
+        branches: finalBranches,
         requesterEmail: MASTER_SUPER_ADMIN
       })
     });
     const data = await res.json();
     if (data.success) {
-      showToast(data.message || ("Email " + email + " berhasil ditambahkan."));
+      showToast(data.message || ("Email " + email + " berhasil ditambahkan ke Cloud & Team Database."));
     } else {
-      showToast(data.message || "Gagal menambah ke Cloud. Disimpan secara lokal.");
+      showToast(data.message || "Tersimpan di Team Database lokal.");
     }
   } catch (err) {
-    if (!APP_STATE.rpmEmails.includes(email) && role === "RPM") {
-      APP_STATE.rpmEmails.push(email);
-      saveState();
-    }
-    showToast("Email " + email + " ditambahkan secara lokal.");
+    showToast("Email " + email + " disimpan di Team Database lokal.");
   }
+
+  syncStateToCloud();
   openWhitelistManagerModal();
+  renderCurrentView();
 }
 
 async function removeWhitelistEmail(email) {
@@ -2339,6 +2583,23 @@ function openMandatoryProfileModal(member) {
     </label>
   `).join('');
 
+  const churchBranches = [
+    { id: 'putat', name: 'Putat' },
+    { id: 'cw', name: 'Ciputra World' },
+    { id: 'glx', name: 'GLX' },
+    { id: 'manukan', name: 'Manukan' },
+    { id: 'krian', name: 'Krian' },
+    { id: 'mojokerto', name: 'Mojokerto' },
+    { id: 'bali', name: 'Kuta Bali' }
+  ];
+  const selectedBranches = m.branches || ['putat'];
+  const branchCheckboxes = churchBranches.map(b => `
+    <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/10 text-xs cursor-pointer hover:bg-white/10 transition">
+      <input type="checkbox" name="mandBranchBox" value="${b.id}" ${selectedBranches.includes(b.id) ? 'checked' : ''} class="accent-amber-400" />
+      <span>${b.name}</span>
+    </label>
+  `).join('');
+
   openModal('📋 Lengkapi Profil Pelayanan Anda', `
     <div class="space-y-4 text-xs sm:text-sm max-h-[80vh] overflow-y-auto pr-1">
       <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border border-amber-500/30 flex items-start gap-3">
@@ -2377,9 +2638,16 @@ function openMandatoryProfileModal(member) {
         </div>
 
         <div>
-          <label class="block text-xs font-bold mb-1.5 text-rpGold">Bidang / Posisi Pelayanan *</label>
+          <label class="block text-xs font-bold mb-1.5 text-rpGold">Bidang / Posisi Pelayanan (Tick box) *</label>
           <div class="flex flex-wrap gap-2 p-3 rounded-2xl bg-black/20 border border-white/10">
             ${posCheckboxes}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold mb-1.5 text-rpGold">Cabang Pelayanan Anda (Tick box) *</label>
+          <div class="flex flex-wrap gap-2 p-3 rounded-2xl bg-black/20 border border-white/10">
+            ${branchCheckboxes}
           </div>
         </div>
 
@@ -2426,6 +2694,7 @@ function saveMandatoryProfile(memberId) {
   const phone = document.getElementById('mandPhone')?.value?.trim();
   const birthday = document.getElementById('mandBirthday')?.value?.trim();
   const positions = Array.from(document.querySelectorAll('input[name="mandPosBox"]:checked')).map(x => x.value);
+  const branches = Array.from(document.querySelectorAll('input[name="mandBranchBox"]:checked')).map(x => x.value);
 
   if (!fullName) return showToast('Nama lengkap wajib diisi.');
   if (!nickname) return showToast('Nama panggilan wajib diisi.');
@@ -2443,6 +2712,7 @@ function saveMandatoryProfile(memberId) {
   m.phone = phone;
   m.birthday = birthday || m.birthday || '';
   m.positions = positions.length ? positions : ['Singers'];
+  m.branches = branches.length ? branches : (m.branches || ['putat']);
   m.favoriteSong = document.getElementById('mandFavSong')?.value?.trim() || '-';
   m.hobby = document.getElementById('mandHobby')?.value?.trim() || '-';
   m.instagram = document.getElementById('mandIg')?.value?.trim() || '-';
@@ -2560,33 +2830,74 @@ function renderHeroSlide() {
   const idx = APP_STATE.heroSlideIdx % slides.length;
   const s = slides[idx];
 
-  document.getElementById('heroSlideIndicator').textContent = `${s.weekLabel} • ${s.dateText} • Tema Bulanan`;
-  document.getElementById('heroSlideCaption').textContent =
-    `Tema Bulanan: ${APP_STATE.monthlyTheme.title} — ${s.subtheme}`;
+  // Visual stage dynamic content
+  const visualContentEl = document.getElementById('heroVisualContent');
+  const badgeEl = document.getElementById('heroSlideBadge');
+  const subBadgeEl = document.getElementById('heroSlideSubBadge');
+
+  if (badgeEl) badgeEl.textContent = `${s.weekLabel} • TEMA BULANAN & EVENT`;
+  if (subBadgeEl) subBadgeEl.textContent = `${s.dateText} • ${APP_STATE.monthlyTheme.title}`;
+
+  if (visualContentEl) {
+    visualContentEl.innerHTML = `
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+        <div class="md:col-span-8 space-y-2">
+          <span class="text-xs uppercase font-extrabold tracking-widest text-rpGold">Rhema Firman & Arah Pelayanan</span>
+          <h3 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">${s.subtheme}</h3>
+          <p class="text-xs sm:text-sm text-gray-200/90 leading-relaxed font-serif italic max-w-2xl border-l-2 border-rpGold pl-3 py-0.5">
+            ${s.highlightQuote}
+          </p>
+        </div>
+        <div class="md:col-span-4 flex flex-col gap-2">
+          <div class="p-3 rounded-2xl bg-white/[0.07] border border-white/10 space-y-1.5 text-xs">
+            <div class="text-[10px] uppercase font-bold text-rpGold">Agenda Pelayanan Minggu Ini:</div>
+            <div class="space-y-1 text-[11px] opacity-85">
+              <div>⛪ <strong>Putat:</strong> 08.00, 10.30 & 16.30 WIB</div>
+              <div>🏙️ <strong>Ciputra World:</strong> 09.00 & 11.00 WIB</div>
+              <div>🙏 <strong>Doa Selasa:</strong> 18.30 WIB • <strong>Doa Sabtu:</strong> 06.00 WIB</div>
+            </div>
+          </div>
+          <button onclick="navigateTo('schedule')" class="gold-pill-btn w-full py-2 px-3 rounded-full text-xs font-bold text-center flex items-center justify-center gap-1.5 shadow">
+            <span>📅</span> <span>Buka Kalender & Jadwal</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Lowered text section
+  const indEl = document.getElementById('heroSlideIndicator');
+  if (indEl) indEl.textContent = `${s.weekLabel} • ${s.dateText} • Tema Bulanan`;
+  
+  const capEl = document.getElementById('heroSlideCaption');
+  if (capEl) capEl.textContent = `Tema Bulanan: ${APP_STATE.monthlyTheme.title} — ${s.subtheme}`;
 
   const dotsEl = document.getElementById('heroDots');
-  dotsEl.innerHTML = slides.map((sl, i) => `
-    <button onclick="setHeroSlide(${i})" class="h-2 rounded-full transition-all ${i === idx ? 'w-6 bg-rpGold' : 'w-2 bg-white/35'}" aria-label="Slide ${i + 1}"></button>
-  `).join('');
+  if (dotsEl) {
+    dotsEl.innerHTML = slides.map((sl, i) => `
+      <button onclick="setHeroSlide(${i})" class="h-2 rounded-full transition-all ${i === idx ? 'w-6 bg-rpGold' : 'w-2 bg-white/35'}" aria-label="Slide ${i + 1}"></button>
+    `).join('');
+  }
 
   const cardEl = document.getElementById('heroThemeSlideCard');
-  const suppChips = (s.supportingVerses || []).map(v =>
-    `<span class="px-2.5 py-1 rounded-full bg-white/10 border border-white/10 text-[11px] font-medium text-amber-100">${v}</span>`
-  ).join('');
+  if (cardEl) {
+    const suppChips = (s.supportingVerses || []).map(v =>
+      `<span class="px-2.5 py-0.5 rounded-full bg-white/10 border border-white/10 text-[11px] font-medium text-amber-100">${v}</span>`
+    ).join('');
 
-  cardEl.innerHTML = `
-    <div class="flex items-center justify-between gap-2">
-      <span class="text-[11px] font-bold uppercase tracking-widest text-rpGold">${APP_STATE.monthlyTheme.title}</span>
-      <span class="px-2.5 py-0.5 rounded-full bg-rpGold/20 text-rpGold text-[11px] font-bold">${s.weekLabel}</span>
-    </div>
-    <div class="text-base sm:text-lg font-bold leading-snug">${s.subtheme}</div>
-    <div class="text-xs font-semibold text-rpGoldSoft">Ayat Utama: ${s.mainVerse} • ${s.dateText}</div>
-    <p class="font-serif italic text-sm sm:text-base text-gray-100/95 border-l-2 border-rpGold pl-3 py-0.5">${s.highlightQuote}</p>
-    <div class="pt-1">
-      <div class="text-[10px] uppercase tracking-wider opacity-65 mb-1.5">Ayat Pendukung Tema Minggu Ini</div>
-      <div class="flex flex-wrap gap-1.5">${suppChips}</div>
-    </div>
-  `;
+    cardEl.innerHTML = `
+      <div class="flex items-center justify-between gap-2">
+        <span class="text-[11px] font-bold uppercase tracking-widest text-rpGold">${APP_STATE.monthlyTheme.title}</span>
+        <span class="px-2.5 py-0.5 rounded-full bg-rpGold/20 text-rpGold text-[11px] font-bold">${s.weekLabel}</span>
+      </div>
+      <div class="text-sm sm:text-base font-bold leading-snug">${s.subtheme}</div>
+      <div class="text-xs font-semibold text-rpGoldSoft">Ayat Utama: ${s.mainVerse} • ${s.dateText}</div>
+      <div class="pt-1">
+        <div class="text-[10px] uppercase tracking-wider opacity-65 mb-1">Ayat Pendukung Tema:</div>
+        <div class="flex flex-wrap gap-1.5">${suppChips}</div>
+      </div>
+    `;
+  }
 }
 
 function setHeroSlide(i) {
@@ -3519,6 +3830,7 @@ function renderScheduleTab() {
           <p class="text-xs sm:text-sm opacity-75 mt-1">Pilih tab cabang atau susun sesi baru dengan kalender tanggal & jam.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
+          <button onclick="openSmartCalendarGeneratorModal()" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-[#090C11] shadow-lg flex items-center gap-1.5"><span class="text-sm">⚡</span> <span>Smart Calendar Generator</span></button>
           <button onclick="openNewSessionModal()" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold">+ Jadwal / Sesi Baru</button>
           <button onclick="openCreateNewSetlistModal()" class="gold-pill-btn px-4 py-2 rounded-full text-xs font-bold">+ BUAT SETLIST BARU</button>
           <button onclick="openMonthlyEdifikasiModal()" class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15">📖 EDIFIKASI BULANAN</button>
@@ -3690,10 +4002,15 @@ function buildPositionMultiSelectRows(assignmentsObj = {}) {
     const pool = eligibleMembers.length ? eligibleMembers : APP_STATE.teamMembers;
     const pillsHtml = pool.map(m => {
       const checked = selectedArr.includes(m.nickname) ? 'checked' : '';
+      const memBranches = (m.branches || ['putat']).map(b => {
+        const br = (APP_STATE.branches || []).find(x => x.id === b);
+        return br ? br.shortName : b;
+      }).join(',');
+      const branchBadge = memBranches ? `<span class="opacity-50 text-[9px] font-bold">(${memBranches})</span>` : '';
       return `
         <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-xs cursor-pointer">
           <input type="checkbox" name="pos_${encodeURIComponent(pos)}" value="${m.nickname}" ${checked} class="accent-amber-400 rounded" />
-          <span>${m.nickname}</span>
+          <span>${m.nickname}</span> ${branchBadge}
         </label>`;
     }).join('');
 
@@ -4083,6 +4400,27 @@ function getYoutubeThumb(url) {
   return vid ? `https://img.youtube.com/vi/${vid}/hqdefault.jpg` : APP_ASSETS.HERO_BANNER;
 }
 
+function getEffectiveSetlistId(schId) {
+  if (!schId) return schId;
+  const sch = (APP_STATE.schedules || []).find(s => s.id === schId);
+  if (!sch) return schId;
+  if (sch.linkedSetlistId) return sch.linkedSetlistId;
+
+  // Putat morning: Raya 1 (08.00) & Raya 2 (10.30) share the exact same setlist
+  const isPutatMorning = sch.branchId === 'putat' && !((sch.time || '').includes('16.30') || (sch.sessionName || '').toLowerCase().includes('sore'));
+  if (isPutatMorning) {
+    return 'setlist-putat-morning-' + (sch.date || sch.weekId);
+  }
+
+  // CW morning: Raya 1 (09.00) & Raya 2 (11.00) share the exact same setlist
+  const isCwMorning = sch.branchId === 'cw';
+  if (isCwMorning) {
+    return 'setlist-cw-morning-' + (sch.date || sch.weekId);
+  }
+
+  return schId;
+}
+
 function ensureSetlistRecord(schId) {
   if (!APP_STATE.setlists || typeof APP_STATE.setlists !== "object") {
     APP_STATE.setlists = {};
@@ -4093,7 +4431,9 @@ function ensureSetlistRecord(schId) {
     APP_STATE.setlists = obj;
   }
   
-  if (!APP_STATE.setlists[schId]) {
+  const effectiveId = getEffectiveSetlistId(schId);
+  
+  if (!APP_STATE.setlists[effectiveId]) {
     const schObj = (APP_STATE.schedules || []).find(s => s.id === schId);
     let ed = JSON.parse(JSON.stringify(APP_STATE.DEFAULT_EDIFIKASI_WEEK1 || DEFAULT_STATE.DEFAULT_EDIFIKASI_WEEK1));
     if (schObj && schObj.weekId) {
@@ -4108,15 +4448,15 @@ function ensureSetlistRecord(schId) {
         }
       }
     }
-    APP_STATE.setlists[schId] = {
-      scheduleId: schId,
+    APP_STATE.setlists[effectiveId] = {
+      scheduleId: effectiveId,
       songs: [],
       edifikasi: ed
     };
-  } else if (!APP_STATE.setlists[schId].edifikasi) {
-    APP_STATE.setlists[schId].edifikasi = JSON.parse(JSON.stringify(APP_STATE.DEFAULT_EDIFIKASI_WEEK1 || DEFAULT_STATE.DEFAULT_EDIFIKASI_WEEK1));
+  } else if (!APP_STATE.setlists[effectiveId].edifikasi) {
+    APP_STATE.setlists[effectiveId].edifikasi = JSON.parse(JSON.stringify(APP_STATE.DEFAULT_EDIFIKASI_WEEK1 || DEFAULT_STATE.DEFAULT_EDIFIKASI_WEEK1));
   }
-  return APP_STATE.setlists[schId];
+  return APP_STATE.setlists[effectiveId];
 }
 
 function renderSetlistTab() {
@@ -5782,13 +6122,79 @@ function buildDefaultCombinedRundownItems(sch) {
   const wls = (sch?.assignments?.['Worship Leader'] || ['WL']).join(', ');
   const mds = (sch?.assignments?.['Music Director'] || ['MD']).join(', ');
   const isDoaSelasa = sch?.branchId === 'doa-selasa' || (sch?.sessionName || '').toLowerCase().includes('doa malam');
+  const isDoaSabtu = sch?.branchId === 'doa-sabtu' || (sch?.sessionName || '').toLowerCase().includes('doa pagi');
   const isAfternoon = (sch?.time || '').includes('16.30') || (sch?.sessionName || '').toLowerCase().includes('sore');
   const isCW = sch?.branchId === 'cw';
+
+  if (isDoaSabtu) {
+    return [
+      {
+        time: '05.30-05.55',
+        duration: '25m',
+        segment: 'Persiapan, Soundcheck & Doa Tim Pelayan Fajar',
+        detail: 'Cek mic, keyboard, sound system & doa konsentrasi hadirat Tuhan bersama tim pelayan.',
+        equipment: 'Sound system, instruments, monitors, mic',
+        location: 'Ruang Doa / Sanctuary',
+        pic: `${wls}, ${mds}, Tim Sound, Tim MM`,
+        tech: 'Soundcheck instrumen & cek slide lirik doa pagi'
+      },
+      {
+        time: '05.55-06.00',
+        duration: '5m',
+        segment: 'Keheningan & Pembukaan Hadirat Tuhan',
+        detail: 'Jemaat masuk dalam keheningan fajar, alunan pad instrumental lembut menyambut hadirat-Nya.',
+        equipment: 'Keyboard / Pad, soft morning lighting',
+        location: 'Sanctuary',
+        pic: `${mds}, Keyboardist`,
+        tech: 'Pencahayaan teduh hangat, sound lembut khusyuk'
+      },
+      {
+        time: '06.00-06.35',
+        duration: '35m',
+        segment: 'Praise & Worship Fajar (Pujian & Penyembahan)',
+        detail: 'Alunan pujian pengagungan dan penyembahan intim mengawali pagi, mengikuti tema edifikasi.',
+        equipment: 'Sound system, keyboard, acoustic, ProPresenter',
+        location: 'Sanctuary',
+        pic: `${wls}, Singers, Musisi`,
+        tech: 'Tampilkan lirik di layar tanpa delay; lighting temaram khusyuk'
+      },
+      {
+        time: '06.35-06.55',
+        duration: '20m',
+        segment: 'Renungan Firman Pagi & Pokok Doa',
+        detail: 'Pemberitaan firman pengurapan pagi & penjelasan pokok doa bagi keluarga, gereja dan kota.',
+        equipment: 'Wireless mic, PPT pokok doa',
+        location: 'Sanctuary',
+        pic: 'Hamba Tuhan / Pastoral',
+        tech: 'Tampilkan slide pokok doa di layar'
+      },
+      {
+        time: '06.55-07.20',
+        duration: '25m',
+        segment: 'Doa Syafaat Fajar & Pengurapan Berantai',
+        detail: 'Doa syafaat bersama jemaat diiringi alunan worship lembut, deklarasi iman dan pengurapan.',
+        equipment: 'Microphones, keyboard pad',
+        location: 'Sanctuary',
+        pic: `${wls}, Pendoa Syafaat, Tim Doa`,
+        tech: 'Musik latar lembut mengalir'
+      },
+      {
+        time: '07.20-07.30',
+        duration: '10m',
+        segment: 'Lagu Penutup, Doa Berkat Pagi & Persekutuan',
+        detail: 'Pengucapan syukur penutup, doa berkat bagi seluruh aktivitas jemaat hari Sabtu.',
+        equipment: 'Wireless mic',
+        location: 'Sanctuary',
+        pic: `${wls}, Pastoral`,
+        tech: 'Lampu utama dinyalakan'
+      }
+    ];
+  }
 
   if (isDoaSelasa) {
     return [
       {
-        time: '18.00-18.45',
+        time: '17.30-18.15',
         duration: '45m',
         segment: 'Persiapan, Soundcheck & Doa Tim Pelayan',
         detail: 'Cek mic, instrumen, ProPresenter slide lirik & doa konsentrasi hadirat Tuhan bersama tim pelayan.',
@@ -5798,7 +6204,7 @@ function buildDefaultCombinedRundownItems(sch) {
         tech: 'Soundcheck instrumen & cek slide lirik doa malam'
       },
       {
-        time: '18.45-19.00',
+        time: '18.15-18.30',
         duration: '15m',
         segment: 'Instrumental Hadirat Tuhan & Doa Pribadi Jemaat',
         detail: 'Musik instrumental lembut mengalir, jemaat masuk dalam keheningan dan persiapan hati.',
@@ -5808,7 +6214,7 @@ function buildDefaultCombinedRundownItems(sch) {
         tech: 'Pencahayaan temaram hangat, sound lembut'
       },
       {
-        time: '19.00-19.35',
+        time: '18.30-19.05',
         duration: '35m',
         segment: 'Praise & Worship (Pujian & Penyembahan)',
         detail: 'Praise & Worship mengalir mengikuti tema bulanan edifikasi, membawa jemaat dalam hadirat Tuhan.',
@@ -5818,7 +6224,7 @@ function buildDefaultCombinedRundownItems(sch) {
         tech: 'Tampilkan lirik di layar tanpa delay; lighting dinamis khusyuk'
       },
       {
-        time: '19.35-19.55',
+        time: '19.05-19.25',
         duration: '20m',
         segment: 'Materi Firman & Pengantar Pokok Doa',
         detail: 'Penjelasan rhema firman sesuai tema mingguan & pengantar pokok doa syafaat jemaat / bangsa.',
@@ -5828,7 +6234,7 @@ function buildDefaultCombinedRundownItems(sch) {
         tech: 'Tampilkan slide pokok doa di layar'
       },
       {
-        time: '19.55-20.30',
+        time: '19.25-20.00',
         duration: '35m',
         segment: 'Doa Syafaat Bersama & Intimacy Worship',
         detail: 'Berdoa bersama untuk pokok doa, diiringi alunan worship intim dan doa berantai.',
@@ -5838,7 +6244,7 @@ function buildDefaultCombinedRundownItems(sch) {
         tech: 'Musik latar mengalir lembut, mic pendoa standby'
       },
       {
-        time: '20.30-20.40',
+        time: '20.00-20.10',
         duration: '10m',
         segment: 'Lagu Penutup, Doa Berkat & Fellowship',
         detail: 'Lagu penutup pengagungan, doa berkat dan salam persekutuan jemaat.',
@@ -6647,17 +7053,27 @@ function deleteRundownRow(schId, idx) {
 // 6. TEAM DATABASE (CLEAN LIST: NAME + MULTI-POSITIONS, SELF-EDIT PROFILE, RPM ROLE & POSITION MANAGER)
 function getFilteredTeamMembers() {
   const posFilter = APP_STATE.teamFilterPos || 'ALL';
+  const branchFilter = APP_STATE.teamFilterBranch || 'ALL';
   const q = (APP_STATE.teamSearch || '').toLowerCase().trim();
 
   return APP_STATE.teamMembers.filter(m => {
     const matchPos = posFilter === 'ALL' || (Array.isArray(m.positions) && m.positions.includes(posFilter));
+    const memBranches = m.branches || ['putat'];
+    const matchBranch = branchFilter === 'ALL' || memBranches.includes(branchFilter);
     const matchQ = !q ||
       (m.nickname || '').toLowerCase().includes(q) ||
       (m.fullName || '').toLowerCase().includes(q) ||
       (m.phone || '').toLowerCase().includes(q) ||
-      (m.positions || []).join(' ').toLowerCase().includes(q);
-    return matchPos && matchQ;
+      (m.positions || []).join(' ').toLowerCase().includes(q) ||
+      memBranches.join(' ').toLowerCase().includes(q);
+    return matchPos && matchBranch && matchQ;
   });
+}
+
+function setTeamFilterBranch(brId) {
+  APP_STATE.teamFilterBranch = brId;
+  saveState();
+  renderCurrentView();
 }
 
 function renderTeamListHtml() {
@@ -6674,6 +7090,12 @@ function renderTeamListHtml() {
     const posBadges = (m.positions || []).map(p =>
       `<span class="px-2.5 py-0.5 rounded-full bg-white/[0.08] border border-white/10 text-[11px] font-semibold">${p}</span>`
     ).join('');
+
+    const branchBadges = (m.branches || ['putat']).map(b => {
+      const brObj = (APP_STATE.branches || []).find(x => x.id === b);
+      const label = brObj ? brObj.shortName : b;
+      return `<span class="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-bold uppercase">${label}</span>`;
+    }).join('');
 
     const photoHtml = m.photo
       ? `<img src="${m.photo}" alt="${m.nickname}" class="w-9 h-9 rounded-full object-cover border border-rpGold/40 shrink-0" />`
@@ -6693,6 +7115,7 @@ function renderTeamListHtml() {
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-1.5">
+          ${branchBadges}
           ${posBadges}
           ${canEdit ? `<button onclick="event.stopPropagation(); openEditMemberModal('${m.id}')" class="ml-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-[11px] font-bold">Edit</button>` : ''}
         </div>
@@ -6710,9 +7133,25 @@ function onTeamSearchInput(val) {
 
 function renderTeamTab() {
   const posFilter = APP_STATE.teamFilterPos || 'ALL';
+  const branchFilter = APP_STATE.teamFilterBranch || 'ALL';
+
+  const churchBranches = [
+    { id: 'ALL', name: 'Semua Cabang' },
+    { id: 'putat', name: 'Putat' },
+    { id: 'cw', name: 'Ciputra World' },
+    { id: 'glx', name: 'GLX' },
+    { id: 'manukan', name: 'Manukan' },
+    { id: 'krian', name: 'Krian' },
+    { id: 'mojokerto', name: 'Mojokerto' },
+    { id: 'bali', name: 'Kuta Bali' }
+  ];
+
+  const branchChips = churchBranches.map(b =>
+    `<button onclick="setTeamFilterBranch('${b.id}')" class="shrink-0 px-3 py-1 rounded-full text-[11px] font-bold transition ${branchFilter === b.id ? 'bg-rpGold text-[#090C11]' : 'bg-white/[0.06] hover:bg-white/10'}">${b.name}</button>`
+  ).join('');
 
   const posChips = [
-    `<button onclick="setTeamFilterPos('ALL')" class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition ${posFilter === 'ALL' ? 'bg-rpGold text-[#090C11]' : 'bg-white/[0.06] hover:bg-white/10'}">Semua (${APP_STATE.teamMembers.length})</button>`,
+    `<button onclick="setTeamFilterPos('ALL')" class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition ${posFilter === 'ALL' ? 'bg-rpGold text-[#090C11]' : 'bg-white/[0.06] hover:bg-white/10'}">Semua Posisi (${APP_STATE.teamMembers.length})</button>`,
     ...APP_STATE.servicePositions.map(p =>
       `<button onclick="setTeamFilterPos('${p}')" class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition ${posFilter === p ? 'bg-rpGold text-[#090C11]' : 'bg-white/[0.06] hover:bg-white/10'}">${p}</button>`
     )
@@ -6735,12 +7174,19 @@ function renderTeamTab() {
         </div>
       </div>
 
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-          ${posChips}
+      <div class="space-y-2">
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+          <span class="text-[10px] font-bold uppercase opacity-60 shrink-0 mr-1">Cabang:</span>
+          ${branchChips}
         </div>
-        <div class="relative sm:w-72 shrink-0">
-          <input type="text" id="teamSearchInput" value="${APP_STATE.teamSearch || ''}" oninput="onTeamSearchInput(this.value)" placeholder="🔍 Cari nama, posisi (WL, Sound, dll)..." class="w-full pl-4 pr-4 py-2 rounded-full bg-white/[0.06] border border-white/15 text-xs focus:border-rpGold focus:outline-none transition" />
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+            <span class="text-[10px] font-bold uppercase opacity-60 shrink-0 mr-1">Posisi:</span>
+            ${posChips}
+          </div>
+          <div class="relative sm:w-72 shrink-0">
+            <input type="text" id="teamSearchInput" value="${APP_STATE.teamSearch || ''}" oninput="onTeamSearchInput(this.value)" placeholder="🔍 Cari nama, posisi, cabang..." class="w-full pl-4 pr-4 py-2 rounded-full bg-white/[0.06] border border-white/15 text-xs focus:border-rpGold focus:outline-none transition" />
+          </div>
         </div>
       </div>
 
@@ -6778,6 +7224,10 @@ function openMemberDetailModal(memberId) {
         <div><span class="opacity-60 block">Kontak Lain yang Bisa Dihubungi</span><strong>${m.altContact || '-'}</strong></div>
         <div><span class="opacity-60 block">Hobi</span><strong>${m.hobby || '-'}</strong></div>
         <div class="sm:col-span-2"><span class="opacity-60 block">Lagu Favorit</span><strong>${m.favoriteSong || '-'}</strong></div>
+        <div class="sm:col-span-2"><span class="opacity-60 block">Cabang Pelayanan</span><strong>${(m.branches || ['putat']).map(b => {
+          const brObj = (APP_STATE.branches || []).find(x => x.id === b);
+          return brObj ? brObj.shortName : b;
+        }).join(', ') || '-'}</strong></div>
         <div class="sm:col-span-2"><span class="opacity-60 block">Notes</span><strong>${m.notes || '-'}</strong></div>
       </div>
       ${canEdit ? `
@@ -6797,6 +7247,23 @@ function buildMemberFormHtml(m = {}) {
     </label>
   `).join('');
 
+  const churchBranches = [
+    { id: 'putat', name: 'Putat' },
+    { id: 'cw', name: 'Ciputra World' },
+    { id: 'glx', name: 'MDC GLX' },
+    { id: 'manukan', name: 'MDC Manukan' },
+    { id: 'krian', name: 'Citra Harmoni Krian' },
+    { id: 'mojokerto', name: 'MDC Mojokerto' },
+    { id: 'bali', name: 'MDC Kuta Bali' }
+  ];
+  const selectedBranches = m.branches || ['putat'];
+  const branchCheckboxes = churchBranches.map(b => `
+    <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/10 text-xs cursor-pointer">
+      <input type="checkbox" name="memBranchBox" value="${b.id}" ${selectedBranches.includes(b.id) ? 'checked' : ''} class="accent-amber-400" />
+      <span>${b.name}</span>
+    </label>
+  `).join('');
+
   return `
     <div class="space-y-3 text-xs sm:text-sm">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -6813,6 +7280,11 @@ function buildMemberFormHtml(m = {}) {
       <div>
         <label class="block text-xs font-semibold mb-1">Posisi Pelayanan (Bisa Pilih Lebih dari Satu)</label>
         <div class="flex flex-wrap gap-1.5 p-3 rounded-2xl bg-black/20 border border-white/10">${posCheckboxes}</div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold mb-1">Cabang Pelayanan (Tick box)</label>
+        <div class="flex flex-wrap gap-1.5 p-3 rounded-2xl bg-black/20 border border-white/10">${branchCheckboxes}</div>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -6893,10 +7365,12 @@ function handleMemberAvatarUpload(input) {
 
 function collectMemberFormValues() {
   const positions = Array.from(document.querySelectorAll('input[name="memPosBox"]:checked')).map(x => x.value);
+  const branches = Array.from(document.querySelectorAll('input[name="memBranchBox"]:checked')).map(x => x.value);
   return {
     fullName: document.getElementById('mfFullName').value.trim(),
     nickname: document.getElementById('mfNickname').value.trim(),
     positions: positions.length ? positions : ['Singers'],
+    branches: branches.length ? branches : ['putat'],
     phone: document.getElementById('mfPhone').value.trim(),
     email: document.getElementById('mfEmail').value.trim(),
     instagram: document.getElementById('mfIg').value.trim(),
@@ -7166,3 +7640,352 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
+
+// ==========================================
+// SMART CALENDAR GENERATOR & CHRISTIAN FEASTS
+// ==========================================
+function computeChristianFeasts(year) {
+  // Anonymous Gregorian Computus (Butcher's algorithm for Easter)
+  const a = year % 19;
+  const b = Math.floor(year / 100);
+  const c = year % 100;
+  const d = Math.floor(b / 4);
+  const e = b % 4;
+  const f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4);
+  const k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+
+  const easterDate = new Date(year, month - 1, day);
+  
+  function addDays(dt, n) {
+    const res = new Date(dt.getTime());
+    res.setDate(res.getDate() + n);
+    return res;
+  }
+
+  function fmt(dt) {
+    const y = dt.getFullYear();
+    const mo = String(dt.getMonth() + 1).padStart(2, '0');
+    const da = String(dt.getDate()).padStart(2, '0');
+    return `${y}-${mo}-${da}`;
+  }
+
+  const goodFriday = addDays(easterDate, -2);
+  const ascension = addDays(easterDate, 39);
+  const pentecost = addDays(easterDate, 49);
+
+  return [
+    { date: `${year}-01-01`, name: 'Ibadah Tahun Baru Masehi', type: 'holiday', defaultTime: '09.00 WIB' },
+    { date: fmt(goodFriday), name: 'Ibadah Jumat Agung (Wafat Isa Almasih)', type: 'holiday', defaultTime: '09.00 & 16.30 WIB' },
+    { date: fmt(easterDate), name: 'Ibadah Raya Paskah (Kebangkitan Kristus)', type: 'holiday', defaultTime: '06.00, 08.30 & 16.30 WIB' },
+    { date: fmt(ascension), name: 'Ibadah Kenaikan Isa Almasih', type: 'holiday', defaultTime: '09.00 WIB' },
+    { date: fmt(pentecost), name: 'Ibadah Hari Pentakosta (Pencurahan Roh Kudus)', type: 'holiday', defaultTime: '08.00 & 10.30 WIB' },
+    { date: `${year}-12-24`, name: 'Ibadah Malam Natal (Christmas Eve)', type: 'holiday', defaultTime: '17.00 & 19.30 WIB' },
+    { date: `${year}-12-25`, name: 'Ibadah Hari Raya Natal (Christmas Day)', type: 'holiday', defaultTime: '09.00 & 16.30 WIB' },
+    { date: `${year}-12-31`, name: 'Ibadah Malam Tutup Tahun (Watchnight)', type: 'holiday', defaultTime: '19.00 & 22.00 WIB' }
+  ];
+}
+
+function getIndonesianDateLabel(dateStr) {
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  const d = parseInt(parts[2], 10);
+  const m = parseInt(parts[1], 10) - 1;
+  const y = parts[0];
+  const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  return `${d} ${months[m] || ''} ${y}`;
+}
+
+let __smartCalSelectedMonth = '';
+
+function openSmartCalendarGeneratorModal(targetMonth = null) {
+  if (!targetMonth) {
+    const now = new Date();
+    // Default to current month or December 2026
+    const curY = now.getFullYear();
+    const curM = String(now.getMonth() + 1).padStart(2, '0');
+    targetMonth = `${curY}-${curM}`;
+  }
+  __smartCalSelectedMonth = targetMonth;
+
+  const [yStr, mStr] = targetMonth.split('-');
+  const year = parseInt(yStr, 10);
+  const month = parseInt(mStr, 10); // 1-indexed
+
+  const monthNames = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  const monthLabel = `${monthNames[month]} ${year}`;
+
+  // Find all days in the month
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const holidays = computeChristianFeasts(year).filter(h => h.date.startsWith(targetMonth));
+
+  const items = [];
+  let sundayCount = 0;
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dt = new Date(year, month - 1, day);
+    const dayOfWeek = dt.getDay(); // 0 = Sunday, 2 = Tuesday, 6 = Saturday
+    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const dateLabel = `${day} ${monthNames[month]} ${year}`;
+
+    // 1. Check Christian Holidays on this day
+    const hols = holidays.filter(h => h.date === dateStr);
+    hols.forEach(h => {
+      items.push({
+        id: `gen-hol-${dateStr}-${Math.random().toString(36).substr(2, 3)}`,
+        date: dateStr,
+        dateLabel: dateLabel,
+        weekLabel: `HARI RAYA`,
+        branchId: 'putat',
+        branchName: 'Putat & Cabang MDC',
+        sessionName: h.name,
+        time: h.defaultTime,
+        category: 'HOLIDAY',
+        highlight: true
+      });
+    });
+
+    // 2. Sundays (Hari Minggu)
+    if (dayOfWeek === 0) {
+      sundayCount++;
+      const weekLabel = `WEEK ${sundayCount}`;
+
+      // Putat Pagi (Raya 1 & 2: 08.00 & 10.30 WIB - Shared Setlist)
+      items.push({
+        id: `gen-sun-putat-pagi-${dateStr}`,
+        date: dateStr,
+        dateLabel: dateLabel,
+        weekLabel: weekLabel,
+        branchId: 'putat',
+        branchName: 'Putat (Graha Pemulihan)',
+        sessionName: 'Ibadah Raya 1 & 2 (08.00 & 10.30 WIB)',
+        time: '08.00 & 10.30 WIB',
+        category: 'SUNDAY',
+        setlistNote: 'Satu Setlist bersama untuk Ibadah 1 & 2'
+      });
+
+      // Putat Sore (16.30 WIB - Separate Setlist)
+      items.push({
+        id: `gen-sun-putat-sore-${dateStr}`,
+        date: dateStr,
+        dateLabel: dateLabel,
+        weekLabel: weekLabel,
+        branchId: 'putat',
+        branchName: 'Putat (Graha Pemulihan)',
+        sessionName: 'Ibadah Sore (16.30 WIB)',
+        time: '16.30 WIB',
+        category: 'SUNDAY',
+        setlistNote: 'Setlist berbeda dari sesi pagi'
+      });
+
+      // Ciputra World (09.00 & 11.00 WIB - Shared Setlist)
+      items.push({
+        id: `gen-sun-cw-${dateStr}`,
+        date: dateStr,
+        dateLabel: dateLabel,
+        weekLabel: weekLabel,
+        branchId: 'cw',
+        branchName: 'Ballroom 89 Ciputra World',
+        sessionName: 'Ibadah Raya 1 & 2 (09.00 & 11.00 WIB)',
+        time: '09.00 & 11.00 WIB',
+        category: 'SUNDAY',
+        setlistNote: 'Satu Setlist bersama untuk Ibadah 1 & 2'
+      });
+    }
+
+    // 3. Tuesdays (Selasa - Doa Malam 18.30 WIB)
+    if (dayOfWeek === 2) {
+      items.push({
+        id: `gen-tue-doa-${dateStr}`,
+        date: dateStr,
+        dateLabel: dateLabel,
+        weekLabel: `DOA MALAM`,
+        branchId: 'doa-selasa',
+        branchName: 'Doa Malam Selasa',
+        sessionName: 'Doa Malam Selasa (18.30 WIB)',
+        time: '18.30 WIB',
+        category: 'PRAYER',
+        setlistNote: 'Liturgi Doa Syafaat & Pujian Hadirat'
+      });
+    }
+
+    // 4. Saturdays (Sabtu - Doa Pagi 06.00 WIB)
+    if (dayOfWeek === 6) {
+      items.push({
+        id: `gen-sat-doa-${dateStr}`,
+        date: dateStr,
+        dateLabel: dateLabel,
+        weekLabel: `DOA PAGI`,
+        branchId: 'doa-sabtu',
+        branchName: 'Doa Pagi Sabtu',
+        sessionName: 'Doa Fajar & Menara Doa (06.00 WIB)',
+        time: '06.00 WIB',
+        category: 'PRAYER',
+        setlistNote: 'Liturgi Doa Fajar & Rohani Pagi'
+      });
+    }
+  }
+
+  window.__smartCalGeneratedItems = items;
+
+  const rowsHtml = items.map((item, idx) => {
+    // Check if schedule already exists in APP_STATE.schedules
+    const alreadyExists = (APP_STATE.schedules || []).some(s => 
+      s.date === item.date && (s.branchId === item.branchId || s.sessionName === item.sessionName)
+    );
+
+    const badgeColor = item.category === 'HOLIDAY' ? 'bg-rose-500/20 text-rose-300 border-rose-500/30' :
+      item.category === 'PRAYER' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' :
+      'bg-amber-500/20 text-amber-300 border-amber-500/30';
+
+    return `
+      <tr class="border-b border-white/[0.06] hover:bg-white/[0.03] transition text-xs">
+        <td class="p-2.5 text-center">
+          <input type="checkbox" name="smartCalItemBox" value="${idx}" ${alreadyExists ? '' : 'checked'} class="accent-amber-400 w-4 h-4 cursor-pointer" />
+        </td>
+        <td class="p-2.5 whitespace-nowrap">
+          <div class="font-bold text-white">${item.dateLabel}</div>
+          <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold border ${badgeColor}">${item.weekLabel}</span>
+        </td>
+        <td class="p-2.5">
+          <div class="font-semibold text-rpGoldSoft">${item.branchName}</div>
+          <div class="text-[11px] text-white/90">${item.sessionName}</div>
+          ${item.setlistNote ? `<div class="text-[10px] opacity-60">💡 ${item.setlistNote}</div>` : ''}
+        </td>
+        <td class="p-2.5 whitespace-nowrap text-right">
+          ${alreadyExists 
+            ? '<span class="px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Sudah Ada di Jadwal</span>' 
+            : '<span class="px-2 py-1 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-bold">Siap Dibuat</span>'}
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  openModal('⚡ Smart Calendar Schedule Generator', `
+    <div class="space-y-4 text-xs sm:text-sm max-h-[82vh] overflow-y-auto pr-1">
+      <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border border-amber-500/30 flex items-start gap-3">
+        <span class="text-2xl shrink-0 mt-0.5">🗓️</span>
+        <div>
+          <h4 class="font-bold text-amber-300 text-sm">Integrasi Smart Calendar Otomatis</h4>
+          <p class="text-xs opacity-85 mt-1 leading-relaxed">
+            Sistem otomatis mendeteksi seluruh <strong>Hari Minggu</strong> (Putat 08.00 & 10.30 satu setlist, Putat 16.30 setlist terpisah, CW 09.00 & 11.00), <strong>Doa Malam Selasa (18.30)</strong>, <strong>Doa Pagi Sabtu (06.00)</strong>, serta <strong>Hari Raya Kristen</strong> (Paskah, Jumat Agung, Natal, Tutup Tahun) tanpa perlu ketik manual.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-2xl bg-black/40 border border-white/10">
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-bold text-rpGold">Pilih Bulan & Tahun:</label>
+          <input type="month" id="smartCalMonthPicker" value="${targetMonth}" onchange="openSmartCalendarGeneratorModal(this.value)" class="px-3 py-1.5 rounded-xl bg-black/60 border border-white/20 text-xs font-bold text-white focus:border-rpGold focus:outline-none" />
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="toggleAllSmartCalCheckboxes(true)" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold">Pilih Semua</button>
+          <button onclick="toggleAllSmartCalCheckboxes(false)" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold">Batal Semua</button>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 overflow-hidden bg-black/25">
+        <table class="w-full border-collapse text-left">
+          <thead>
+            <tr class="border-b border-white/15 bg-white/[0.04] text-[11px] font-bold uppercase opacity-75">
+              <th class="p-2.5 text-center w-12">Pilih</th>
+              <th class="p-2.5">Tanggal & Hari</th>
+              <th class="p-2.5">Cabang & Sesi Ibadah</th>
+              <th class="p-2.5 text-right">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-white/10">
+        <div class="text-[11px] opacity-70">
+          Total ${items.length} sesi ibadah terdeteksi pada ${monthLabel}
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-white/10 text-xs font-semibold">Tutup</button>
+          <button onclick="commitSmartCalendarSchedules()" class="gold-pill-btn px-6 py-2 rounded-full text-xs font-bold shadow-lg">
+            ⚡ Generate & Masukkan ke Jadwal
+          </button>
+        </div>
+      </div>
+    </div>
+  `);
+}
+
+function toggleAllSmartCalCheckboxes(checked) {
+  const boxes = document.querySelectorAll('input[name="smartCalItemBox"]');
+  boxes.forEach(b => b.checked = checked);
+}
+
+function commitSmartCalendarSchedules() {
+  const selectedIndexes = Array.from(document.querySelectorAll('input[name="smartCalItemBox"]:checked')).map(x => parseInt(x.value, 10));
+  if (!selectedIndexes.length) return showToast('Pilih setidaknya satu sesi ibadah untuk digenerate.');
+
+  const items = window.__smartCalGeneratedItems || [];
+  let addedCount = 0;
+
+  selectedIndexes.forEach(idx => {
+    const item = items[idx];
+    if (!item) return;
+
+    // Check if already exists
+    const exists = APP_STATE.schedules.some(s => 
+      s.date === item.date && (s.branchId === item.branchId || s.sessionName === item.sessionName)
+    );
+    if (exists) return;
+
+    const newSch = {
+      id: `sch-${item.branchId}-${item.date}-${Math.random().toString(36).substr(2, 4)}`,
+      weekId: item.date,
+      weekLabel: item.weekLabel,
+      date: item.date,
+      dateLabel: item.dateLabel,
+      branchId: item.branchId,
+      sessionName: item.sessionName,
+      time: item.time,
+      rehearsalNote: item.branchId.startsWith('doa') 
+        ? 'Briefing dan doa persiapan 30 menit sebelum ibadah' 
+        : 'Tim Graha Pemulihan / Cabang: Latihan & soundcheck sesuai jadwal',
+      dresscodePalette: 'Earth Tone / Bebas Rapi',
+      dresscodeNote: 'Semi-formal, sopan, dan rapi',
+      dresscodeImages: [],
+      assignments: {
+        'Worship Leader': [],
+        'Music Director': [],
+        'Singers': [],
+        'Keyboardist': [],
+        'Guitarist': [],
+        'Bassist': [],
+        'Drummer': [],
+        'Saxophonist': [],
+        'Multimedia': [],
+        'Sound System': [],
+        'Event Organizer': []
+      }
+    };
+
+    APP_STATE.schedules.push(newSch);
+    ensureSetlistRecord(newSch.id);
+    ensureRundownRecord(newSch.id);
+    addedCount++;
+  });
+
+  // Sort schedules chronologically
+  APP_STATE.schedules.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+  saveState();
+  syncStateToCloud();
+  closeModal();
+  renderCurrentView();
+  showToast(`⚡ ${addedCount} sesi ibadah berhasil ditambahkan ke Jadwal!`);
+}
