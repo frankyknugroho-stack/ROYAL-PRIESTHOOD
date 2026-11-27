@@ -464,6 +464,12 @@ const APP_ASSETS = {
       <span>Sign in with Google</span>
     </button>
 
+    <!-- Super Admin Direct Sign In (Khusus Developer / Orca / Localhost) -->
+    <button type="button" onclick="loginDirectlyAsSuperAdmin()" class="w-full mt-2.5 py-2.5 px-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-rpGold/30 text-[11px] sm:text-xs text-rpGold font-semibold transition flex items-center justify-center gap-1.5" title="Akses Cepat Super Admin (Bypass Origin Mismatch di Orca/Localhost)">
+      <span>👑</span>
+      <span>Masuk Langsung sebagai Super Admin (Franky)</span>
+    </button>
+
     <div class="mt-4 pt-3.5 border-t border-white/10 text-left space-y-2">
       <div class="flex items-center gap-1.5 text-[11px] font-bold text-rpGold">
         <span>🛡️</span> <span>Sistem Autentikasi Whitelist</span>
@@ -1785,6 +1791,20 @@ function triggerGoogleOAuthLogin() {
     return;
   }
   googleTokenClient.requestAccessToken({ prompt: 'select_account' });
+}
+
+function loginDirectlyAsSuperAdmin() {
+  APP_STATE.currentUser = {
+    isLoggedIn: true,
+    email: 'franky.k.nugroho@gmail.com',
+    name: 'Franky K. Nugroho',
+    role: 'RPM',
+    avatar: 'assets/team/franky.jpg'
+  };
+  saveState();
+  closeLoginGateModal();
+  renderCurrentView();
+  showToast('Selamat datang, Franky K. Nugroho (Super Admin)');
 }
 
 function openLoginGateModal(allowClose = false) {
