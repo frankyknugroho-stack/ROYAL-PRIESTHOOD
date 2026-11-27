@@ -7195,7 +7195,10 @@ function renderTeamListHtml() {
         <div class="flex flex-wrap items-center gap-1.5">
           ${branchBadges}
           ${posBadges}
-          ${canEdit ? `<button onclick="event.stopPropagation(); openEditMemberModal('${m.id}')" class="ml-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-[11px] font-bold">Edit</button>` : ''}
+          ${canEdit ? `
+            <button onclick="event.stopPropagation(); openEditMemberModal('${m.id}')" class="ml-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-[11px] font-bold">Edit</button>
+            ${isRPM() ? `<button onclick="event.stopPropagation(); confirmDeleteMember('${m.id}')" class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 text-[11px] font-bold">Hapus</button>` : ''}
+          ` : ''}
         </div>
       </div>`;
   }).join('');
@@ -7314,6 +7317,9 @@ function openMemberDetailModal(memberId) {
         </button>
         ${canEdit ? `
           <button onclick="closeModal(); openEditMemberModal('${m.id}')" class="gold-pill-btn px-4 py-1.5 rounded-full text-xs font-bold">Edit Profil</button>
+        ` : ''}
+        ${isRPM() ? `
+          <button onclick="confirmDeleteMember('${m.id}')" class="px-3 py-1.5 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 text-xs font-bold">Hapus</button>
         ` : ''}
       </div>
     </div>
@@ -7496,9 +7502,12 @@ function openEditMemberModal(memberId) {
   if (!m) return;
   openModal(`Edit Profil — ${m.nickname}`, `
     ${buildMemberFormHtml(m)}
-    <div class="flex justify-end gap-2 pt-4">
-      <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-white/10 text-xs font-semibold">Batal</button>
-      <button onclick="saveEditedMember('${m.id}')" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold">Simpan Perubahan</button>
+    <div class="flex items-center justify-between gap-2 pt-4 border-t border-white/10">
+      ${isRPM() ? `<button onclick="confirmDeleteMember('${m.id}')" class="px-4 py-2 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 text-xs font-bold">🗑️ Hapus Member</button>` : '<div></div>'}
+      <div class="flex items-center gap-2">
+        <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-white/10 text-xs font-semibold">Batal</button>
+        <button onclick="saveEditedMember('${m.id}')" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold">Simpan Perubahan</button>
+      </div>
     </div>
   `);
 }
@@ -8366,6 +8375,98 @@ document.addEventListener('DOMContentLoaded', () => {
   checkLoginGateOnLoad();
   loadStateFromCloud();
 });
+
+
+// ==========================================
+// CONFIRMATION & MEMBER DELETION FEATURE
+// ==========================================
+function confirmDeleteMember(memberId) {
+  const m = (APP_STATE.teamMembers || []).find(x => x.id === memberId);
+  if (!m) return showToast('Data anggota tidak ditemukan.');
+
+  const isMaster = (m.email || '').toLowerCase() === MASTER_SUPER_ADMIN.toLowerCase();
+  if (isMaster) {
+    return showToast('Super Admin utama (' + MASTER_SUPER_ADMIN + ') tidak dapat dihapus.');
+  }
+
+  const name = m.nickname || m.fullName || 'Anggota';
+  const posStr = (m.positions && m.positions.length) ? m.positions.join(', ') : '-';
+  const branchStr = (m.branches && m.branches.length) 
+    ? m.branches.map(b => (APP_STATE.branches.find(x => x.id === b)?.shortName || b)).join(', ') 
+    : '-';
+
+  openModal('⚠️ Konfirmasi Hapus Anggota Tim', `
+    <div class="space-y-4 text-xs sm:text-sm">
+      <div class="p-4 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-start gap-3.5 text-rose-200">
+        <span class="text-3xl shrink-0 mt-0.5">🗑️</span>
+        <div class="space-y-1.5">
+          <h4 class="font-bold text-rose-300 text-sm sm:text-base">Apakah Anda yakin ingin menghapus anggota ini?</h4>
+          <p class="text-xs leading-relaxed text-white/90">
+            Data anggota <strong>"${name}"</strong> (${m.fullName || m.nickname}) akan dihapus secara permanen dari <strong>Team Database</strong> dan <strong>Cloud Whitelist</strong>.
+          </p>
+          <div class="p-2.5 rounded-xl bg-black/40 border border-white/10 text-[11px] space-y-1 text-gray-200 mt-2">
+            <div>• Email: <strong class="text-white">${m.email || '-'}</strong></div>
+            <div>• Posisi Pelayanan: <strong class="text-rpGold">${posStr}</strong></div>
+            <div>• Cabang Pelayanan: <strong class="text-amber-300">${branchStr}</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200/90 leading-relaxed">
+        ⚠️ <strong>Perhatian:</strong> Setelah dihapus, akun Google ini tidak akan dapat login atau membuka modul pelayanan kecuali didaftarkan kembali oleh RPM.
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
+        <button onclick="closeModal()" class="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-semibold transition">
+          Batal
+        </button>
+        <button onclick="executeDeleteMember('${m.id}')" class="px-6 py-2 rounded-full bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-lg transition hover:scale-105">
+          Ya, Yakin Hapus
+        </button>
+      </div>
+    </div>
+  `);
+}
+
+async function executeDeleteMember(memberId) {
+  const m = (APP_STATE.teamMembers || []).find(x => x.id === memberId);
+  if (!m) return;
+  const email = (m.email || '').toLowerCase();
+  const name = m.nickname || m.fullName || 'Anggota';
+
+  // 1. Remove from local APP_STATE.teamMembers
+  APP_STATE.teamMembers = APP_STATE.teamMembers.filter(x => x.id !== memberId);
+
+  // 2. Remove from local rpmEmails if present
+  if (email) {
+    APP_STATE.rpmEmails = (APP_STATE.rpmEmails || []).filter(x => x.toLowerCase() !== email);
+  }
+
+  saveState();
+
+  // 3. Remove from Cloud Whitelist via API
+  if (email && email !== MASTER_SUPER_ADMIN.toLowerCase()) {
+    try {
+      await fetch(WHITELIST_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'remove',
+          email: email,
+          requesterEmail: MASTER_SUPER_ADMIN
+        })
+      });
+    } catch (err) {
+      console.warn('Error removing from cloud whitelist:', err.message);
+    }
+  }
+
+  syncStateToCloud();
+  closeModal();
+  renderCurrentView();
+  showToast(`Anggota "${name}" berhasil dihapus dari Team Database.`);
+}
+
 </script>
 
 <!-- FLOATING WHATSAPP CS PELAYANAN -->
