@@ -283,6 +283,10 @@
       background-color: rgba(255, 255, 255, 0.95);
       border-bottom: 1px solid rgba(17, 19, 24, 0.10);
     }
+    html.light #appMainNavBar {
+      background-color: rgba(248, 250, 252, 0.95) !important;
+      border-top: 1px solid rgba(15, 23, 42, 0.09) !important;
+    }
     .nav-pill-group {
       background-color: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255, 255, 255, 0.10);
@@ -370,24 +374,17 @@ const APP_ASSETS = {
   </div>
 </div>
 
-<!-- TOP NAVIGATION BAR -->
+<!-- TOP NAVIGATION BAR (TWO-TIER: TOP LOGO & USER CONTROLS, BOTTOM DEDICATED MENU BAR) -->
 <header class="no-print top-header-bar">
-  <div class="max-w-7xl mx-auto px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between gap-3 sm:gap-6">
-    <div class="flex items-center min-w-0 shrink mr-3 sm:mr-8">
-      <button onclick="navigateTo('weekly'); handleTripleTapAdmin();" class="flex items-center text-left group focus:outline-none p-1.5 sm:p-2 rounded-2xl hover:bg-white/[0.05] transition" title="Royal Priesthood (Triple Tap: Whitelist)">
-        <img id="navRpLogo" alt="Royal Priesthood" class="h-8 sm:h-11 max-w-[165px] sm:max-w-[270px] w-auto object-contain adapt-logo-png" />
+  <!-- TIER 1: BRAND LOGO (LEFT) & USER / SETTINGS CONTROLS (RIGHT) -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-8 h-14 sm:h-16 flex items-center justify-between gap-3 sm:gap-6">
+    <div class="flex items-center min-w-0 shrink">
+      <button onclick="navigateTo('weekly'); handleTripleTapAdmin();" class="flex items-center text-left group focus:outline-none p-1 sm:p-1.5 rounded-2xl hover:bg-white/[0.05] transition" title="Royal Priesthood (Triple Tap: Whitelist)">
+        <img id="navRpLogo" alt="Royal Priesthood" class="h-8 sm:h-10 max-w-[170px] sm:max-w-[280px] w-auto object-contain adapt-logo-png" />
       </button>
     </div>
 
-    <nav id="desktopNavBar" class="hidden lg:flex items-center gap-1 nav-pill-group p-1 rounded-full">
-      <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SCHEDULE</button>
-      <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SETLIST</button>
-      <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SERVICE RUNDOWN</button>
-      <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">PRAYER WALL</button>
-      <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SONG BANK</button>
-      <button data-nav="team" onclick="navigateTo('team')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">TEAM DATABASE</button>
-    </nav>
-
+    <!-- Right Controls: Cloud Status, Font Size, Whitelist, Theme, User Profile, Mobile Drawer -->
     <div class="flex items-center gap-1 sm:gap-2 shrink-0">
       <div id="cloudSyncIndicator" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/[0.1] text-xs cursor-pointer hover:bg-white/[0.1] transition" onclick="syncStateToCloud()" title="Status Sinkronisasi Cloud (Klik untuk Sync manual)">
         <span class="w-2 h-2 rounded-full bg-blue-400"></span>
@@ -415,18 +412,21 @@ const APP_ASSETS = {
     </div>
   </div>
 
-  <div id="mobileNavBar" class="lg:hidden flex items-center gap-1 px-2.5 py-1.5 overflow-x-auto no-scrollbar border-t border-current/10">
-    <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SCHEDULE</button>
-    <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SETLIST</button>
-    <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">RUNDOWN</button>
-    <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">PRAYER</button>
-    <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SONG BANK</button>
-    <button data-nav="team" onclick="navigateTo('team')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">TEAM</button>
-  </div>
+  <!-- TIER 2: DEDICATED FULL-WIDTH MENU BAR (ALWAYS UNDER LOGO) -->
+  <nav id="appMainNavBar" class="w-full border-t border-white/[0.08] bg-black/35 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 py-1.5 flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar">
+      <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">SCHEDULE</button>
+      <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">SETLIST</button>
+      <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">SERVICE RUNDOWN</button>
+      <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">PRAYER WALL</button>
+      <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">SONG BANK</button>
+      <button data-nav="team" onclick="navigateTo('team')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">TEAM DATABASE</button>
+    </div>
+  </nav>
 </header>
 
 <!-- FIXED HEADER SPACER -->
-<div class="header-spacer h-[96px] lg:h-[64px] shrink-0 no-print" aria-hidden="true"></div>
+<div class="header-spacer h-[104px] sm:h-[114px] shrink-0 no-print" aria-hidden="true"></div>
 
 <!-- MOBILE DRAWER -->
 <div id="mobileDrawer" class="no-print fixed inset-0 z-50 hidden">
@@ -1907,7 +1907,7 @@ function navigateTo(tabName) {
   renderCurrentView();
   const targetEl = document.getElementById('appViewContainer');
   if (targetEl) {
-    const headerOffset = window.innerWidth >= 1024 ? 80 : 115;
+    const headerOffset = 125;
     const elementPosition = targetEl.getBoundingClientRect().top;
     const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
     window.scrollTo({
@@ -1920,10 +1920,10 @@ function navigateTo(tabName) {
 function highlightNav() {
   document.querySelectorAll('.nav-pill').forEach(btn => {
     const active = btn.dataset.nav === APP_STATE.activeTab;
-    const sizeCls = btn.className.includes('shrink-0') ? 'shrink-0 px-3 py-1' : 'px-3.5 py-1.5';
-    btn.className = `nav-pill ${sizeCls} rounded-full text-xs font-semibold transition ` +
+    const sizeCls = 'shrink-0 px-3.5 sm:px-4 py-1.5';
+    btn.className = `nav-pill ${sizeCls} rounded-full text-xs font-bold transition ` +
       (active ? 'nav-pill-active' : 'nav-pill-inactive');
-    if (active && btn.parentElement && btn.parentElement.classList.contains('lg:hidden')) {
+    if (active) {
       try {
         btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       } catch (e) {}
