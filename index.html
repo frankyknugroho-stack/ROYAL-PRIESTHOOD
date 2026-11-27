@@ -453,8 +453,35 @@ const APP_ASSETS = {
     <img id="heroBannerImg" alt="Royal Priesthood Worship Collective" class="absolute inset-0 w-full h-full object-cover object-center opacity-40" />
     <div class="absolute inset-0 bg-gradient-to-b from-[#070A0F]/85 via-[#070A0F]/75 to-[#070A0F]/95"></div>
 
+    <!-- 0. DEDICATED WIDESCREEN IMAGE SLIDESHOW BANNER (1920 × 600 PX) -->
+    <div class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-5 pb-2">
+      <div id="widescreenBannerWrapper" class="relative rounded-3xl overflow-hidden border border-rpGold/40 shadow-2xl bg-black/70 aspect-[1920/600] min-h-[190px] sm:min-h-[260px] md:min-h-[340px] lg:min-h-[400px] flex items-center justify-center group">
+        <img id="widescreenBannerImg" src="" alt="Royal Priesthood Banner" class="w-full h-full object-cover object-center transition-opacity duration-700 select-none" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 pointer-events-none"></div>
+        
+        <div id="widescreenBannerCaption" class="absolute bottom-3 left-4 right-4 sm:bottom-6 sm:left-8 sm:right-8 text-white z-10 pointer-events-none space-y-0.5">
+          <div id="wsBannerTitle" class="text-base sm:text-2xl md:text-3xl font-extrabold tracking-tight drop-shadow-lg text-rpGold"></div>
+          <div id="wsBannerSubtitle" class="text-xs sm:text-sm md:text-base opacity-90 drop-shadow font-medium text-gray-200"></div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <button onclick="prevBannerSlide()" class="absolute left-2.5 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/25 text-white flex items-center justify-center text-sm sm:text-lg font-bold transition opacity-80 hover:opacity-100 shadow-xl z-20 cursor-pointer" title="Slide Sebelumnya">‹</button>
+        <button onclick="nextBannerSlide()" class="absolute right-2.5 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/25 text-white flex items-center justify-center text-sm sm:text-lg font-bold transition opacity-80 hover:opacity-100 shadow-xl z-20 cursor-pointer" title="Slide Berikutnya">›</button>
+
+        <!-- Dot Indicators -->
+        <div id="widescreenBannerDots" class="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20"></div>
+
+        <!-- RPM Upload Button -->
+        <div class="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 z-20">
+          <button onclick="openManageBannersModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/75 hover:bg-black/95 backdrop-blur-md border border-rpGold/40 text-rpGold text-[10px] sm:text-xs font-bold flex items-center gap-1.5 shadow-2xl transition hover:scale-105">
+            <span>📷</span> <span>Kelola / Upload Slide (1920×600)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- 1. DEDICATED PROMINENT VISUAL SLIDESHOW / EVENT CAROUSEL STAGE -->
-    <div class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-5 pb-3">
+    <div class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-2 pb-3">
       <div id="heroVisualStage" class="relative rounded-3xl overflow-hidden border border-rpGold/30 shadow-2xl bg-gradient-to-r from-rpGold/15 via-black/40 to-black/60 p-4 sm:p-7 min-h-[200px] sm:min-h-[250px] flex flex-col justify-between">
         <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
           <div class="flex items-center gap-2">
@@ -475,7 +502,7 @@ const APP_ASSETS = {
 
         <div class="flex items-center justify-between gap-3 pt-2 border-t border-white/10 text-xs">
           <div id="heroDots" class="flex items-center gap-1.5"></div>
-          <div id="heroSlideTimerText" class="text-[11px] opacity-75">Slide Otomatis • Tema & Event</div>
+          <div id="heroSlideTimerText" class="hidden"></div>
         </div>
       </div>
     </div>
@@ -1757,6 +1784,8 @@ function toggleTheme() {
   APP_STATE.theme = APP_STATE.theme === 'dark' ? 'light' : 'dark';
   saveState();
   applyAssetsAndTheme();
+  renderWidescreenBanner();
+  resetBannerTimer();
 }
 
 function adjustFontSize(delta) {
@@ -1764,6 +1793,8 @@ function adjustFontSize(delta) {
   APP_STATE.fontScale = next;
   saveState();
   applyAssetsAndTheme();
+  renderWidescreenBanner();
+  resetBannerTimer();
 }
 
 function toggleMobileDrawer() {
@@ -2092,6 +2123,8 @@ function initGoogleOAuth() {
           saveState();
           syncStateToCloud();
           applyAssetsAndTheme();
+  renderWidescreenBanner();
+  resetBannerTimer();
           renderNavigationMenu();
           renderCurrentView();
           closeLoginGateModal();
@@ -2213,6 +2246,8 @@ function confirmLoginGateSignIn() {
   saveState();
   syncStateToCloud();
   applyAssetsAndTheme();
+  renderWidescreenBanner();
+  resetBannerTimer();
   renderNavigationMenu();
   renderCurrentView();
   closeLoginGateModal();
@@ -2239,6 +2274,8 @@ function continueAsGuest() {
   };
   saveState();
   applyAssetsAndTheme();
+  renderWidescreenBanner();
+  resetBannerTimer();
   renderCurrentView();
   closeLoginGateModal();
   showToast('Masuk dalam Mode Tamu (Akses lihat jadwal).');
@@ -2818,6 +2855,8 @@ function signOutGoogle() {
   };
   saveState();
   applyAssetsAndTheme();
+  renderWidescreenBanner();
+  resetBannerTimer();
   renderCurrentView();
   if (typeof closeModal === 'function') closeModal();
   showToast('Sesi akun keluar.');
@@ -7613,40 +7652,7 @@ function openModal(title, bodyHtml) {
   m.classList.add('flex');
 }
 
-function closeModal() {
-  const m = document.getElementById('appModal');
-  m.classList.add('hidden');
-  m.classList.remove('flex');
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  applyAssetsAndTheme();
-  renderCurrentView();
-  initGoogleOAuth();
-  checkLoginGateOnLoad();
-  loadStateFromCloud();
-});
-</script>
-
-<!-- FLOATING WHATSAPP CS PELAYANAN -->
-<div id="rpFloatingWa" class="no-print fixed bottom-5 right-5 z-40 flex items-center gap-2 group">
-  <span class="hidden sm:inline-block px-3 py-1.5 rounded-full bg-black/80 backdrop-blur-md text-white text-xs font-semibold shadow-lg border border-white/15 opacity-0 group-hover:opacity-100 transition duration-200 pointer-events-none">
-    Tanya CS Pelayanan
-  </span>
-  <a href="https://wa.me/6281340538536?text=Halo%20RP%20CS%2C%20saya%20ingin%20bertanya%20mengenai%20pelayanan%20dan%20kebutuhan%20service%20di%20Royal%20Priesthood%20MDC"
-     target="_blank" rel="noopener noreferrer"
-     class="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-2xl hover:scale-105 transition-all duration-200 border-2 border-white/30"
-     title="Tanya CS Pelayanan" aria-label="Tanya CS Pelayanan">
-    <svg class="w-7 h-7 sm:w-8 sm:h-8 fill-current" viewBox="0 0 24 24">
-      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.043.073.043.42-.101.825zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.66 1.434 5.176L2 22l4.957-1.399C8.423 21.493 10.153 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
-    </svg>
-  </a>
-</div>
-
-</body>
-</html>
-
-
+function clo
 // ==========================================
 // SMART CALENDAR GENERATOR & CHRISTIAN FEASTS
 // ==========================================
@@ -8090,3 +8096,254 @@ function copyInviteWhatsAppText() {
     showToast('Gagal menyalin teks secara otomatis. Silakan pilih dan salin manual.');
   });
 }
+
+// ==========================================
+// WIDESCREEN BANNER CAROUSEL (1920 x 600 PX)
+// ==========================================
+function getWidescreenBanners() {
+  if (!APP_STATE.widescreenBanners || !Array.isArray(APP_STATE.widescreenBanners) || !APP_STATE.widescreenBanners.length) {
+    APP_STATE.widescreenBanners = [
+      {
+        id: 'ws-banner-1',
+        title: 'ROYAL PRIESTHOOD MDC',
+        subtitle: 'Church Service Management System • GKPB Masa Depan Cerah',
+        imageUrl: APP_ASSETS.HERO_BANNER
+      }
+    ];
+  }
+  return APP_STATE.widescreenBanners;
+}
+
+let __wsBannerIdx = 0;
+let __wsBannerTimer = null;
+
+function renderWidescreenBanner() {
+  const banners = getWidescreenBanners();
+  if (!banners.length) return;
+  __wsBannerIdx = (__wsBannerIdx + banners.length) % banners.length;
+  const cur = banners[__wsBannerIdx];
+
+  const imgEl = document.getElementById('widescreenBannerImg');
+  const titleEl = document.getElementById('wsBannerTitle');
+  const subEl = document.getElementById('wsBannerSubtitle');
+  const dotsEl = document.getElementById('widescreenBannerDots');
+
+  if (imgEl && cur.imageUrl) {
+    imgEl.style.opacity = '0.4';
+    setTimeout(() => {
+      imgEl.src = cur.imageUrl;
+      imgEl.style.opacity = '1';
+    }, 150);
+  }
+
+  if (titleEl) titleEl.textContent = cur.title || '';
+  if (subEl) subEl.textContent = cur.subtitle || '';
+
+  if (dotsEl) {
+    dotsEl.innerHTML = banners.map((b, i) => `
+      <button onclick="setBannerSlide(${i})" class="h-2 rounded-full transition-all cursor-pointer ${i === __wsBannerIdx ? 'w-6 bg-rpGold' : 'w-2 bg-white/40 hover:bg-white/70'}" aria-label="Slide ${i + 1}"></button>
+    `).join('');
+  }
+}
+
+function nextBannerSlide() {
+  const banners = getWidescreenBanners();
+  __wsBannerIdx = (__wsBannerIdx + 1) % banners.length;
+  renderWidescreenBanner();
+  resetBannerTimer();
+}
+
+function prevBannerSlide() {
+  const banners = getWidescreenBanners();
+  __wsBannerIdx = (__wsBannerIdx - 1 + banners.length) % banners.length;
+  renderWidescreenBanner();
+  resetBannerTimer();
+}
+
+function setBannerSlide(i) {
+  __wsBannerIdx = i;
+  renderWidescreenBanner();
+  resetBannerTimer();
+}
+
+function resetBannerTimer() {
+  if (__wsBannerTimer) clearInterval(__wsBannerTimer);
+  __wsBannerTimer = setInterval(() => {
+    nextBannerSlide();
+  }, 6000);
+}
+
+function openManageBannersModal() {
+  const banners = getWidescreenBanners();
+  const listRows = banners.map((b, idx) => `
+    <div class="flex items-center justify-between gap-3 p-3 rounded-2xl bg-white/[0.05] border border-white/10 text-xs">
+      <div class="flex items-center gap-3 min-w-0">
+        <img src="${b.imageUrl}" alt="${b.title || 'Slide'}" class="w-24 h-10 object-cover rounded-xl border border-white/15 shrink-0" />
+        <div class="min-w-0">
+          <div class="font-bold text-white truncate">${b.title || 'Slide Banner ' + (idx + 1)}</div>
+          <div class="text-[10px] opacity-60 truncate">${b.subtitle || '1920 × 600 px'}</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        ${banners.length > 1 ? `<button onclick="removeBannerSlide(${idx})" class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 font-bold text-[10px]">Hapus</button>` : '<span class="text-[10px] opacity-50">Utama</span>'}
+      </div>
+    </div>
+  `).join('');
+
+  openModal('📷 Kelola Slide Show Banner (1920 × 600 px)', `
+    <div class="space-y-4 text-xs sm:text-sm max-h-[82vh] overflow-y-auto pr-1">
+      <div class="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-start gap-3 text-amber-200">
+        <span class="text-2xl shrink-0 mt-0.5">🖼️</span>
+        <div class="text-xs leading-relaxed">
+          Upload slide gambar banner promosi event, pengumuman, atau tema ibadah. <strong>Rekomendasi ukuran gambar: 1920 × 600 piksel (Format JPG / PNG)</strong>. Slide akan otomatis berputar dan tampil di bawah header utama.
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-3">
+        <div class="text-xs font-bold text-rpGold">Tambah Slide Banner Baru</div>
+        
+        <div>
+          <label class="block text-[11px] font-bold text-white/80 mb-1">Upload File Gambar JPG (1920 × 600 px):</label>
+          <input type="file" id="newBannerFile" accept="image/jpeg,image/png,image/webp" onchange="previewNewBannerFile(this)" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-rpGold file:text-black hover:file:opacity-90 cursor-pointer" />
+        </div>
+
+        <div class="relative py-1">
+          <div class="text-[10px] opacity-60 uppercase font-bold text-center">Atau Masukkan URL Gambar:</div>
+          <input type="url" id="newBannerUrl" placeholder="https://contoh-domain.com/banner-1920x600.jpg" oninput="previewNewBannerUrl(this.value)" class="w-full px-3.5 py-2 rounded-xl bg-black/40 border border-white/15 text-xs focus:border-rpGold focus:outline-none mt-1" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <input type="text" id="newBannerTitle" placeholder="Judul Event / Slide (Opsional)" class="px-3.5 py-2 rounded-xl bg-black/40 border border-white/15 text-xs focus:border-rpGold focus:outline-none" />
+          <input type="text" id="newBannerSubtitle" placeholder="Keterangan / Tanggal (Opsional)" class="px-3.5 py-2 rounded-xl bg-black/40 border border-white/15 text-xs focus:border-rpGold focus:outline-none" />
+        </div>
+
+        <!-- Live Preview Box -->
+        <div id="newBannerPreviewBox" class="hidden rounded-2xl overflow-hidden border border-rpGold/30 aspect-[1920/600] max-h-36 bg-black/60 relative">
+          <img id="newBannerPreviewImg" src="" alt="Preview Banner" class="w-full h-full object-cover" />
+          <div class="absolute bottom-2 left-3 right-3 text-white text-xs font-bold drop-shadow">Pratinjau Banner 1920 × 600</div>
+        </div>
+
+        <div class="flex justify-end pt-1">
+          <button onclick="addNewBannerSlide()" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold shadow-md">+ Tambah ke Slide Show</button>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div class="font-bold text-xs opacity-75">Daftar Slide Aktif (${banners.length} Banner)</div>
+        <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
+          ${listRows}
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-white/10">
+        <button onclick="closeModal()" class="px-5 py-2 rounded-full bg-white/10 text-xs font-semibold">Tutup</button>
+      </div>
+    </div>
+  `);
+}
+
+let __pendingBannerDataUrl = '';
+
+function previewNewBannerFile(input) {
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      __pendingBannerDataUrl = e.target.result;
+      const previewBox = document.getElementById('newBannerPreviewBox');
+      const previewImg = document.getElementById('newBannerPreviewImg');
+      if (previewBox && previewImg) {
+        previewImg.src = e.target.result;
+        previewBox.classList.remove('hidden');
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function previewNewBannerUrl(url) {
+  if (url && url.startsWith('http')) {
+    __pendingBannerDataUrl = url;
+    const previewBox = document.getElementById('newBannerPreviewBox');
+    const previewImg = document.getElementById('newBannerPreviewImg');
+    if (previewBox && previewImg) {
+      previewImg.src = url;
+      previewBox.classList.remove('hidden');
+    }
+  }
+}
+
+function addNewBannerSlide() {
+  const urlInput = document.getElementById('newBannerUrl');
+  const titleInput = document.getElementById('newBannerTitle');
+  const subInput = document.getElementById('newBannerSubtitle');
+
+  const imageUrl = __pendingBannerDataUrl || (urlInput ? urlInput.value.trim() : '');
+  if (!imageUrl) return showToast('Pilih file gambar atau masukkan URL gambar.');
+
+  const title = titleInput ? titleInput.value.trim() : '';
+  const subtitle = subInput ? subInput.value.trim() : '';
+
+  const banners = getWidescreenBanners();
+  banners.push({
+    id: 'ws-banner-' + Date.now(),
+    title: title,
+    subtitle: subtitle,
+    imageUrl: imageUrl
+  });
+
+  saveState();
+  syncStateToCloud();
+  __pendingBannerDataUrl = '';
+  __wsBannerIdx = banners.length - 1;
+  renderWidescreenBanner();
+  openManageBannersModal();
+  showToast('Slide banner berhasil ditambahkan!');
+}
+
+function removeBannerSlide(idx) {
+  const banners = getWidescreenBanners();
+  if (banners.length <= 1) return showToast('Minimal harus ada satu banner.');
+  banners.splice(idx, 1);
+  __wsBannerIdx = 0;
+  saveState();
+  syncStateToCloud();
+  renderWidescreenBanner();
+  openManageBannersModal();
+  showToast('Slide banner dihapus.');
+}
+
+seModal() {
+  const m = document.getElementById('appModal');
+  m.classList.add('hidden');
+  m.classList.remove('flex');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  applyAssetsAndTheme();
+  renderWidescreenBanner();
+  resetBannerTimer();
+  renderCurrentView();
+  initGoogleOAuth();
+  checkLoginGateOnLoad();
+  loadStateFromCloud();
+});
+</script>
+
+<!-- FLOATING WHATSAPP CS PELAYANAN -->
+<div id="rpFloatingWa" class="no-print fixed bottom-5 right-5 z-40 flex items-center gap-2 group">
+  <span class="hidden sm:inline-block px-3 py-1.5 rounded-full bg-black/80 backdrop-blur-md text-white text-xs font-semibold shadow-lg border border-white/15 opacity-0 group-hover:opacity-100 transition duration-200 pointer-events-none">
+    Tanya CS Pelayanan
+  </span>
+  <a href="https://wa.me/6281340538536?text=Halo%20RP%20CS%2C%20saya%20ingin%20bertanya%20mengenai%20pelayanan%20dan%20kebutuhan%20service%20di%20Royal%20Priesthood%20MDC"
+     target="_blank" rel="noopener noreferrer"
+     class="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-2xl hover:scale-105 transition-all duration-200 border-2 border-white/30"
+     title="Tanya CS Pelayanan" aria-label="Tanya CS Pelayanan">
+    <svg class="w-7 h-7 sm:w-8 sm:h-8 fill-current" viewBox="0 0 24 24">
+      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.043.073.043.42-.101.825zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.66 1.434 5.176L2 22l4.957-1.399C8.423 21.493 10.153 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+    </svg>
+  </a>
+</div>
+
+</body>
+</html>
