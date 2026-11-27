@@ -241,6 +241,11 @@ const APP_ASSETS = {
     </nav>
 
     <div class="flex items-center gap-1 sm:gap-2 shrink-0">
+      <div id="cloudSyncIndicator" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/[0.1] text-xs cursor-pointer hover:bg-white/[0.1] transition" onclick="syncStateToCloud()" title="Status Sinkronisasi Cloud (Klik untuk Sync manual)">
+        <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+        <span class="text-[10px] text-blue-300 font-bold hidden sm:inline">Local Active</span>
+      </div>
+
       <div class="hidden sm:flex items-center bg-white/[0.06] border border-white/[0.1] rounded-full p-0.5" title="Ukuran Font">
         <button onclick="adjustFontSize(-0.08)" class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hover:bg-white/10 transition" aria-label="Perkecil Font">A-</button>
         <span id="fontScaleLabel" class="px-1.5 text-[11px] font-semibold opacity-75">100%</span>
@@ -438,18 +443,18 @@ const APP_ASSETS = {
   <div class="relative z-10 w-full max-w-[360px] sm:max-w-md max-h-[92vh] overflow-y-auto apple-card p-4 sm:p-7 shadow-2xl border border-rpGold/30 text-center animate-in fade-in zoom-in-95 duration-200">
     <button id="loginGateCloseBtn" onclick="closeLoginGateModal()" class="absolute top-3 right-3 sm:top-4 sm:right-4 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-xs sm:text-sm font-semibold transition" title="Tutup">✕</button>
 
-    <div class="mx-auto w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-rpGold/40 flex items-center justify-center mb-2.5 sm:mb-3 shadow-lg">
-      <img id="loginModalLogo" alt="Royal Priesthood" class="w-8 h-8 sm:w-9 sm:h-9 object-contain" />
+    <div class="mx-auto w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#090C11] border border-rpGold/40 flex items-center justify-center mb-3 shadow-lg p-2">
+      <img id="loginModalLogo" alt="Royal Priesthood" class="w-full h-full object-contain" />
     </div>
 
     <h3 class="text-base sm:text-xl font-extrabold tracking-tight mb-0.5">Royal Priesthood MDC</h3>
     <p class="text-[11px] sm:text-xs text-rpGold font-semibold mb-1.5 sm:mb-2">Church Service Management System</p>
     <p class="text-[11px] sm:text-xs opacity-75 leading-relaxed mb-4 sm:mb-5">
-      Silakan masuk menggunakan akun Google Anda untuk mengakses fitur pelayanan dan jadwal ibadah.
+      Sistem ini diproteksi oleh <strong>Cloud Whitelist Gatekeeper</strong>. Silakan masuk menggunakan akun Google resmi Anda yang telah terdaftar.
     </p>
 
     <!-- Google OAuth Button -->
-    <button type="button" onclick="triggerGoogleOAuthLogin()" class="w-full flex items-center justify-center gap-2.5 sm:gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-white text-gray-900 hover:bg-gray-100 font-bold text-xs sm:text-sm shadow-xl hover:shadow-2xl hover:scale-[1.01] active:scale-[0.99] transition duration-150">
+    <button type="button" onclick="triggerGoogleOAuthLogin()" class="w-full flex items-center justify-center gap-2.5 sm:gap-3 px-3 py-3 sm:px-4 sm:py-3.5 rounded-2xl bg-white text-gray-900 hover:bg-gray-100 font-bold text-xs sm:text-sm shadow-xl hover:shadow-2xl hover:scale-[1.01] active:scale-[0.99] transition duration-150">
       <svg class="w-4 h-4 sm:w-5 sm:h-5 shrink-0" viewBox="0 0 24 24">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -459,39 +464,18 @@ const APP_ASSETS = {
       <span>Sign in with Google</span>
     </button>
 
-    <div class="relative my-3.5 sm:my-4">
-      <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
-      <div class="relative flex justify-center text-[10px] uppercase tracking-wider font-semibold">
-        <span class="bg-[var(--bg-card)] px-2.5 opacity-60">atau masuk via akun tim</span>
+    <div class="mt-4 pt-3.5 border-t border-white/10 text-left space-y-2">
+      <div class="flex items-center gap-1.5 text-[11px] font-bold text-rpGold">
+        <span>🛡️</span> <span>Sistem Autentikasi Whitelist</span>
       </div>
-    </div>
-
-    <!-- Quick Team Member Select -->
-    <div class="space-y-2 text-left mb-3.5 sm:mb-4">
-      <label class="block text-[10px] sm:text-[11px] font-semibold opacity-75">Pilih Akun Terdaftar di Database Tim</label>
-      <select id="loginGateSelect" onchange="syncRoleFromLoginGateSelect()" class="w-full max-w-full px-3 py-2 rounded-xl bg-black/25 border border-white/15 text-xs text-white overflow-hidden text-ellipsis">
-        <!-- populated dynamically -->
-      </select>
-      <div class="flex items-center justify-between text-[10px] sm:text-[11px] px-1 text-rpGold font-medium">
-        <span id="loginGateRolePreview" class="truncate">Peran: General Member</span>
-        <label class="flex items-center gap-1.5 cursor-pointer opacity-80 hover:opacity-100 shrink-0">
-          <input id="loginGateGcal" type="checkbox" checked class="w-3.5 h-3.5 accent-amber-400" />
-          <span>GCal Sync</span>
-        </label>
-      </div>
-      <button type="button" onclick="confirmLoginGateSignIn()" class="w-full py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 font-semibold text-xs text-white transition">
-        Masuk dengan Akun Tim
-      </button>
-    </div>
-
-    <div class="pt-2.5 sm:pt-3 border-t border-white/10 flex flex-col gap-1.5 sm:gap-2">
-      <button type="button" onclick="continueAsGuest()" class="w-full py-2 sm:py-2.5 rounded-xl text-xs font-semibold text-rpGold hover:text-rpGoldSoft hover:bg-white/5 border border-rpGold/25 hover:border-rpGold/50 transition flex items-center justify-center gap-1.5">
-        <span>👀</span>
-        <span>Lanjut sebagai Tamu (Mode Lihat Jadwal)</span>
-      </button>
-      <div class="text-[10px] opacity-50">
-        Mode Tamu hanya memiliki akses lihat tanpa izin edit.
-      </div>
+      <p class="text-[11px] opacity-70 leading-relaxed">
+        Hanya email yang telah didaftarkan oleh Super Admin (Franky) yang dapat membuka modul pelayanan. Butuh akses atau bantuan?
+      </p>
+      <a href="https://wa.me/6281340538536?text=Halo%20RP%20CS%2C%20saya%20ingin%20mendaftarkan%20email%20saya%20ke%20Whitelist%20Royal%20Priesthood"
+         target="_blank" rel="noopener noreferrer"
+         class="inline-flex items-center gap-1.5 text-[11px] text-[#25D366] hover:underline font-semibold">
+        <span>💬</span> <span>Hubungi CS Pelayanan / Request Whitelist</span>
+      </a>
     </div>
   </div>
 </div>
@@ -1425,11 +1409,113 @@ function loadState() {
   }
 }
 
-function saveState() {
+let __cloudSyncTimer = null;
+let __isCloudSyncing = false;
+
+function saveState(skipCloudSync = false) {
   try {
     localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(APP_STATE));
   } catch (e) {
     console.warn('Storage save warning:', e);
+  }
+  if (!skipCloudSync) {
+    triggerDebouncedCloudSync();
+  }
+}
+
+function triggerDebouncedCloudSync() {
+  clearTimeout(__cloudSyncTimer);
+  updateCloudSyncBadge('syncing');
+  __cloudSyncTimer = setTimeout(() => {
+    syncStateToCloud();
+  }, 1200);
+}
+
+async function syncStateToCloud() {
+  if (__isCloudSyncing) return;
+  __isCloudSyncing = true;
+  updateCloudSyncBadge('syncing');
+  try {
+    const payload = {
+      monthlyTheme: APP_STATE.monthlyTheme,
+      schedules: APP_STATE.schedules,
+      setlists: APP_STATE.setlists,
+      rundowns: APP_STATE.rundowns,
+      songBank: APP_STATE.songBank,
+      teamMembers: APP_STATE.teamMembers,
+      prayerRequests: APP_STATE.prayerRequests,
+      branches: APP_STATE.branches,
+      rpmEmails: APP_STATE.rpmEmails,
+      lastUpdated: new Date().toISOString(),
+      updatedBy: APP_STATE.currentUser?.email || 'RPM'
+    };
+
+    const res = await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      const result = await res.json();
+      if (result.cloud) {
+        updateCloudSyncBadge('synced');
+      } else {
+        updateCloudSyncBadge('local');
+      }
+    } else {
+      updateCloudSyncBadge('local');
+    }
+  } catch (e) {
+    console.warn('Background cloud sync:', e.message);
+    updateCloudSyncBadge('local');
+  } finally {
+    __isCloudSyncing = false;
+  }
+}
+
+async function loadStateFromCloud() {
+  try {
+    const res = await fetch('/api/sync');
+    if (res.ok) {
+      const result = await res.json();
+      if (result.success && result.cloud && result.data) {
+        const d = result.data;
+        if (d.monthlyTheme) APP_STATE.monthlyTheme = d.monthlyTheme;
+        if (Array.isArray(d.schedules)) APP_STATE.schedules = d.schedules;
+        if (d.setlists) APP_STATE.setlists = Object.assign(APP_STATE.setlists || {}, d.setlists);
+        if (d.rundowns) APP_STATE.rundowns = Object.assign(APP_STATE.rundowns || {}, d.rundowns);
+        if (Array.isArray(d.songBank)) APP_STATE.songBank = d.songBank;
+        if (Array.isArray(d.teamMembers)) APP_STATE.teamMembers = d.teamMembers;
+        if (Array.isArray(d.prayerRequests)) APP_STATE.prayerRequests = d.prayerRequests;
+        if (Array.isArray(d.branches)) APP_STATE.branches = d.branches;
+        if (Array.isArray(d.rpmEmails)) APP_STATE.rpmEmails = d.rpmEmails;
+        saveState(true);
+        updateCloudSyncBadge('synced');
+        renderCurrentView();
+        console.log('Master data synced from Cloudflare R2 successfully.');
+      } else {
+        updateCloudSyncBadge('local');
+      }
+    }
+  } catch (e) {
+    console.warn('Could not load remote cloud state:', e.message);
+    updateCloudSyncBadge('local');
+  }
+}
+
+function updateCloudSyncBadge(status) {
+  const badge = document.getElementById('cloudSyncIndicator');
+  if (!badge) return;
+  if (status === 'syncing') {
+    badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span><span class="text-[10px] text-amber-300 font-bold hidden sm:inline">Syncing...</span>';
+    badge.title = 'Sedang menyinkronkan data ke Cloud...';
+  } else if (status === 'synced') {
+    badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span class="text-[10px] text-emerald-300 font-bold hidden sm:inline">Cloud Synced</span>';
+    badge.title = 'Tersinkronisasi ke Cloudflare R2 Global';
+  } else {
+    badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-blue-400"></span><span class="text-[10px] text-blue-300 font-bold hidden sm:inline">Local Active</span>';
+    badge.title = 'Tersimpan otomatis di browser lokal (R2 siap dihubungkan)';
   }
 }
 
@@ -1470,7 +1556,7 @@ function applyAssetsAndTheme() {
   document.getElementById('footerMdcLogo').src = APP_ASSETS.MDC_LOGO;
   document.getElementById('footerElevateLogo').src = APP_ASSETS.ELEVATE_LOGO;
   const loginModalLogo = document.getElementById('loginModalLogo');
-  if (loginModalLogo) loginModalLogo.src = APP_ASSETS.RP_CROWN_LOGO;
+  if (loginModalLogo) loginModalLogo.src = APP_ASSETS.FAVICON_LOGO;
 
   const htmlEl = document.documentElement;
   if (APP_STATE.theme === 'light') {
@@ -1709,17 +1795,8 @@ function openLoginGateModal(allowClose = false) {
   }
 
   const logo = document.getElementById('loginModalLogo');
-  if (logo && APP_ASSETS?.RP_CROWN_LOGO) {
-    logo.src = APP_ASSETS.RP_CROWN_LOGO;
-  }
-
-  const sel = document.getElementById('loginGateSelect');
-  if (sel && Array.isArray(APP_STATE.teamMembers)) {
-    const curEmail = (APP_STATE.currentUser?.email || '').toLowerCase();
-    sel.innerHTML = APP_STATE.teamMembers.map(m =>
-      `<option value="${m.email}" ${curEmail === (m.email || '').toLowerCase() ? 'selected' : ''}>${m.nickname} (${m.fullName}) — ${m.email}</option>`
-    ).join('');
-    syncRoleFromLoginGateSelect();
+  if (logo && APP_ASSETS?.FAVICON_LOGO) {
+    logo.src = APP_ASSETS.FAVICON_LOGO;
   }
 
   modal.classList.remove('hidden');
@@ -6077,6 +6154,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCurrentView();
   initGoogleOAuth();
   checkLoginGateOnLoad();
+  loadStateFromCloud();
 });
 </script>
 
