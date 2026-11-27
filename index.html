@@ -1479,23 +1479,27 @@ async function loadStateFromCloud() {
     const res = await fetch('/api/sync');
     if (res.ok) {
       const result = await res.json();
-      if (result.success && result.cloud && result.data) {
-        const d = result.data;
-        if (d.monthlyTheme) APP_STATE.monthlyTheme = d.monthlyTheme;
-        if (Array.isArray(d.schedules)) APP_STATE.schedules = d.schedules;
-        if (d.setlists) APP_STATE.setlists = Object.assign(APP_STATE.setlists || {}, d.setlists);
-        if (d.rundowns) APP_STATE.rundowns = Object.assign(APP_STATE.rundowns || {}, d.rundowns);
-        if (Array.isArray(d.songBank)) APP_STATE.songBank = d.songBank;
-        if (Array.isArray(d.teamMembers)) APP_STATE.teamMembers = d.teamMembers;
-        if (Array.isArray(d.prayerRequests)) APP_STATE.prayerRequests = d.prayerRequests;
-        if (Array.isArray(d.branches)) APP_STATE.branches = d.branches;
-        if (Array.isArray(d.rpmEmails)) APP_STATE.rpmEmails = d.rpmEmails;
-        saveState(true);
+      if (result.success && result.cloud) {
+        if (result.hasData && result.data) {
+          const d = result.data;
+          if (d.monthlyTheme) APP_STATE.monthlyTheme = d.monthlyTheme;
+          if (Array.isArray(d.schedules)) APP_STATE.schedules = d.schedules;
+          if (d.setlists) APP_STATE.setlists = Object.assign(APP_STATE.setlists || {}, d.setlists);
+          if (d.rundowns) APP_STATE.rundowns = Object.assign(APP_STATE.rundowns || {}, d.rundowns);
+          if (Array.isArray(d.songBank)) APP_STATE.songBank = d.songBank;
+          if (Array.isArray(d.teamMembers)) APP_STATE.teamMembers = d.teamMembers;
+          if (Array.isArray(d.prayerRequests)) APP_STATE.prayerRequests = d.prayerRequests;
+          if (Array.isArray(d.branches)) APP_STATE.branches = d.branches;
+          if (Array.isArray(d.rpmEmails)) APP_STATE.rpmEmails = d.rpmEmails;
+          saveState(true);
+          renderCurrentView();
+        } else if (!result.hasData) {
+          syncStateToCloud();
+        }
         updateCloudSyncBadge('synced');
-        renderCurrentView();
         console.log('Master data synced from Cloudflare R2 successfully.');
       } else {
-        updateCloudSyncBadge('local');
+        updateCloudSyncBadge('local', result.missingKeys);
       }
     }
   } catch (e) {
@@ -1504,7 +1508,7 @@ async function loadStateFromCloud() {
   }
 }
 
-function updateCloudSyncBadge(status) {
+function updateCloudSyncBadge(status, missingKeys = []) {
   const badge = document.getElementById('cloudSyncIndicator');
   if (!badge) return;
   if (status === 'syncing') {
@@ -1515,7 +1519,10 @@ function updateCloudSyncBadge(status) {
     badge.title = 'Tersinkronisasi ke Cloudflare R2 Global';
   } else {
     badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-blue-400"></span><span class="text-[10px] text-blue-300 font-bold hidden sm:inline">Local Active</span>';
-    badge.title = 'Tersimpan otomatis di browser lokal (R2 siap dihubungkan)';
+    const missingText = Array.isArray(missingKeys) && missingKeys.length > 0
+      ? ' (Belum redeploy / variabel belum diset: ' + missingKeys.join(', ') + ')'
+      : ' (Tersimpan aman di browser lokal)';
+    badge.title = 'Mode Lokal' + missingText;
   }
 }
 

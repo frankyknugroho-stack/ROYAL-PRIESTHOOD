@@ -14,10 +14,19 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const { R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME } = process.env;
+  const R2_ACCOUNT_ID = (process.env.R2_ACCOUNT_ID || '').trim();
+  const R2_ACCESS_KEY_ID = (process.env.R2_ACCESS_KEY_ID || '').trim();
+  const R2_SECRET_ACCESS_KEY = (process.env.R2_SECRET_ACCESS_KEY || '').trim();
+  const R2_BUCKET_NAME = (process.env.R2_BUCKET_NAME || 'rp-mdc-vault').trim();
+
+  const missingKeys = [];
+  if (!R2_ACCOUNT_ID) missingKeys.push('R2_ACCOUNT_ID');
+  if (!R2_ACCESS_KEY_ID) missingKeys.push('R2_ACCESS_KEY_ID');
+  if (!R2_SECRET_ACCESS_KEY) missingKeys.push('R2_SECRET_ACCESS_KEY');
 
   let s3 = null;
-  if (R2_ACCOUNT_ID && R2_ACCESS_KEY_ID && R2_SECRET_ACCESS_KEY) {
+  let initError = null;
+  if (missingKeys.length === 0) {
     try {
       const { S3Client } = await import('@aws-sdk/client-s3');
       s3 = new S3Client({
@@ -29,6 +38,7 @@ export default async function handler(req, res) {
         },
       });
     } catch (err) {
+      initError = err.message;
       console.warn('AWS SDK S3 Client not initialized:', err.message);
     }
   }
@@ -38,15 +48,23 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     if (!s3) {
-      return res.status(200).json({ success: true, cloud: false, message: 'Running in Local Storage / Offline mode (No R2 credentials set)' });
+      return res.status(200).json({
+        success: true,
+        cloud: false,
+        missingKeys,
+        initError,
+        message: missingKeys.length > 0
+          ? `Running in Local Storage / Offline mode. Missing: ${missingKeys.join(', ')}`
+          : `S3 init error: ${initError}`
+      });
     }
     try {
       const { GetObjectCommand } = await import('@aws-sdk/client-s3');
       const data = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: KEY }));
       const str = await data.Body.transformToString();
-      return res.status(200).json({ success: true, cloud: true, data: JSON.parse(str) });
+      return res.status(200).json({ success: true, cloud: true, hasData: true, data: JSON.parse(str) });
     } catch (err) {
-      return res.status(200).json({ success: true, cloud: false, message: 'No remote file yet, use local state' });
+      return res.status(200).json({ success: true, cloud: true, hasData: false, message: 'Bucket connected. Initial file pending.', error: err.message });
     }
   }
 
