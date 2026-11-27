@@ -2351,9 +2351,10 @@ async function openWhitelistManagerModal() {
 
   const listRows = cloudList.map(function(item) {
     const isMaster = item.email.toLowerCase() === MASTER_SUPER_ADMIN.toLowerCase();
+    const inviteBtn = `<button onclick="openInviteWhatsAppModal('${item.email}')" class="px-2.5 py-1 rounded-full wa-green-btn font-bold text-[10px] flex items-center gap-1 shadow-sm hover:scale-105 transition" title="Kirim Undangan WhatsApp"><span>📲</span> <span>Invite WA</span></button>`;
     const actionBtn = !isMaster 
-      ? `<button onclick="removeWhitelistEmail('${item.email}')" class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 font-bold text-[10px]">Hapus</button>`
-      : '<span class="text-[10px] text-rpGold font-bold px-2">Super Admin</span>';
+      ? `<div class="flex items-center gap-1.5">${inviteBtn}<button onclick="removeWhitelistEmail('${item.email}')" class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 font-bold text-[10px]">Hapus</button></div>`
+      : `<div class="flex items-center gap-1.5">${inviteBtn}<span class="text-[10px] text-rpGold font-bold px-2">Super Admin</span></div>`;
 
     const mem = (APP_STATE.teamMembers || []).find(m => (m.email || '').toLowerCase() === item.email.toLowerCase());
     const memPositions = (mem && mem.positions && mem.positions.length) ? mem.positions : (item.positions || []);
@@ -2506,8 +2507,8 @@ async function addWhitelistEmail() {
   }
 
   syncStateToCloud();
-  openWhitelistManagerModal();
   renderCurrentView();
+  openInviteWhatsAppModal(email);
 }
 
 async function removeWhitelistEmail(email) {
@@ -7230,10 +7231,14 @@ function openMemberDetailModal(memberId) {
         }).join(', ') || '-'}</strong></div>
         <div class="sm:col-span-2"><span class="opacity-60 block">Notes</span><strong>${m.notes || '-'}</strong></div>
       </div>
-      ${canEdit ? `
-        <div class="flex justify-end">
-          <button onclick="closeModal(); openEditMemberModal('${m.id}')" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold">Edit Profil</button>
-        </div>` : ''}
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
+        <button onclick="openInviteWhatsAppModal('${m.email}')" class="px-3.5 py-1.5 rounded-full wa-green-btn text-xs font-bold flex items-center gap-1.5 shadow transition hover:scale-105">
+          <span>📲</span> <span>Kirim Undangan WA</span>
+        </button>
+        ${canEdit ? `
+          <button onclick="closeModal(); openEditMemberModal('${m.id}')" class="gold-pill-btn px-4 py-1.5 rounded-full text-xs font-bold">Edit Profil</button>
+        ` : ''}
+      </div>
     </div>
   `);
 }
@@ -7988,4 +7993,100 @@ function commitSmartCalendarSchedules() {
   closeModal();
   renderCurrentView();
   showToast(`⚡ ${addedCount} sesi ibadah berhasil ditambahkan ke Jadwal!`);
+}
+
+
+// ==========================================
+// WHATSAPP INVITATION BUILDER & MODAL
+// ==========================================
+function buildInviteWhatsAppMessage(email) {
+  const m = (APP_STATE.teamMembers || []).find(x => (x.email || '').toLowerCase() === (email || '').toLowerCase()) || {};
+  const name = m.nickname || m.fullName || (email ? email.split('@')[0] : 'Pelayan Tuhan');
+  const role = m.role === 'RPM' ? 'RPM Admin' : (m.role === 'WL_MD' ? 'Worship Leader & Music Director' : (m.role === 'SERVICE_COORD' ? 'Service Coordinator' : 'General Member'));
+  const positions = (m.positions && m.positions.length) ? m.positions.join(', ') : 'Pelayan Jemaat';
+  const branches = (m.branches && m.branches.length) 
+    ? m.branches.map(b => {
+        const br = (APP_STATE.branches || []).find(x => x.id === b);
+        return br ? br.shortName : b;
+      }).join(', ')
+    : 'Graha Pemulihan (Putat)';
+
+  const appLink = 'https://spoo.me/rp-apps';
+
+  return `👑 *ROYAL PRIESTHOOD MDC*
+*Church Service Management System*
+
+Shalom *${name}*! 👋
+
+Email Google Anda telah resmi terdaftar dan diundang oleh Tim RPM ke dalam sistem pelayanan gereja *ROYAL PRIESTHOOD APPS*:
+
+📧 *Email Terdaftar:* ${email}
+🎖️ *Akses Pelayanan:* ${role}
+🎼 *Bidang Pelayanan:* ${positions}
+📍 *Cabang:* ${branches}
+
+Silakan buka aplikasi dan masuk (*Sign in with Google*) menggunakan email di atas melalui link resmi berikut:
+👉 ${appLink}
+
+Setelah berhasil masuk, mohon lengkapi data profil pelayanan Anda (nomor WhatsApp & tanggal lahir) agar koordinasi jadwal, dresscode, serta materi edifikasi & setlist lagu dapat tersampaikan dengan lancar.
+
+_“Tetapi kamulah bangsa yang terpilih, imamat yang rajani, bangsa yang kudus, umat kepunyaan Allah sendiri.” (1 Petrus 2:9)_
+
+Tuhan Yesus memberkati pelayanan kita bersama! 🙏✨`;
+}
+
+function openInviteWhatsAppModal(email) {
+  if (!email) return showToast('Email tidak valid.');
+  const m = (APP_STATE.teamMembers || []).find(x => (x.email || '').toLowerCase() === email.toLowerCase()) || {};
+  const txt = buildInviteWhatsAppMessage(email);
+  const targetPhone = (m.phone && m.phone !== '-' && m.phone.length > 5) ? m.phone.replace(/[^0-9]/g, '') : '';
+  const formattedPhone = targetPhone.startsWith('0') ? ('62' + targetPhone.slice(1)) : targetPhone;
+
+  const waUrl = formattedPhone 
+    ? `https://wa.me/${formattedPhone}?text=${encodeURIComponent(txt)}`
+    : `https://wa.me/?text=${encodeURIComponent(txt)}`;
+
+  openModal('📲 Format Undangan WhatsApp (Royal Priesthood)', `
+    <div class="space-y-4 text-xs sm:text-sm max-h-[82vh] overflow-y-auto pr-1">
+      <div class="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-start gap-3 text-emerald-200">
+        <span class="text-2xl shrink-0 mt-0.5">💬</span>
+        <div class="text-xs leading-relaxed">
+          Format pesan undangan resmi untuk <strong>${m.nickname || email}</strong> ke <strong>ROYAL PRIESTHOOD APPS</strong> (<a href="https://spoo.me/rp-apps" target="_blank" class="underline font-bold text-amber-300">https://spoo.me/rp-apps</a>). Anda dapat langsung membuka WhatsApp atau menyalin teks di bawah.
+        </div>
+      </div>
+
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold opacity-75">Pratinjau Pesan WhatsApp:</span>
+          <span class="text-[10px] text-rpGold font-semibold">Tujuan: ${email}</span>
+        </div>
+        <div class="relative">
+          <pre id="inviteWaTextContent" class="whitespace-pre-wrap font-sans text-xs leading-relaxed p-4 rounded-2xl bg-black/40 border border-white/10 text-white/90 max-h-72 overflow-y-auto">${txt}</pre>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/10">
+        <button onclick="copyInviteWhatsAppText()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold flex items-center gap-1.5 transition">
+          <span>📋</span> <span>Salin Teks Undangan</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="openWhitelistManagerModal()" class="px-3.5 py-2 rounded-full bg-white/10 text-xs font-semibold">Kembali ke Whitelist</button>
+          <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="px-5 py-2 rounded-full wa-green-btn text-xs font-bold flex items-center gap-1.5 shadow-lg transition hover:scale-105">
+            <span>📲</span> <span>Kirim via WhatsApp ↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  `);
+}
+
+function copyInviteWhatsAppText() {
+  const el = document.getElementById('inviteWaTextContent');
+  if (!el) return;
+  const text = el.innerText || el.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Teks undangan berhasil disalin ke clipboard!');
+  }).catch(() => {
+    showToast('Gagal menyalin teks secara otomatis. Silakan pilih dan salin manual.');
+  });
 }
