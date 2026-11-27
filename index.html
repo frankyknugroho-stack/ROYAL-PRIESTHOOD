@@ -2421,16 +2421,324 @@ async function fetchCloudWhitelist() {
   return list;
 }
 
-async function openWhitelistManagerModal() {
-  const curUser = (APP_STATE.currentUser?.email || "").toLowerCase();
-  const isSuperAdmin = curUser === MASTER_SUPER_ADMIN.toLowerCase() || isRPM();
-  
-  if (!isSuperAdmin && curUser !== "" && curUser !== "tamu") {
-    console.log("Super Admin whitelist manager opened");
+let __cloudWhitelistCache = [];
+let __wlActiveTab = 'list';
+let __wlSearchTerm = '';
+let __wlRoleFilter = 'ALL';
+let __wlBranchFilter = 'ALL';
+
+async function openWhitelistManagerModal(initialTab = 'list') {
+  if (initialTab) __wlActiveTab = initialTab;
+
+  const modalBox = document.getElementById('modalBox');
+  if (modalBox) {
+    modalBox.classList.remove('max-w-2xl');
+    modalBox.classList.add('max-w-3xl');
   }
 
-  const cloudList = await fetchCloudWhitelist();
+  __cloudWhitelistCache = await fetchCloudWhitelist();
+  
+  openModal('🛡️ Cloud Whitelist Gatekeeper Manager', renderWlModalContent());
 
+  // If on list tab, trigger initial rendering of cards
+  if (__wlActiveTab === 'list') {
+    renderWlFilteredCards();
+  }
+}
+
+function renderWlModalContent() {
+  const totalCount = (__cloudWhitelistCache || []).length;
+  const isList = __wlActiveTab === 'list';
+
+  return `
+    <div class="space-y-3.5 text-xs sm:text-sm">
+      <!-- Tabs Navigation Header -->
+      <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <button id="wlTabBtnList" onclick="switchWlTab('list')" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-1.5 cursor-pointer ${isList ? 'bg-rpGold text-black shadow-md' : 'bg-white/[0.06] text-white/80 hover:bg-white/10'}">
+            <span>📋</span> <span>Daftar Whitelist</span>
+            <span id="wlTotalBadge" class="ml-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold ${isList ? 'bg-black text-rpGold' : 'bg-rpGold text-black'}">${totalCount}</span>
+          </button>
+          <button id="wlTabBtnAdd" onclick="switchWlTab('add')" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-1.5 cursor-pointer ${!isList ? 'bg-rpGold text-black shadow-md' : 'bg-white/[0.06] text-white/80 hover:bg-white/10'}">
+            <span>➕</span> <span>Tambah Akun Baru</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Content Body Container -->
+      <div id="wlTabBodyContainer">
+        ${isList ? renderWlListView() : renderWlAddForm()}
+      </div>
+    </div>
+  `;
+}
+
+function switchWlTab(tab) {
+  __wlActiveTab = tab;
+  const btnList = document.getElementById('wlTabBtnList');
+  const btnAdd = document.getElementById('wlTabBtnAdd');
+  const badge = document.getElementById('wlTotalBadge');
+  const bodyEl = document.getElementById('wlTabBodyContainer');
+
+  if (btnList && btnAdd && bodyEl) {
+    if (tab === 'list') {
+      btnList.className = 'px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold bg-rpGold text-black shadow-md transition flex items-center gap-1.5 cursor-pointer';
+      btnAdd.className = 'px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/[0.06] text-white/80 hover:bg-white/10 transition flex items-center gap-1.5 cursor-pointer';
+      if (badge) badge.className = 'ml-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-black text-rpGold';
+      bodyEl.innerHTML = renderWlListView();
+      renderWlFilteredCards();
+    } else {
+      btnList.className = 'px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/[0.06] text-white/80 hover:bg-white/10 transition flex items-center gap-1.5 cursor-pointer';
+      btnAdd.className = 'px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold bg-rpGold text-black shadow-md transition flex items-center gap-1.5 cursor-pointer';
+      if (badge) badge.className = 'ml-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rpGold text-black';
+      bodyEl.innerHTML = renderWlAddForm();
+    }
+  }
+}
+
+function renderWlListView() {
+  const branches = [
+    { id: 'ALL', name: 'Semua Cabang' },
+    { id: 'putat', name: 'Putat' },
+    { id: 'cw', name: 'Ciputra World' },
+    { id: 'glx', name: 'GLX' },
+    { id: 'manukan', name: 'Manukan' },
+    { id: 'krian', name: 'Krian' },
+    { id: 'mojokerto', name: 'Mojokerto' },
+    { id: 'bali', name: 'Kuta Bali' },
+    { id: 'doa-selasa', name: 'Doa Selasa' },
+    { id: 'doa-sabtu', name: 'Doa Pagi' }
+  ];
+
+  const branchOptions = branches.map(b => 
+    `<option value="${b.id}" ${__wlBranchFilter === b.id ? 'selected' : ''}>${b.name}</option>`
+  ).join('');
+
+  return `
+    <div class="space-y-3">
+      <!-- Search & Filter Controls -->
+      <div class="p-3 rounded-2xl bg-black/40 border border-white/10 space-y-2.5">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <!-- Search Input -->
+          <div class="relative flex-1">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">🔍</span>
+            <input id="wlSearchInput" type="text" value="${__wlSearchTerm}" placeholder="Cari email, nama, posisi, atau cabang..." oninput="onWlSearchChange(this.value)" class="w-full pl-8 pr-8 py-2 rounded-xl bg-black/50 border border-white/15 text-xs text-white focus:border-rpGold focus:outline-none" />
+            <button id="wlClearSearchBtn" onclick="clearWlSearch()" class="${__wlSearchTerm ? '' : 'hidden'} absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs w-5 h-5 rounded-full bg-white/10 flex items-center justify-center cursor-pointer">✕</button>
+          </div>
+          
+          <!-- Role Filter -->
+          <select id="wlRoleFilterSelect" onchange="onWlRoleFilterChange(this.value)" class="px-3 py-2 rounded-xl bg-black/50 border border-white/15 text-xs text-white focus:border-rpGold focus:outline-none cursor-pointer">
+            <option value="ALL" ${__wlRoleFilter === 'ALL' ? 'selected' : ''}>Semua Role</option>
+            <option value="SUPER_ADMIN" ${__wlRoleFilter === 'SUPER_ADMIN' ? 'selected' : ''}>Super Admin</option>
+            <option value="RPM" ${__wlRoleFilter === 'RPM' ? 'selected' : ''}>RPM Admin</option>
+            <option value="WL_MD" ${__wlRoleFilter === 'WL_MD' ? 'selected' : ''}>WL / MD</option>
+            <option value="SERVICE_COORD" ${__wlRoleFilter === 'SERVICE_COORD' ? 'selected' : ''}>Service Coord</option>
+            <option value="GENERAL" ${__wlRoleFilter === 'GENERAL' ? 'selected' : ''}>General Member</option>
+          </select>
+
+          <!-- Branch Filter -->
+          <select id="wlBranchFilterSelect" onchange="onWlBranchFilterChange(this.value)" class="px-3 py-2 rounded-xl bg-black/50 border border-white/15 text-xs text-white focus:border-rpGold focus:outline-none cursor-pointer">
+            ${branchOptions}
+          </select>
+        </div>
+
+        <div class="flex items-center justify-between text-[11px] pt-0.5">
+          <span id="wlFilterStatusText" class="text-gray-300 font-medium">Memuat data...</span>
+          <button onclick="switchWlTab('add')" class="text-rpGold hover:underline font-bold flex items-center gap-1 cursor-pointer">
+            <span>+</span> <span>Tambah Email Baru</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Whitelist Cards List Container (Full Height & Comfortable Scroll) -->
+      <div id="wlCardsList" class="space-y-2 max-h-[58vh] overflow-y-auto pr-1">
+        <!-- Rendered by renderWlFilteredCards() -->
+      </div>
+    </div>
+  `;
+}
+
+function onWlSearchChange(val) {
+  __wlSearchTerm = (val || '').toLowerCase().trim();
+  const clearBtn = document.getElementById('wlClearSearchBtn');
+  if (clearBtn) {
+    if (__wlSearchTerm) clearBtn.classList.remove('hidden');
+    else clearBtn.classList.add('hidden');
+  }
+  renderWlFilteredCards();
+}
+
+function clearWlSearch() {
+  const input = document.getElementById('wlSearchInput');
+  if (input) input.value = '';
+  __wlSearchTerm = '';
+  const clearBtn = document.getElementById('wlClearSearchBtn');
+  if (clearBtn) clearBtn.classList.add('hidden');
+  renderWlFilteredCards();
+}
+
+function onWlRoleFilterChange(role) {
+  __wlRoleFilter = role;
+  renderWlFilteredCards();
+}
+
+function onWlBranchFilterChange(branch) {
+  __wlBranchFilter = branch;
+  renderWlFilteredCards();
+}
+
+function resetWlFilters() {
+  __wlSearchTerm = '';
+  __wlRoleFilter = 'ALL';
+  __wlBranchFilter = 'ALL';
+  const sInput = document.getElementById('wlSearchInput');
+  if (sInput) sInput.value = '';
+  const rSelect = document.getElementById('wlRoleFilterSelect');
+  if (rSelect) rSelect.value = 'ALL';
+  const bSelect = document.getElementById('wlBranchFilterSelect');
+  if (bSelect) bSelect.value = 'ALL';
+  const clearBtn = document.getElementById('wlClearSearchBtn');
+  if (clearBtn) clearBtn.classList.add('hidden');
+  renderWlFilteredCards();
+}
+
+function renderWlFilteredCards() {
+  const container = document.getElementById('wlCardsList');
+  const statusText = document.getElementById('wlFilterStatusText');
+  if (!container) return;
+
+  const total = (__cloudWhitelistCache || []).length;
+  const filtered = (__cloudWhitelistCache || []).filter(item => {
+    const isMaster = item.email.toLowerCase() === MASTER_SUPER_ADMIN.toLowerCase();
+    const mem = (APP_STATE.teamMembers || []).find(m => (m.email || '').toLowerCase() === item.email.toLowerCase());
+    const name = (item.name || (mem && mem.nickname) || (mem && mem.fullName) || '').toLowerCase();
+    const email = item.email.toLowerCase();
+    const role = (item.role || 'GENERAL').toUpperCase();
+    const positions = ((mem && mem.positions && mem.positions.length) ? mem.positions : (item.positions || [])).map(p => p.toLowerCase());
+    const branches = ((mem && mem.branches && mem.branches.length) ? mem.branches : (item.branches || [])).map(b => b.toLowerCase());
+
+    // Role filter
+    if (__wlRoleFilter !== 'ALL') {
+      if (__wlRoleFilter === 'SUPER_ADMIN') {
+        if (!isMaster) return false;
+      } else if (role !== __wlRoleFilter) {
+        return false;
+      }
+    }
+
+    // Branch filter
+    if (__wlBranchFilter !== 'ALL') {
+      if (!branches.includes(__wlBranchFilter.toLowerCase())) return false;
+    }
+
+    // Search query filter
+    if (__wlSearchTerm) {
+      const matchEmail = email.includes(__wlSearchTerm);
+      const matchName = name.includes(__wlSearchTerm);
+      const matchPos = positions.some(p => p.includes(__wlSearchTerm));
+      const matchBranch = branches.some(b => b.includes(__wlSearchTerm));
+      if (!matchEmail && !matchName && !matchPos && !matchBranch) return false;
+    }
+
+    return true;
+  });
+
+  if (statusText) {
+    statusText.textContent = `Menampilkan ${filtered.length} dari ${total} akun aktif`;
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="p-8 text-center rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
+        <div class="text-3xl">🔍</div>
+        <div class="font-bold text-white text-xs sm:text-sm">Tidak ada akun yang sesuai filter</div>
+        <div class="text-[11px] opacity-60">Silakan sesuaikan kata kunci atau reset filter pencarian.</div>
+        <button onclick="resetWlFilters()" class="mt-2 px-4 py-1.5 rounded-full bg-rpGold text-black font-bold text-xs shadow cursor-pointer">
+          Reset Filter
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(item => renderWlCardItem(item)).join('');
+}
+
+function renderWlCardItem(item) {
+  const isMaster = item.email.toLowerCase() === MASTER_SUPER_ADMIN.toLowerCase();
+  const mem = (APP_STATE.teamMembers || []).find(m => (m.email || '').toLowerCase() === item.email.toLowerCase());
+  const nickname = item.name || (mem && mem.nickname) || (mem && mem.fullName) || '';
+  const initial = (nickname || item.email)[0].toUpperCase();
+
+  const memPositions = (mem && mem.positions && mem.positions.length) ? mem.positions : (item.positions || []);
+  const memBranches = (mem && mem.branches && mem.branches.length) ? mem.branches : (item.branches || []);
+
+  const role = (item.role || 'GENERAL').toUpperCase();
+  let roleBadge = '';
+  if (isMaster) {
+    roleBadge = '<span class="px-2 py-0.5 rounded-full bg-rpGold text-black font-extrabold text-[10px] tracking-wide uppercase shadow">👑 Super Admin</span>';
+  } else if (role === 'RPM') {
+    roleBadge = '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold text-[10px]">RPM Admin</span>';
+  } else if (role === 'WL_MD') {
+    roleBadge = '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold text-[10px]">WL / MD</span>';
+  } else if (role === 'SERVICE_COORD') {
+    roleBadge = '<span class="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold text-[10px]">Service Coord</span>';
+  } else {
+    roleBadge = '<span class="px-2 py-0.5 rounded-full bg-white/10 text-white/70 border border-white/15 font-medium text-[10px]">General Member</span>';
+  }
+
+  const posChips = memPositions.slice(0, 4).map(p => 
+    `<span class="px-2 py-0.5 rounded-md bg-white/[0.08] text-white/90 text-[10px] font-medium">${p}</span>`
+  ).join(' ');
+  const morePos = memPositions.length > 4 ? `<span class="text-[10px] text-rpGold font-bold">+${memPositions.length - 4}</span>` : '';
+
+  const branchChips = memBranches.map(b => {
+    const brObj = (APP_STATE.branches || []).find(x => x.id === b);
+    const label = brObj ? brObj.shortName : b;
+    return `<span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-semibold">${label}</span>`;
+  }).join(' ');
+
+  const inviteBtn = `<button onclick="openInviteWhatsAppModal('${item.email}')" class="px-3 py-1.5 rounded-full wa-green-btn font-bold text-[11px] flex items-center gap-1.5 shadow transition hover:scale-105 cursor-pointer" title="Kirim Undangan WhatsApp"><span>📲</span> <span class="hidden sm:inline">Invite WA</span><span class="sm:hidden">WA</span></button>`;
+
+  const deleteBtn = !isMaster 
+    ? `<button onclick="confirmRemoveWhitelistEmail('${item.email}')" class="px-3 py-1.5 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/35 border border-rose-500/30 font-bold text-[11px] transition cursor-pointer" title="Hapus dari Whitelist">Hapus</button>`
+    : '';
+
+  return `
+    <div class="p-3 rounded-2xl bg-white/[0.05] hover:bg-white/[0.08] border border-white/10 transition space-y-2">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-rpGold/30 to-amber-600/30 border border-rpGold/40 text-rpGold font-extrabold flex items-center justify-center text-xs shrink-0 shadow-sm">
+            ${initial}
+          </div>
+          <div class="min-w-0">
+            <div class="font-bold text-white text-xs sm:text-sm flex flex-wrap items-center gap-1.5">
+              <span class="truncate">${item.email}</span>
+              ${nickname ? `<span class="text-rpGold font-normal text-xs">(${nickname})</span>` : ''}
+            </div>
+            <div class="flex items-center gap-2 mt-0.5">
+              ${roleBadge}
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 shrink-0">
+          ${inviteBtn}
+          ${deleteBtn}
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-white/[0.06] text-[11px]">
+        <span class="text-[10px] text-gray-400 font-semibold mr-0.5">Posisi:</span>
+        ${posChips || '<span class="text-[10px] text-gray-500">-</span>'} ${morePos}
+        <span class="text-[10px] text-gray-400 font-semibold ml-2 mr-0.5">Cabang:</span>
+        ${branchChips || '<span class="text-[10px] text-gray-500">-</span>'}
+      </div>
+    </div>
+  `;
+}
+
+function renderWlAddForm() {
   const allPositions = APP_STATE.servicePositions || [
     'Worship Leader', 'Music Director', 'Singers', 'Keyboardist', 'Guitarist',
     'Bassist', 'Drummer', 'Saxophonist', 'Multimedia', 'Sound System',
@@ -2449,99 +2757,119 @@ async function openWhitelistManagerModal() {
     { id: 'doa-sabtu', name: 'Doa Pagi' }
   ];
 
-  const posBoxesHtml = allPositions.map(p => `
-    <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/10 text-[11px] cursor-pointer hover:bg-white/10 transition">
-      <input type="checkbox" name="wlPosBox" value="${p}" class="accent-amber-400" />
-      <span>${p}</span>
-    </label>
+  const posPillsHtml = allPositions.map(p => `
+    <button type="button" onclick="toggleWlPill(this)" data-pill-type="pos" data-val="${p}" data-selected="false" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] text-white/80 border border-white/15 hover:bg-white/10 transition cursor-pointer">
+      ${p}
+    </button>
   `).join('');
 
-  const branchBoxesHtml = churchBranches.map(b => `
-    <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/10 text-[11px] cursor-pointer hover:bg-white/10 transition">
-      <input type="checkbox" name="wlBranchBox" value="${b.id}" class="accent-amber-400" />
-      <span>${b.name}</span>
-    </label>
+  const branchPillsHtml = churchBranches.map(b => `
+    <button type="button" onclick="toggleWlPill(this)" data-pill-type="branch" data-val="${b.id}" data-selected="false" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/[0.06] text-white/80 border border-white/15 hover:bg-white/10 transition cursor-pointer">
+      ${b.name}
+    </button>
   `).join('');
 
-  const listRows = cloudList.map(function(item) {
-    const isMaster = item.email.toLowerCase() === MASTER_SUPER_ADMIN.toLowerCase();
-    const inviteBtn = `<button onclick="openInviteWhatsAppModal('${item.email}')" class="px-2.5 py-1 rounded-full wa-green-btn font-bold text-[10px] flex items-center gap-1 shadow-sm hover:scale-105 transition" title="Kirim Undangan WhatsApp"><span>📲</span> <span>Invite WA</span></button>`;
-    const actionBtn = !isMaster 
-      ? `<div class="flex items-center gap-1.5">${inviteBtn}<button onclick="removeWhitelistEmail('${item.email}')" class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 font-bold text-[10px]">Hapus</button></div>`
-      : `<div class="flex items-center gap-1.5">${inviteBtn}<span class="text-[10px] text-rpGold font-bold px-2">Super Admin</span></div>`;
+  return `
+    <div class="space-y-4 max-h-[72vh] overflow-y-auto pr-1">
+      <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-3 text-amber-200 text-xs leading-relaxed">
+        <span class="text-xl shrink-0 mt-0.5">ℹ️</span>
+        <div>
+          Email yang didaftarkan akan langsung diizinkan login melalui Google dan otomatis terdaftar ke <strong>Team Database</strong> agar siap dialokasikan ke jadwal pelayanan.
+        </div>
+      </div>
 
-    const mem = (APP_STATE.teamMembers || []).find(m => (m.email || '').toLowerCase() === item.email.toLowerCase());
-    const memPositions = (mem && mem.positions && mem.positions.length) ? mem.positions : (item.positions || []);
-    const memBranches = (mem && mem.branches && mem.branches.length) ? mem.branches : (item.branches || []);
+      <div class="p-4 sm:p-5 rounded-2xl bg-black/40 border border-white/10 space-y-4">
+        <!-- Basic Info -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-white/80 mb-1">Email Akun Google <span class="text-rose-400">*</span></label>
+            <input id="wlNewEmail" type="email" placeholder="nama@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-xs text-white focus:border-rpGold focus:outline-none" required />
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-white/80 mb-1">Nama Panggilan / Lengkap</label>
+            <input id="wlNewName" type="text" placeholder="Contoh: Franky / Jonathan" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-xs text-white focus:border-rpGold focus:outline-none" />
+          </div>
+        </div>
 
-    const posBadges = memPositions.slice(0, 4).map(p => `<span class="px-1.5 py-0.5 rounded bg-white/[0.08] text-[9px] font-semibold">${p}</span>`).join(' ');
-    const morePos = memPositions.length > 4 ? `<span class="text-[9px] opacity-60">+${memPositions.length - 4}</span>` : '';
-    
-    const branchBadges = memBranches.map(b => {
-      const brObj = (APP_STATE.branches || []).find(x => x.id === b);
-      const label = brObj ? brObj.shortName : b;
-      return `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[9px] font-bold uppercase">${label}</span>`;
-    }).join(' ');
+        <div>
+          <label class="block text-[11px] font-bold text-white/80 mb-1">Hak Akses / Role Sistem</label>
+          <select id="wlNewRole" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-xs text-white focus:border-rpGold focus:outline-none cursor-pointer">
+            <option value="GENERAL">General Member (Pemusik, Singer, Crew Multimedia, dll)</option>
+            <option value="WL_MD">WL / MD (Worship Leader & Music Director)</option>
+            <option value="SERVICE_COORD">Service Coordinator (Koordinator Rundown Ibadah)</option>
+            <option value="RPM">RPM Admin (Pengelola Layanan & Akses Lengkap)</option>
+          </select>
+        </div>
 
-    return '<div class="p-2.5 rounded-xl bg-white/[0.05] border border-white/10 space-y-1.5 text-xs">' +
-      '<div class="flex items-center justify-between">' +
-        '<div>' +
-          '<div class="font-bold text-white flex items-center gap-1.5">' +
-            item.email +
-            (item.name || (mem && mem.nickname) ? '<span class="text-rpGold font-normal text-[11px]">(' + (item.name || mem.nickname) + ')</span>' : '') +
-          '</div>' +
-          '<div class="opacity-60 text-[10px]">Role: <span class="text-rpGold font-semibold">' + (item.role || 'GENERAL') + '</span></div>' +
-        '</div>' +
-        actionBtn +
-      '</div>' +
-      '<div class="flex flex-wrap items-center gap-1 pt-1 border-t border-white/[0.06]">' +
-        '<span class="text-[9px] opacity-60 mr-1">Posisi:</span>' + (posBadges || '<span class="text-[9px] opacity-40">-</span>') + morePos +
-        '<span class="text-[9px] opacity-60 ml-2 mr-1">Cabang:</span>' + (branchBadges || '<span class="text-[9px] opacity-40">-</span>') +
-      '</div>' +
-    '</div>';
-  }).join("");
+        <!-- Posisi Pelayanan with Apple Pills -->
+        <div class="space-y-2 pt-2 border-t border-white/10">
+          <div class="flex items-center justify-between">
+            <label class="text-[11px] font-bold text-white/90">Kategori / Posisi Pelayanan (Klik untuk memilih):</label>
+            <div class="flex items-center gap-2 text-[10px]">
+              <button type="button" onclick="selectAllWlPills('pos', true)" class="text-rpGold hover:underline font-semibold cursor-pointer">Pilih Semua</button>
+              <span class="opacity-40">•</span>
+              <button type="button" onclick="selectAllWlPills('pos', false)" class="text-gray-400 hover:underline cursor-pointer">Reset</button>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 p-3 rounded-2xl bg-black/25 border border-white/10">
+            ${posPillsHtml}
+          </div>
+        </div>
 
-  openModal("🛡️ Cloud Whitelist Gatekeeper Manager", 
-    '<div class="space-y-4 text-xs sm:text-sm max-h-[82vh] overflow-y-auto pr-1">' +
-      '<div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs leading-relaxed text-amber-200">' +
-        'Kelola email Google yang diizinkan masuk ke sistem Royal Priesthood. Mengisi posisi & cabang pelayanan akan langsung menyinkronkan data ke Team Database agar siap dijadwalkan secara inline.' +
-      '</div>' +
-      '<div class="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-3">' +
-        '<div class="text-xs font-bold text-rpGold">Tambah Email Whitelist & Kategori Pelayanan</div>' +
-        '<div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">' +
-          '<input id="wlNewEmail" type="email" placeholder="nama@gmail.com *" class="px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs focus:border-rpGold focus:outline-none" />' +
-          '<input id="wlNewName" type="text" placeholder="Nama Panggilan / Lengkap" class="px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs focus:border-rpGold focus:outline-none" />' +
-          '<select id="wlNewRole" class="px-3 py-2 rounded-xl bg-black/40 border border-white/15 text-xs">' +
-            '<option value="GENERAL">General Member</option>' +
-            '<option value="WL_MD">WL / MD</option>' +
-            '<option value="SERVICE_COORD">Service Coordinator</option>' +
-            '<option value="RPM">RPM Admin</option>' +
-          '</select>' +
-        '</div>' +
-        '<div>' +
-          '<label class="block text-[11px] font-bold text-white/80 mb-1.5">Kategori / Posisi Pelayanan (Tick box):</label>' +
-          '<div class="flex flex-wrap gap-1.5 p-2.5 rounded-xl bg-black/25 border border-white/10">' +
-            posBoxesHtml +
-          '</div>' +
-        '</div>' +
-        '<div>' +
-          '<label class="block text-[11px] font-bold text-white/80 mb-1.5">Cabang Pelayanan (Tick box):</label>' +
-          '<div class="flex flex-wrap gap-1.5 p-2.5 rounded-xl bg-black/25 border border-white/10">' +
-            branchBoxesHtml +
-          '</div>' +
-        '</div>' +
-        '<div class="flex justify-end pt-1">' +
-          '<button onclick="addWhitelistEmail()" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold shadow-md">+ Tambah & Sinkronkan ke Team</button>' +
-        '</div>' +
-      '</div>' +
-      '<div class="space-y-2">' +
-        '<div class="font-bold text-xs opacity-75">Daftar Whitelist Aktif (' + cloudList.length + ' Akun)</div>' +
-        '<div class="space-y-2 max-h-60 overflow-y-auto pr-1">' +
-          listRows +
-        '</div>' +
-      '</div>' +
-    '</div>'
-  );
+        <!-- Cabang Pelayanan with Apple Pills -->
+        <div class="space-y-2 pt-2 border-t border-white/10">
+          <div class="flex items-center justify-between">
+            <label class="text-[11px] font-bold text-white/90">Cabang Pelayanan (Klik untuk memilih):</label>
+            <div class="flex items-center gap-2 text-[10px]">
+              <button type="button" onclick="selectAllWlPills('branch', true)" class="text-rpGold hover:underline font-semibold cursor-pointer">Pilih Semua</button>
+              <span class="opacity-40">•</span>
+              <button type="button" onclick="selectAllWlPills('branch', false)" class="text-gray-400 hover:underline cursor-pointer">Reset</button>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 p-3 rounded-2xl bg-black/25 border border-white/10">
+            ${branchPillsHtml}
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-between pt-3 border-t border-white/10">
+          <button type="button" onclick="switchWlTab('list')" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-semibold cursor-pointer">
+            ← Kembali ke Daftar
+          </button>
+          <button type="button" onclick="addWhitelistEmail()" class="gold-pill-btn px-6 py-2.5 rounded-full text-xs font-bold shadow-lg transition hover:scale-105 cursor-pointer">
+            + Tambah & Sinkronkan ke Team
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleWlPill(el) {
+  const isSelected = el.getAttribute('data-selected') === 'true';
+  const next = !isSelected;
+  el.setAttribute('data-selected', next ? 'true' : 'false');
+  if (next) {
+    el.classList.remove('bg-white/[0.06]', 'text-white/80', 'border-white/15');
+    el.classList.add('bg-rpGold', 'text-black', 'border-rpGold', 'font-bold', 'shadow');
+  } else {
+    el.classList.remove('bg-rpGold', 'text-black', 'border-rpGold', 'font-bold', 'shadow');
+    el.classList.add('bg-white/[0.06]', 'text-white/80', 'border-white/15');
+  }
+}
+
+function selectAllWlPills(type, selectAll) {
+  const pills = document.querySelectorAll(`button[data-pill-type="${type}"]`);
+  pills.forEach(el => {
+    el.setAttribute('data-selected', selectAll ? 'true' : 'false');
+    if (selectAll) {
+      el.classList.remove('bg-white/[0.06]', 'text-white/80', 'border-white/15');
+      el.classList.add('bg-rpGold', 'text-black', 'border-rpGold', 'font-bold', 'shadow');
+    } else {
+      el.classList.remove('bg-rpGold', 'text-black', 'border-rpGold', 'font-bold', 'shadow');
+      el.classList.add('bg-white/[0.06]', 'text-white/80', 'border-white/15');
+    }
+  });
 }
 
 async function addWhitelistEmail() {
@@ -2553,8 +2881,8 @@ async function addWhitelistEmail() {
   const name = nameInput ? nameInput.value.trim() : "";
   const role = roleInput ? roleInput.value : "GENERAL";
 
-  const selectedPositions = Array.from(document.querySelectorAll('input[name="wlPosBox"]:checked')).map(x => x.value);
-  const selectedBranches = Array.from(document.querySelectorAll('input[name="wlBranchBox"]:checked')).map(x => x.value);
+  const selectedPositions = Array.from(document.querySelectorAll('button[data-pill-type="pos"][data-selected="true"]')).map(x => x.getAttribute('data-val'));
+  const selectedBranches = Array.from(document.querySelectorAll('button[data-pill-type="branch"][data-selected="true"]')).map(x => x.getAttribute('data-val'));
 
   const finalPositions = selectedPositions.length ? selectedPositions : ["Singers"];
   const finalBranches = selectedBranches.length ? selectedBranches : ["putat"];
@@ -2595,11 +2923,7 @@ async function addWhitelistEmail() {
   }
   saveState();
 
-  // 2. Clear input fields immediately so user knows it's submitted
-  if (emailInput) emailInput.value = "";
-  if (nameInput) nameInput.value = "";
-
-  // 3. Sync to Cloud API
+  // 2. Sync to Cloud API
   try {
     const res = await fetch(WHITELIST_API_URL, {
       method: "POST",
@@ -2627,11 +2951,43 @@ async function addWhitelistEmail() {
   syncStateToCloud();
   renderCurrentView();
 
-  // 4. Immediately RE-OPEN / REFRESH the whitelist modal so the newly added email is visible in the list below!
-  await openWhitelistManagerModal();
+  // Refresh cache and open list tab
+  __cloudWhitelistCache = await fetchCloudWhitelist();
+  __wlActiveTab = 'list';
+  __wlSearchTerm = email; // Highlight newly added email
+  openWhitelistManagerModal('list');
 }
 
-async function removeWhitelistEmail(email) {
+function confirmRemoveWhitelistEmail(email) {
+  const isMaster = email.toLowerCase() === MASTER_SUPER_ADMIN.toLowerCase();
+  if (isMaster) return showToast('Super Admin utama tidak dapat dihapus.');
+
+  const mem = (APP_STATE.teamMembers || []).find(m => (m.email || '').toLowerCase() === email.toLowerCase());
+  const name = mem ? (mem.nickname || mem.fullName) : email;
+
+  openModal('⚠️ Konfirmasi Hapus Whitelist', `
+    <div class="space-y-4 text-xs sm:text-sm">
+      <div class="p-4 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-200 space-y-1.5">
+        <div class="font-bold text-sm">Hapus Akun dari Whitelist?</div>
+        <div class="text-xs leading-relaxed opacity-90">
+          Apakah Anda yakin ingin menghapus akun <strong>${email}</strong> ${name ? `(${name})` : ''} dari Cloud Whitelist?
+          <br/><br/>
+          Pengguna ini <strong>tidak akan dapat login lagi</strong> ke sistem Royal Priesthood.
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
+        <button onclick="openWhitelistManagerModal('list')" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-semibold cursor-pointer">
+          Batal
+        </button>
+        <button onclick="executeRemoveWhitelistEmail('${email}')" class="px-5 py-2 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg transition cursor-pointer">
+          Ya, Hapus Akun
+        </button>
+      </div>
+    </div>
+  `);
+}
+
+async function executeRemoveWhitelistEmail(email) {
   try {
     const res = await fetch(WHITELIST_API_URL, {
       method: "POST",
@@ -2649,7 +3005,10 @@ async function removeWhitelistEmail(email) {
     saveState();
     showToast("Email " + email + " dihapus secara lokal.");
   }
-  openWhitelistManagerModal();
+  syncStateToCloud();
+  renderCurrentView();
+  __cloudWhitelistCache = await fetchCloudWhitelist();
+  openWhitelistManagerModal('list');
 }
 
 window.addEventListener("keydown", function(e) {
@@ -7749,6 +8108,11 @@ function closeModal() {
   if (m) {
     m.classList.add('hidden');
     m.classList.remove('flex');
+  }
+  const modalBox = document.getElementById('modalBox');
+  if (modalBox) {
+    modalBox.classList.remove('max-w-3xl', 'max-w-4xl');
+    modalBox.classList.add('max-w-2xl');
   }
 }
 
