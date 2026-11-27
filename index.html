@@ -231,7 +231,6 @@ const APP_ASSETS = {
     </div>
 
     <nav id="desktopNavBar" class="hidden lg:flex items-center gap-1 nav-pill-group p-1 rounded-full">
-      <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition" title="POV Royal Priesthood Manager Service Pipeline">Service Pipeline</button>
       <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SCHEDULE</button>
       <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SETLIST</button>
       <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Song Bank</button>
@@ -268,7 +267,6 @@ const APP_ASSETS = {
   </div>
 
   <div id="mobileNavBar" class="lg:hidden flex items-center gap-1 px-2.5 py-1.5 overflow-x-auto no-scrollbar border-t border-current/10">
-    <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Pipeline</button>
     <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SCHEDULE</button>
     <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SETLIST</button>
     <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Song Bank</button>
@@ -376,9 +374,6 @@ const APP_ASSETS = {
 
           <p id="heroSlideCaption" class="text-sm text-gray-200/90 max-w-xl leading-relaxed"></p>
           <div class="flex flex-wrap items-center gap-3 pt-1">
-            <button onclick="navigateTo('weekly')" class="gold-pill-btn px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold tracking-wide transition">
-              Buka Service Pipeline →
-            </button>
             <button onclick="prevHeroSlide()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-xs font-bold transition" title="Slide Sebelumnya">‹</button>
             <button onclick="nextHeroSlide()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-xs font-bold transition" title="Slide Berikutnya">›</button>
             <div id="heroDots" class="flex items-center gap-1.5 ml-1"></div>
@@ -464,11 +459,7 @@ const APP_ASSETS = {
       <span>Sign in with Google</span>
     </button>
 
-    <!-- Super Admin Direct Sign In (Khusus Developer / Orca / Localhost) -->
-    <button type="button" onclick="loginDirectlyAsSuperAdmin()" class="w-full mt-2.5 py-2.5 px-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-rpGold/30 text-[11px] sm:text-xs text-rpGold font-semibold transition flex items-center justify-center gap-1.5" title="Akses Cepat Super Admin (Bypass Origin Mismatch di Orca/Localhost)">
-      <span>👑</span>
-      <span>Masuk Langsung sebagai Super Admin (Franky)</span>
-    </button>
+
 
     <div class="mt-4 pt-3.5 border-t border-white/10 text-left space-y-2">
       <div class="flex items-center gap-1.5 text-[11px] font-bold text-rpGold">
@@ -668,7 +659,8 @@ const DEFAULT_STATE = {
   ],
   branches: [
     { id: 'putat', name: 'Graha Pemulihan (Putat)', shortName: 'Putat', defaultTimes: ['08.00 WIB', '10.30 WIB', '16.30 WIB'] },
-    { id: 'cw', name: 'Ballroom 89 Ciputra World', shortName: 'Ciputra World', defaultTimes: ['09.00 WIB', '11.00 WIB'] }
+    { id: 'cw', name: 'Ballroom 89 Ciputra World', shortName: 'Ciputra World', defaultTimes: ['09.00 WIB', '11.00 WIB'] },
+    { id: 'doa-selasa', name: 'Doa Malam Selasa', shortName: 'Doa Selasa', defaultTimes: ['19.00 WIB'] }
   ],
   monthlyTheme: {
     monthLabel: 'Desember 2026',
@@ -919,6 +911,33 @@ const DEFAULT_STATE = {
         'Guitarist': ['Mike', 'Yole'],
         'Bassist': ['Ivan'],
         'Drummer': ['David'],
+        'Saxophonist': [],
+        'Multimedia': ['Tim MM'],
+        'Sound System': ['Tim Sound'],
+        'Event Organizer': ['Tim EO']
+      }
+    },
+    {
+      id: 'sch-w1-doa-selasa',
+      weekId: '2026-12-06',
+      weekLabel: 'WEEK 1',
+      date: '2026-12-08',
+      dateLabel: '8 Desember 2026 (Selasa)',
+      branchId: 'doa-selasa',
+      sessionName: 'Doa Malam Selasa (19.00 WIB)',
+      time: '19.00 WIB',
+      rehearsalNote: 'Persiapan & Soundcheck: Selasa 18.00 WIB di Ruang Doa Graha Pemulihan',
+      dresscodePalette: 'Smart Casual • Rapi Bebas',
+      dresscodeNote: 'Bebas rapi dan sopan',
+      dresscodeImages: [APP_ASSETS.DC_SAMPLE_1],
+      assignments: {
+        'Worship Leader': ['Franky'],
+        'Music Director': ['Ronald'],
+        'Singers': ['Cindy', 'Audrey'],
+        'Keyboardist': ['Ronald'],
+        'Guitarist': ['Bumi'],
+        'Bassist': ['Andhika'],
+        'Drummer': ['Steve'],
         'Saxophonist': [],
         'Multimedia': ['Tim MM'],
         'Sound System': ['Tim Sound'],
@@ -1549,12 +1568,17 @@ function isRPM() {
   return APP_STATE.currentUser?.role === 'RPM' || rpList.includes(email);
 }
 
-function canEditSetlist() {
-  return true;
+function canEditSetlist(schId) {
+  if (isRPM()) return true;
+  if (!schId && window.__selectedSetlistSchId) schId = window.__selectedSetlistSchId;
+  return isAssignedWlForSchedule(schId);
 }
 
-function canEditRundown() {
-  return true;
+function canEditRundown(schId) {
+  if (isRPM()) return true;
+  const u = APP_STATE.currentUser;
+  if (!u || !u.isLoggedIn) return false;
+  return u.role === "SERVICE_COORD" || u.role === "WL_MD";
 }
 
 function applyAssetsAndTheme() {
@@ -1670,7 +1694,6 @@ function renderNavigationMenu() {
   if (desktopNav) {
     if (isUserRpm) {
       desktopNav.innerHTML = `
-        <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition" title="Alur Pelayanan & Orchestration Bulanan">👑 Alur Pelayanan (RPM)</button>
         <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SCHEDULE</button>
         <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SETLIST</button>
         <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Song Bank</button>
@@ -1680,7 +1703,6 @@ function renderNavigationMenu() {
       `;
     } else {
       desktopNav.innerHTML = `
-        <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">🏠 Beranda Pelayanan Saya</button>
         <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">JADWAL IBADAH</button>
         <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SETLIST & LAGU</button>
         <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Song Bank</button>
@@ -1692,7 +1714,6 @@ function renderNavigationMenu() {
   if (mobileNav) {
     if (isUserRpm) {
       mobileNav.innerHTML = `
-        <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Alur RPM</button>
         <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SCHEDULE</button>
         <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SETLIST</button>
         <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Song Bank</button>
@@ -1702,7 +1723,6 @@ function renderNavigationMenu() {
       `;
     } else {
       mobileNav.innerHTML = `
-        <button data-nav="weekly" onclick="navigateTo('weekly')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Beranda Saya</button>
         <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Jadwal</button>
         <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Setlist</button>
         <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Song Bank</button>
@@ -1714,10 +1734,6 @@ function renderNavigationMenu() {
   if (drawerNav) {
     if (isUserRpm) {
       drawerNav.innerHTML = `
-        <button onclick="navigateTo('weekly'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>👑 Alur Pelayanan (RPM)</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
         <button onclick="navigateTo('schedule'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
           <span>SCHEDULE (Jadwal & Tim)</span>
           <span class="text-xs opacity-50">→</span>
@@ -1745,10 +1761,6 @@ function renderNavigationMenu() {
       `;
     } else {
       drawerNav.innerHTML = `
-        <button onclick="navigateTo('weekly'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>🏠 Beranda Pelayanan Saya</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
         <button onclick="navigateTo('schedule'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
           <span>Jadwal Ibadah</span>
           <span class="text-xs opacity-50">→</span>
@@ -1876,32 +1888,49 @@ function initGoogleOAuth() {
             showToast('Tidak dapat membaca email akun Google.');
             return;
           }
-          const role = resolveRoleByEmail(email);
-          const member = (APP_STATE.teamMembers || []).find(
+
+          // Strict Cloud Whitelist Gatekeeper check
+          let cloudWhitelist = [];
+          try {
+            cloudWhitelist = await fetchCloudWhitelist();
+          } catch (err) {
+            console.warn('Gagal memuat Cloud Whitelist:', err);
+          }
+          const matchedWhitelist = (cloudWhitelist || []).find(w => (w.email || '').trim().toLowerCase() === email);
+          const isMaster = email === MASTER_SUPER_ADMIN.toLowerCase();
+          const isRpmConfigured = (APP_STATE.rpmEmails || []).some(e => e.toLowerCase() === email);
+
+          if (!matchedWhitelist && !isMaster && !isRpmConfigured) {
+            showToast('Akses Ditolak: Email (' + email + ') belum terdaftar di Cloud Whitelist. Hubungi Super Admin.');
+            if (typeof closeModal === 'function') closeModal();
+            return;
+          }
+
+          let role = 'GENERAL';
+          if (isMaster || isRpmConfigured) {
+            role = 'RPM';
+          } else if (matchedWhitelist && matchedWhitelist.role) {
+            role = matchedWhitelist.role;
+          } else {
+            role = resolveRoleByEmail(email);
+          }
+
+          let member = (APP_STATE.teamMembers || []).find(
             m => (m.email || '').toLowerCase() === email
           );
           const gcalEl = document.getElementById('loginGateGcal');
           const gcal = gcalEl ? gcalEl.checked : true;
 
-          APP_STATE.currentUser = {
-            email,
-            name: profile.name || member?.fullName || email.split('@')[0],
-            nickname: member?.nickname || profile.given_name || email.split('@')[0],
-            photo: profile.picture || APP_ASSETS.FAVICON_LOGO,
-            role,
-            isLoggedIn: true,
-            calendarConnected: gcal,
-            calendarEmail: email,
-            authProvider: 'google_oauth'
-          };
           if (!member) {
+            const preferredName = (matchedWhitelist && matchedWhitelist.name) || profile.name || email.split('@')[0];
+            const preferredNick = (matchedWhitelist && matchedWhitelist.name) ? matchedWhitelist.name.split(' ')[0] : (profile.given_name || email.split('@')[0]);
             member = {
               id: 'm-' + Date.now(),
-              fullName: profile.name || email.split('@')[0],
-              nickname: profile.given_name || email.split('@')[0],
+              fullName: preferredName,
+              nickname: preferredNick,
               email: email,
               role: role,
-              positions: ['Singers'],
+              positions: role === 'WL_MD' ? ['Worship Leader', 'Singers'] : ['Singers'],
               phone: '',
               birthday: '',
               hobby: '',
@@ -1909,11 +1938,26 @@ function initGoogleOAuth() {
               instagram: '',
               tiktok: '',
               altContact: '-',
-              notes: 'Member baru Google Sign-In',
+              notes: 'Member terdaftar via Cloud Whitelist Google Sign-In',
               profileCompleted: false
             };
             APP_STATE.teamMembers.push(member);
+          } else {
+            if (role) member.role = role;
+            if (profile.picture) member.avatar = profile.picture;
           }
+
+          APP_STATE.currentUser = {
+            email,
+            name: member.fullName || profile.name || email.split('@')[0],
+            nickname: member.nickname || profile.given_name || email.split('@')[0],
+            photo: profile.picture || member.avatar || APP_ASSETS.FAVICON_LOGO,
+            role,
+            isLoggedIn: true,
+            calendarConnected: gcal,
+            calendarEmail: email,
+            authProvider: 'google_oauth'
+          };
 
           sessionStorage.removeItem('RP_GUEST_DISMISSED');
           saveState();
@@ -1931,7 +1975,8 @@ function initGoogleOAuth() {
             }, 350);
           }
         } catch (e) {
-          showToast('Gagal memverifikasi profil Google OAuth.');
+          console.error('Google OAuth error:', e);
+          showToast('Gagal memverifikasi profil Google OAuth: ' + (e.message || ''));
         }
       }
     });
@@ -2612,13 +2657,38 @@ function renderCurrentView() {
 }
 
 // 1. WEEKLY DASHBOARD
-function getUserAssignments(nickname) {
-  if (!nickname) return [];
+function getUserAssignments(userOrNick) {
+  const u = (typeof userOrNick === 'object' && userOrNick !== null) 
+    ? userOrNick 
+    : (APP_STATE.currentUser || {});
+  const nick = typeof userOrNick === 'string' 
+    ? userOrNick 
+    : (u.nickname || u.name || '');
+  const fullName = typeof userOrNick === 'object' ? (u.name || '') : '';
+  const email = typeof userOrNick === 'object' ? (u.email || '') : (u.email || '');
+
+  // Match against teamMembers
+  const member = (APP_STATE.teamMembers || []).find(tm => 
+    (email && tm.email && tm.email.toLowerCase() === email.toLowerCase()) ||
+    (nick && tm.nickname && tm.nickname.toLowerCase() === nick.toLowerCase()) ||
+    (fullName && tm.fullName && tm.fullName.toLowerCase() === fullName.toLowerCase())
+  );
+
+  const validNames = new Set();
+  if (nick) validNames.add(nick.toLowerCase().trim());
+  if (fullName) validNames.add(fullName.toLowerCase().trim());
+  if (member) {
+    if (member.nickname) validNames.add(member.nickname.toLowerCase().trim());
+    if (member.fullName) validNames.add(member.fullName.toLowerCase().trim());
+  }
+
+  if (validNames.size === 0) return [];
+
   const res = [];
-  APP_STATE.schedules.forEach(sch => {
+  (APP_STATE.schedules || []).forEach(sch => {
     const matchedPos = [];
     Object.entries(sch.assignments || {}).forEach(([pos, names]) => {
-      if (Array.isArray(names) && names.some(n => n.toLowerCase() === nickname.toLowerCase())) {
+      if (Array.isArray(names) && names.some(n => n && validNames.has(n.trim().toLowerCase()))) {
         matchedPos.push(pos);
       }
     });
@@ -2626,30 +2696,21 @@ function getUserAssignments(nickname) {
       res.push({ schedule: sch, positions: matchedPos });
     }
   });
+
+  res.sort((a, b) => (a.schedule.date || '').localeCompare(b.schedule.date || ''));
   return res;
 }
 
-function renderWeeklyDashboard() {
-  if (!isRPM()) {
-    return renderMemberPersonalDashboard();
-  }
-  return renderRpmWorkflowDashboard();
-}
-
-// ==========================================
-// 1. NON-RPM / MEMBER PERSONAL DASHBOARD POV
-// ==========================================
-function renderMemberPersonalDashboard() {
+function renderTopPersonalSection() {
   const u = APP_STATE.currentUser || {};
   const isLogged = !!(u && u.isLoggedIn && u.email);
-  const nick = isLogged ? (u.nickname || u.name || 'Pelayan') : 'Tamu';
+  const nick = isLogged ? (u.nickname || (u.name ? u.name.split(' ')[0] : 'Pelayan')) : 'Tamu';
   const roleName = getRoleDisplayName(u.role);
-  const myDuties = isLogged ? getUserAssignments(nick) : [];
+  const myDuties = isLogged ? getUserAssignments(u) : [];
   const theme = APP_STATE.monthlyTheme || {};
-  const slides = theme.weeklySlides || [];
-  const activeSlide = slides.find(s => s.id === APP_STATE.activeWeekId) || slides[0] || {};
+  const myMember = (APP_STATE.teamMembers || []).find(m => (m.email || '').toLowerCase() === (u.email || '').toLowerCase());
+  const userPositionsText = (myMember?.positions || []).join(', ') || (u.role === 'RPM' ? 'Royal Priesthood Manager / WL' : roleName);
 
-  // Member's duty cards
   let dutyCardsHtml = '';
   if (myDuties.length > 0) {
     dutyCardsHtml = myDuties.map(d => {
@@ -2660,7 +2721,6 @@ function renderMemberPersonalDashboard() {
         `<span class="px-2.5 py-1 rounded-full bg-rpGold text-black font-extrabold text-[11px] shadow-sm">${p}</span>`
       ).join(' ');
 
-      // Find teammates
       const wl = (sch.assignments?.['Worship Leader'] || []).join(', ') || '-';
       const singers = (sch.assignments?.['Singers'] || []).join(', ') || '-';
       const keyboard = (sch.assignments?.['Keyboardist'] || []).join(', ') || '-';
@@ -2702,12 +2762,12 @@ function renderMemberPersonalDashboard() {
     }).join('');
   } else {
     dutyCardsHtml = `
-      <div class="col-span-full apple-card-soft p-6 sm:p-8 text-center space-y-3 border border-white/10">
-        <div class="w-14 h-14 mx-auto rounded-full bg-rpGold/15 border border-rpGold/30 flex items-center justify-center text-2xl">
+      <div class="col-span-full apple-card-soft p-5 sm:p-7 text-center space-y-2.5 border border-white/10">
+        <div class="w-12 h-12 mx-auto rounded-full bg-rpGold/15 border border-rpGold/30 flex items-center justify-center text-xl">
           🕊️
         </div>
-        <h4 class="text-base sm:text-lg font-bold text-white">Belum Ada Jadwal Tugas Bulan Ini</h4>
-        <p class="text-xs sm:text-sm opacity-75 max-w-lg mx-auto leading-relaxed">
+        <h4 class="text-base font-bold text-white">Belum Ada Jadwal Tugas Bulan Ini</h4>
+        <p class="text-xs opacity-75 max-w-lg mx-auto leading-relaxed">
           ${isLogged
             ? `Shalom <strong>${nick}</strong>, Anda belum dijadwalkan bertugas pada bulan ${theme.monthLabel || 'ini'}. Tetap rawat keintiman doa, hadirat Tuhan, dan kesatuan hati bersama seluruh keluarga Royal Priesthood!`
             : `Silakan klik tombol <strong>Sign in Google</strong> di pojok kanan atas untuk melihat jadwal penugasan ibadah pribadi Anda.`
@@ -2725,7 +2785,82 @@ function renderMemberPersonalDashboard() {
     `;
   }
 
-  // Week Selector Tabs
+  return `
+    <!-- 1. PERSONAL GREETING BANNER (AT VERY TOP) -->
+    <section class="apple-card p-5 sm:p-7 bg-gradient-to-r from-rpGold/20 via-black/50 to-black/70 border border-rpGold/30 space-y-3">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rpGold/20 text-rpGold text-[11px] font-extrabold uppercase tracking-wider">
+            <span>👑</span> <span>${isRPM() ? 'Royal Priesthood Manager (RPM)' : 'Pelayan Royal Priesthood'}</span>
+          </div>
+          <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Shalom, ${nick}!
+          </h2>
+          <p class="text-xs sm:text-sm opacity-85 leading-relaxed max-w-2xl">
+            Posisi Pelayanan: <strong class="text-rpGold">${userPositionsText}</strong> • Bulan: <strong>${theme.monthLabel || 'Desember 2026'}</strong> (${theme.title || '-'})
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          ${isLogged ? `
+            <button onclick="openProfileModal()" class="px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-bold transition flex items-center gap-2">
+              <span>👤</span> <span>Profil Pelayanan</span>
+            </button>
+          ` : `
+            <button onclick="openLoginGateModal(true)" class="gold-pill-btn px-5 py-2.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-2">
+              <span>🔑</span> <span>Sign In Akun Tim</span>
+            </button>
+          `}
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. MY DUTIES SECTION (IMMEDIATELY BELOW GREETING) -->
+    <section class="space-y-3.5">
+      <div class="flex items-center justify-between gap-2">
+        <div>
+          <h3 class="text-lg sm:text-xl font-extrabold tracking-tight">📅 Jadwal Tugas Anda (${myDuties.length} Tugas)</h3>
+          <p class="text-xs opacity-75">Daftar ibadah dan doa malam di mana Anda dijadwalkan bertugas melayani</p>
+        </div>
+        <button onclick="navigateTo('schedule')" class="text-xs text-rpGold font-bold hover:underline">
+          Lihat Semua Jadwal &rarr;
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        ${dutyCardsHtml}
+      </div>
+    </section>
+  `;
+}
+
+function renderWeeklyDashboard() {
+  const topPersonalHtml = renderTopPersonalSection();
+  if (!isRPM()) {
+    return `
+      <div class="space-y-6 sm:space-y-8">
+        ${topPersonalHtml}
+        ${renderMemberThemeAndOutlineSection()}
+        ${renderMemberProfileSummarySection()}
+      </div>
+    `;
+  }
+  return `
+    <div class="space-y-6 sm:space-y-8">
+      ${topPersonalHtml}
+      ${renderRpmWorkflowDashboardContent()}
+    </div>
+  `;
+}
+
+// ==========================================
+// 1. NON-RPM / MEMBER THEME & PROFILE HELPERS
+// ==========================================
+function renderMemberThemeAndOutlineSection() {
+  const theme = APP_STATE.monthlyTheme || {};
+  const slides = theme.weeklySlides || [];
+  const activeSlide = slides.find(s => s.id === APP_STATE.activeWeekId) || slides[0] || {};
+
   const weekSelectorHtml = slides.map(s => {
     const active = s.id === activeSlide.id;
     return `
@@ -2735,129 +2870,85 @@ function renderMemberPersonalDashboard() {
     `;
   }).join('');
 
-  // Find member profile details
+  return `
+    <!-- MONTHLY EDIFIKASI & THEME GUIDE -->
+    <section class="apple-card p-5 sm:p-6 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-rpGold tracking-widest">Visi & Arah Rohani Bulan Ini</span>
+          <h3 class="text-lg sm:text-xl font-bold mt-0.5">${theme.title || '-'}</h3>
+          <p class="text-xs opacity-80 mt-1 max-w-2xl">${theme.summary || ''}</p>
+        </div>
+        <button onclick="openMonthlyEdifikasiModal()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15 transition shrink-0 flex items-center gap-1.5">
+          <span>📖</span> <span>Lihat Materi Lengkap</span>
+        </button>
+      </div>
+
+      <!-- Week Selector Tabs -->
+      <div class="space-y-3">
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          ${weekSelectorHtml}
+        </div>
+
+        <div class="apple-card-soft p-4 sm:p-5 border-l-4 border-rpGold space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-rpGold">${activeSlide.weekLabel || 'MINGGU INI'} • ${activeSlide.dateText || ''}</span>
+            <span class="text-xs font-bold">Ayat Utama: ${activeSlide.mainVerse || '-'}</span>
+          </div>
+          <div class="text-sm sm:text-base font-bold">${activeSlide.subtheme || '-'}</div>
+          <div class="text-xs opacity-85 leading-relaxed italic bg-black/20 p-2.5 rounded-xl border border-white/10">
+            ${activeSlide.highlightQuote || ''}
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderMemberProfileSummarySection() {
+  const u = APP_STATE.currentUser || {};
+  const isLogged = !!(u && u.isLoggedIn && u.email);
+  if (!isLogged) return '';
   const myMember = (APP_STATE.teamMembers || []).find(m => (m.email || '').toLowerCase() === (u.email || '').toLowerCase());
+  if (!myMember) return '';
 
   return `
-    <div class="space-y-6 sm:space-y-8">
-      <!-- 1. PERSONAL GREETING BANNER -->
-      <section class="apple-card p-5 sm:p-7 bg-gradient-to-r from-rpGold/20 via-black/50 to-black/70 border border-rpGold/30 space-y-3">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="space-y-1">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rpGold/20 text-rpGold text-[11px] font-extrabold uppercase tracking-wider">
-              <span>👑</span> <span>Pelayan Royal Priesthood</span>
-            </div>
-            <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Shalom, ${u.name || nick}!
-            </h2>
-            <p class="text-xs sm:text-sm opacity-85 leading-relaxed max-w-2xl">
-              Selamat melayani di bulan <strong>${theme.monthLabel || 'ini'}</strong> dengan tema: <span class="text-rpGold font-semibold">"${theme.title || '-'}"</span>. Berikut adalah agenda pelayanan dan materi firman untuk perlengkapan Anda.
-            </p>
-          </div>
-
-          <div class="flex items-center gap-2 shrink-0">
-            ${isLogged ? `
-              <button onclick="openProfileModal()" class="px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-bold transition flex items-center gap-2">
-                <span>👤</span> <span>Profil Pelayanan</span>
-              </button>
-            ` : `
-              <button onclick="openLoginGateModal(true)" class="gold-pill-btn px-5 py-2.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-2">
-                <span>🔑</span> <span>Sign In Akun Tim</span>
-              </button>
-            `}
-          </div>
+    <section class="apple-card p-5 sm:p-6 space-y-4">
+      <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-rpGold tracking-widest">Data Pelayan</span>
+          <h3 class="text-base sm:text-lg font-bold">Profil Pelayanan Anda</h3>
         </div>
-      </section>
-
-      <!-- 2. MY DUTIES SECTION -->
-      <section class="space-y-3.5">
-        <div class="flex items-center justify-between gap-2">
-          <div>
-            <h3 class="text-lg sm:text-xl font-extrabold tracking-tight">📅 Jadwal Tugas Anda Bulan Ini</h3>
-            <p class="text-xs opacity-75">Daftar ibadah di mana Anda dijadwalkan bertugas melayani</p>
-          </div>
-          <button onclick="navigateTo('schedule')" class="text-xs text-rpGold font-bold hover:underline">
-            Lihat Semua Jadwal &rarr;
-          </button>
+        <button onclick="openProfileModal()" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold transition flex items-center gap-1.5">
+          <span>✏️</span> <span>Edit Profil</span>
+        </button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+        <div class="p-3 rounded-xl bg-white/[0.04]">
+          <span class="opacity-60 text-[10px] block">Nama Lengkap & Panggilan</span>
+          <span class="font-bold text-white text-xs">${myMember.fullName} (${myMember.nickname})</span>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          ${dutyCardsHtml}
+        <div class="p-3 rounded-xl bg-white/[0.04]">
+          <span class="opacity-60 text-[10px] block">WhatsApp / Kontak</span>
+          <span class="font-bold text-white text-xs">${myMember.phone || '-'}</span>
         </div>
-      </section>
-
-      <!-- 3. MONTHLY EDIFIKASI & THEME GUIDE -->
-      <section class="apple-card p-5 sm:p-6 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
-          <div>
-            <span class="text-[10px] uppercase font-bold text-rpGold tracking-widest">Visi & Arah Rohani Bulan Ini</span>
-            <h3 class="text-lg sm:text-xl font-bold mt-0.5">${theme.title || '-'}</h3>
-            <p class="text-xs opacity-80 mt-1 max-w-2xl">${theme.summary || ''}</p>
-          </div>
-          <button onclick="openMonthlyEdifikasiModal()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold border border-white/15 transition shrink-0 flex items-center gap-1.5">
-            <span>📖</span> <span>Lihat Materi Lengkap</span>
-          </button>
+        <div class="p-3 rounded-xl bg-white/[0.04]">
+          <span class="opacity-60 text-[10px] block">Posisi Pelayanan</span>
+          <span class="font-bold text-rpGold text-xs">${(myMember.positions || []).join(', ') || '-'}</span>
         </div>
-
-        <!-- Week Selector Tabs -->
-        <div class="space-y-3">
-          <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-            ${weekSelectorHtml}
-          </div>
-
-          <div class="apple-card-soft p-4 sm:p-5 border-l-4 border-rpGold space-y-2">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="text-xs font-extrabold uppercase tracking-wider text-rpGold">${activeSlide.weekLabel || 'MINGGU INI'} • ${activeSlide.dateText || ''}</span>
-              <span class="text-xs font-bold">Ayat Utama: ${activeSlide.mainVerse || '-'}</span>
-            </div>
-            <div class="text-sm sm:text-base font-bold">${activeSlide.subtheme || '-'}</div>
-            <div class="text-xs opacity-85 leading-relaxed italic bg-black/20 p-2.5 rounded-xl border border-white/10">
-              ${activeSlide.highlightQuote || ''}
-            </div>
-          </div>
+        <div class="p-3 rounded-xl bg-white/[0.04]">
+          <span class="opacity-60 text-[10px] block">Lagu Favorit</span>
+          <span class="font-bold text-white text-xs truncate block">${myMember.favoriteSong || '-'}</span>
         </div>
-      </section>
-
-      <!-- 4. MY PROFILE SUMMARY CARD -->
-      ${isLogged && myMember ? `
-        <section class="apple-card p-5 sm:p-6 space-y-4">
-          <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
-            <div>
-              <span class="text-[10px] uppercase font-bold text-rpGold tracking-widest">Data Pelayan</span>
-              <h3 class="text-base sm:text-lg font-bold">Profil Pelayanan Anda</h3>
-            </div>
-            <button onclick="openProfileModal()" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold transition flex items-center gap-1.5">
-              <span>✏️</span> <span>Edit Profil</span>
-            </button>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div class="p-3 rounded-xl bg-white/[0.04]">
-              <span class="opacity-60 text-[10px] block">Nama Lengkap & Panggilan</span>
-              <span class="font-bold text-white text-xs">${myMember.fullName} (${myMember.nickname})</span>
-            </div>
-            <div class="p-3 rounded-xl bg-white/[0.04]">
-              <span class="opacity-60 text-[10px] block">WhatsApp / Kontak</span>
-              <span class="font-bold text-white text-xs">${myMember.phone || '-'}</span>
-            </div>
-            <div class="p-3 rounded-xl bg-white/[0.04]">
-              <span class="opacity-60 text-[10px] block">Posisi Pelayanan</span>
-              <span class="font-bold text-rpGold text-xs">${(myMember.positions || []).join(', ') || '-'}</span>
-            </div>
-            <div class="p-3 rounded-xl bg-white/[0.04]">
-              <span class="opacity-60 text-[10px] block">Lagu Favorit</span>
-              <span class="font-bold text-white text-xs truncate block">${myMember.favoriteSong || '-'}</span>
-            </div>
-          </div>
-        </section>
-      ` : ''}
-    </div>
+      </div>
+    </section>
   `;
 }
 
 // ==========================================
 // 2. RPM WORKFLOW DASHBOARD POV (PIPELINE)
 // ==========================================
-function renderRpmWorkflowDashboard() {
+function renderRpmWorkflowDashboardContent() {
   const slides = APP_STATE.monthlyTheme.weeklySlides || [];
   const activeSlide = slides.find(s => s.id === APP_STATE.activeWeekId) || slides[0] || {};
   const weekSchedules = APP_STATE.schedules.filter(s => s.weekId === activeSlide.id || (activeSlide.id === '2026-12-27' && s.date === '2026-12-25'));
@@ -3624,10 +3715,45 @@ function collectPositionMultiSelectRows() {
   return result;
 }
 
+function applyPresetSession(type) {
+  if (type === 'doa-selasa') {
+    const brSel = document.getElementById('sessBranch');
+    if (brSel) brSel.value = 'doa-selasa';
+    const timeInp = document.getElementById('sessTime');
+    if (timeInp) timeInp.value = '19.00 WIB';
+    const nameInp = document.getElementById('sessName');
+    if (nameInp) nameInp.value = 'Doa Malam Selasa (19.00 WIB)';
+    const rehInp = document.getElementById('sessRehearsal');
+    if (rehInp) rehInp.value = 'Persiapan & Soundcheck: Selasa 18.00 WIB di Ruang Doa Graha Pemulihan';
+  } else if (type === 'putat') {
+    const brSel = document.getElementById('sessBranch');
+    if (brSel) brSel.value = 'putat';
+    const timeInp = document.getElementById('sessTime');
+    if (timeInp) timeInp.value = '08.00 & 10.30 WIB';
+    const nameInp = document.getElementById('sessName');
+    if (nameInp) nameInp.value = 'Ibadah Raya 1 & 2 (08.00 & 10.30 WIB)';
+  }
+}
+
 function openNewSessionModal() {
   const branchOpts = APP_STATE.branches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
   openModal('Buat Jadwal / Sesi Ibadah Baru', `
     <div class="space-y-4 text-xs sm:text-sm">
+      <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div>
+          <div class="font-bold text-rpGold text-xs">⚡ Quick Preset Ibadah & Doa:</div>
+          <div class="text-[11px] opacity-75">Klik untuk mengisi waktu dan cabang secara otomatis</div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="applyPresetSession('doa-selasa')" class="px-3 py-1.5 rounded-full bg-rpGold text-black font-extrabold text-[11px] shadow hover:brightness-105 transition">
+            🙏 Doa Malam Selasa (19.00)
+          </button>
+          <button type="button" onclick="applyPresetSession('putat')" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 font-bold text-[11px] transition">
+            ⛪ Raya Putat (08.00)
+          </button>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <label class="block text-xs font-semibold mb-1">Tanggal (Calendar Picker)</label>
@@ -3961,7 +4087,6 @@ function ensureSetlistRecord(schId) {
   if (!APP_STATE.setlists || typeof APP_STATE.setlists !== "object") {
     APP_STATE.setlists = {};
   }
-  // If APP_STATE.setlists was mistakenly an array in memory
   if (Array.isArray(APP_STATE.setlists)) {
     const obj = {};
     APP_STATE.setlists.forEach(item => { if (item && item.scheduleId) obj[item.scheduleId] = item; });
@@ -3969,10 +4094,24 @@ function ensureSetlistRecord(schId) {
   }
   
   if (!APP_STATE.setlists[schId]) {
+    const schObj = (APP_STATE.schedules || []).find(s => s.id === schId);
+    let ed = JSON.parse(JSON.stringify(APP_STATE.DEFAULT_EDIFIKASI_WEEK1 || DEFAULT_STATE.DEFAULT_EDIFIKASI_WEEK1));
+    if (schObj && schObj.weekId) {
+      const slide = (APP_STATE.monthlyTheme?.weeklySlides || []).find(sl => sl.id === schObj.weekId);
+      if (slide) {
+        ed.subtheme = slide.subtheme || ed.subtheme;
+        ed.subthemeDesc = slide.highlightQuote || ed.subthemeDesc;
+        ed.mainVerse = slide.mainVerse || ed.mainVerse;
+        ed.mainVerseQuote = slide.highlightQuote || ed.mainVerseQuote;
+        if (slide.supportingVerses && slide.supportingVerses.length) {
+          ed.supportingVerses = slide.supportingVerses;
+        }
+      }
+    }
     APP_STATE.setlists[schId] = {
       scheduleId: schId,
       songs: [],
-      edifikasi: JSON.parse(JSON.stringify(APP_STATE.DEFAULT_EDIFIKASI_WEEK1 || DEFAULT_STATE.DEFAULT_EDIFIKASI_WEEK1))
+      edifikasi: ed
     };
   } else if (!APP_STATE.setlists[schId].edifikasi) {
     APP_STATE.setlists[schId].edifikasi = JSON.parse(JSON.stringify(APP_STATE.DEFAULT_EDIFIKASI_WEEK1 || DEFAULT_STATE.DEFAULT_EDIFIKASI_WEEK1));
@@ -5642,8 +5781,74 @@ function saveEditedSongBank(id) {
 function buildDefaultCombinedRundownItems(sch) {
   const wls = (sch?.assignments?.['Worship Leader'] || ['WL']).join(', ');
   const mds = (sch?.assignments?.['Music Director'] || ['MD']).join(', ');
+  const isDoaSelasa = sch?.branchId === 'doa-selasa' || (sch?.sessionName || '').toLowerCase().includes('doa malam');
   const isAfternoon = (sch?.time || '').includes('16.30') || (sch?.sessionName || '').toLowerCase().includes('sore');
   const isCW = sch?.branchId === 'cw';
+
+  if (isDoaSelasa) {
+    return [
+      {
+        time: '18.00-18.45',
+        duration: '45m',
+        segment: 'Persiapan, Soundcheck & Doa Tim Pelayan',
+        detail: 'Cek mic, instrumen, ProPresenter slide lirik & doa konsentrasi hadirat Tuhan bersama tim pelayan.',
+        equipment: 'Sound system, instruments, monitors, mic, LED screen',
+        location: 'Ruang Doa / Sanctuary',
+        pic: `${wls}, ${mds}, Tim Sound, Tim MM`,
+        tech: 'Soundcheck instrumen & cek slide lirik doa malam'
+      },
+      {
+        time: '18.45-19.00',
+        duration: '15m',
+        segment: 'Instrumental Hadirat Tuhan & Doa Pribadi Jemaat',
+        detail: 'Musik instrumental lembut mengalir, jemaat masuk dalam keheningan dan persiapan hati.',
+        equipment: 'Keyboard / Pad, sound system, warm lighting',
+        location: 'Sanctuary',
+        pic: `${mds}, Keyboardist`,
+        tech: 'Pencahayaan temaram hangat, sound lembut'
+      },
+      {
+        time: '19.00-19.35',
+        duration: '35m',
+        segment: 'Praise & Worship (Pujian & Penyembahan)',
+        detail: 'Praise & Worship mengalir mengikuti tema bulanan edifikasi, membawa jemaat dalam hadirat Tuhan.',
+        equipment: 'Sound system, band instruments, ProPresenter lyrics',
+        location: 'Sanctuary',
+        pic: `${wls}, Singers, Musisi`,
+        tech: 'Tampilkan lirik di layar tanpa delay; lighting dinamis khusyuk'
+      },
+      {
+        time: '19.35-19.55',
+        duration: '20m',
+        segment: 'Materi Firman & Pengantar Pokok Doa',
+        detail: 'Penjelasan rhema firman sesuai tema mingguan & pengantar pokok doa syafaat jemaat / bangsa.',
+        equipment: 'Wireless mic, PPT / slide pokok doa',
+        location: 'Sanctuary',
+        pic: 'Hamba Tuhan / Pastoral',
+        tech: 'Tampilkan slide pokok doa di layar'
+      },
+      {
+        time: '19.55-20.30',
+        duration: '35m',
+        segment: 'Doa Syafaat Bersama & Intimacy Worship',
+        detail: 'Berdoa bersama untuk pokok doa, diiringi alunan worship intim dan doa berantai.',
+        equipment: 'Microphones, keyboard/acoustic pad, soft lighting',
+        location: 'Sanctuary',
+        pic: `${wls}, Pendoa Syafaat, Tim Doa`,
+        tech: 'Musik latar mengalir lembut, mic pendoa standby'
+      },
+      {
+        time: '20.30-20.40',
+        duration: '10m',
+        segment: 'Lagu Penutup, Doa Berkat & Fellowship',
+        detail: 'Lagu penutup pengagungan, doa berkat dan salam persekutuan jemaat.',
+        equipment: 'Wireless mic, full stage lighting',
+        location: 'Sanctuary',
+        pic: `${wls}, Pastoral`,
+        tech: 'Lampu utama dinyalakan, musik closing standby'
+      }
+    ];
+  }
 
   if (isAfternoon) {
     return [
