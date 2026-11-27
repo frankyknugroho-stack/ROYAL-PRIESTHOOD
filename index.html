@@ -50,11 +50,18 @@
       --border-hair: rgba(15, 23, 42, 0.12);
       --accent-gold: #B45309;
     }
+
     /* Comprehensive Light Mode Contrast Overrides */
-    html.light .text-white {
+    html.light .text-white,
+    html.light [class*="text-white"] {
       color: #0B0F19 !important;
     }
-    html.light .text-gray-200, html.light .text-gray-300, html.light .text-gray-400 {
+    html.light .text-gray-200, 
+    html.light .text-gray-300, 
+    html.light .text-gray-400,
+    html.light [class*="text-gray-200"],
+    html.light [class*="text-gray-300"],
+    html.light [class*="text-gray-400"] {
       color: #334155 !important;
     }
     html.light .text-amber-100, html.light .text-amber-200 {
@@ -114,13 +121,63 @@
       background-color: #F8FAFC !important;
       border: 1px solid rgba(15, 23, 42, 0.10) !important;
     }
-    html.light .bg-gradient-to-r.from-rpGold\/20.via-black\/50.to-black\/70 {
-      background-image: linear-gradient(to right, rgba(245, 158, 11, 0.18), #FFFFFF, #F8FAFC) !important;
-      border: 1px solid rgba(180, 83, 9, 0.25) !important;
+    /* Hero Visual Stage Styling */
+    #heroVisualStage {
+      background: linear-gradient(135deg, rgba(229, 181, 103, 0.14) 0%, rgba(16, 21, 30, 0.96) 45%, rgba(10, 14, 22, 0.98) 100%);
+      border: 1px solid rgba(229, 181, 103, 0.35);
     }
-    html.light .bg-gradient-to-br.from-rpGold\/10.via-black\/40.to-black\/60 {
-      background-image: linear-gradient(135deg, rgba(245, 158, 11, 0.15), #FFFFFF, #F1F5F9) !important;
-      border: 1px solid rgba(180, 83, 9, 0.25) !important;
+    html.light #heroVisualStage {
+      background: #FFFFFF !important;
+      background-image: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, #FFFFFF 55%, #F8FAFC 100%) !important;
+      border: 1px solid rgba(180, 83, 9, 0.28) !important;
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08) !important;
+    }
+    html.light #heroVisualStage h3,
+    html.light #heroVisualStage .text-white,
+    html.light #heroVisualStage [class*="text-white"] {
+      color: #0F172A !important;
+    }
+    html.light #heroVisualStage p,
+    html.light #heroVisualStage [class*="text-gray"] {
+      color: #334155 !important;
+    }
+    html.light #heroVisualStage .bg-white\/\[0\.07\] {
+      background-color: #F8FAFC !important;
+      border: 1px solid rgba(15, 23, 42, 0.12) !important;
+      color: #0F172A !important;
+    }
+    html.light #heroVisualStage .border-white\/10 {
+      border-color: rgba(15, 23, 42, 0.14) !important;
+    }
+    html.light #heroVisualStage .bg-white\/10 {
+      background-color: rgba(15, 23, 42, 0.06) !important;
+      border-color: rgba(15, 23, 42, 0.15) !important;
+      color: #0F172A !important;
+    }
+    html.light #heroSlideSubBadge {
+      color: #92400E !important;
+    }
+    html.light #heroVisualStage .opacity-85 {
+      color: #334155 !important;
+      opacity: 1 !important;
+    }
+    html.light #heroDots button:not(.bg-rpGold) {
+      background-color: rgba(15, 23, 42, 0.25) !important;
+    }
+    html.light #heroSlideCaption {
+      color: #334155 !important;
+    }
+    html.light #heroSlideIndicator {
+      color: #92400E !important;
+    }
+    /* Widescreen Banner keeps dark photo-overlay text readability */
+    html.light #widescreenBannerWrapper .text-white,
+    html.light #widescreenBannerWrapper [class*="text-white"] {
+      color: #FFFFFF !important;
+    }
+    html.light #widescreenBannerWrapper .text-gray-200,
+    html.light #widescreenBannerWrapper [class*="text-gray"] {
+      color: #E2E8F0 !important;
     }
     html.light input, html.light select, html.light textarea {
       background-color: #FFFFFF !important;
@@ -132,10 +189,14 @@
       color: #0B0F19 !important;
       border: 1px solid rgba(15, 23, 42, 0.15) !important;
     }
-    html.light #modalBox .text-white {
+    html.light #modalBox .text-white,
+    html.light #modalBox [class*="text-white"] {
       color: #0B0F19 !important;
     }
-    html.light .gold-pill-btn {
+    html.light .gold-pill-btn,
+    html.light .gold-pill-btn *,
+    html.light .bg-rpGold,
+    html.light .bg-rpGold * {
       color: #000000 !important;
     }
     html, body {
@@ -449,10 +510,7 @@ const APP_ASSETS = {
 
 <!-- HERO WEBSITE HEADER WITH DEDICATED SLIDESHOW STAGE & LOWERED TEXT -->
 <section class="no-print relative overflow-hidden border-b border-white/[0.08] pt-16 sm:pt-20">
-  <div class="relative min-h-[460px] sm:min-h-[520px] flex flex-col justify-between">
-    <img id="heroBannerImg" alt="Royal Priesthood Worship Collective" class="absolute inset-0 w-full h-full object-cover object-center opacity-40" />
-    <div class="absolute inset-0 bg-gradient-to-b from-[#070A0F]/85 via-[#070A0F]/75 to-[#070A0F]/95"></div>
-
+  <div class="relative flex flex-col justify-between">
     <!-- 0. DEDICATED WIDESCREEN IMAGE SLIDESHOW BANNER (1920 × 600 PX) -->
     <div class="relative z-10 max-w-7xl mx-auto w-full px-3 sm:px-6 pt-3 sm:pt-5 pb-2">
       <div id="widescreenBannerWrapper" class="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-rpGold/40 shadow-2xl bg-black/80 aspect-[16/9] sm:aspect-[21/9] lg:aspect-[1920/600] w-full min-h-[180px] sm:min-h-[250px] md:min-h-[320px] lg:min-h-[380px] max-h-[460px] flex items-center justify-center group touch-pan-y">
@@ -482,7 +540,7 @@ const APP_ASSETS = {
 
     <!-- 1. DEDICATED PROMINENT VISUAL SLIDESHOW / EVENT CAROUSEL STAGE -->
     <div class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-2 pb-3">
-      <div id="heroVisualStage" class="relative rounded-3xl overflow-hidden border border-rpGold/30 shadow-2xl bg-gradient-to-r from-rpGold/15 via-black/40 to-black/60 p-4 sm:p-7 min-h-[200px] sm:min-h-[250px] flex flex-col justify-between">
+      <div id="heroVisualStage" class="relative rounded-3xl overflow-hidden shadow-2xl p-4 sm:p-7 min-h-[200px] sm:min-h-[250px] flex flex-col justify-between transition-colors">
         <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
           <div class="flex items-center gap-2">
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rpGold text-black font-extrabold text-[10px] tracking-wider uppercase shadow">
@@ -1791,7 +1849,7 @@ function applyAssetsAndTheme() {
   }
   document.getElementById('printCrownImg').src = APP_ASSETS.RP_CROWN_LOGO;
   document.getElementById('printMdcImg').src = APP_ASSETS.MDC_LOGO;
-  document.getElementById('heroBannerImg').src = APP_ASSETS.HERO_BANNER;
+  const heroBanner = document.getElementById('heroBannerImg'); if (heroBanner) heroBanner.src = APP_ASSETS.HERO_BANNER;
   document.getElementById('footerMdcLogo').src = APP_ASSETS.MDC_LOGO;
   document.getElementById('footerElevateLogo').src = APP_ASSETS.ELEVATE_LOGO;
   const loginModalLogo = document.getElementById('loginModalLogo');
