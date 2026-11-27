@@ -382,10 +382,10 @@ const APP_ASSETS = {
     <nav id="desktopNavBar" class="hidden lg:flex items-center gap-1 nav-pill-group p-1 rounded-full">
       <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SCHEDULE</button>
       <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SETLIST</button>
-      <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Song Bank</button>
-      <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Service Rundown</button>
-      <button data-nav="team" onclick="navigateTo('team')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Team Database</button>
-      <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Prayer Wall</button>
+      <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SERVICE RUNDOWN</button>
+      <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">PRAYER WALL</button>
+      <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SONG BANK</button>
+      <button data-nav="team" onclick="navigateTo('team')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">TEAM DATABASE</button>
     </nav>
 
     <div class="flex items-center gap-1 sm:gap-2 shrink-0">
@@ -418,10 +418,10 @@ const APP_ASSETS = {
   <div id="mobileNavBar" class="lg:hidden flex items-center gap-1 px-2.5 py-1.5 overflow-x-auto no-scrollbar border-t border-current/10">
     <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SCHEDULE</button>
     <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SETLIST</button>
-    <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Song Bank</button>
-    <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Rundown</button>
-    <button data-nav="team" onclick="navigateTo('team')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Team</button>
-    <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Prayer</button>
+    <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">RUNDOWN</button>
+    <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">PRAYER</button>
+    <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SONG BANK</button>
+    <button data-nav="team" onclick="navigateTo('team')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">TEAM</button>
   </div>
 </header>
 
@@ -464,10 +464,6 @@ const APP_ASSETS = {
 
       <!-- Nav Links -->
       <div id="mobileDrawerNavLinks" class="space-y-1">
-        <button onclick="navigateTo('weekly'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Service Pipeline Hub</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
         <button onclick="navigateTo('schedule'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
           <span>SCHEDULE</span>
           <span class="text-xs opacity-50">→</span>
@@ -476,20 +472,20 @@ const APP_ASSETS = {
           <span>SETLIST</span>
           <span class="text-xs opacity-50">→</span>
         </button>
-        <button onclick="navigateTo('songbank'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Song Bank</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
         <button onclick="navigateTo('rundown'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Service Rundown</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
-        <button onclick="navigateTo('team'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Team Database</span>
+          <span>SERVICE RUNDOWN</span>
           <span class="text-xs opacity-50">→</span>
         </button>
         <button onclick="navigateTo('prayer'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Prayer Wall</span>
+          <span>PRAYER WALL</span>
+          <span class="text-xs opacity-50">→</span>
+        </button>
+        <button onclick="navigateTo('songbank'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+          <span>SONG BANK</span>
+          <span class="text-xs opacity-50">→</span>
+        </button>
+        <button onclick="navigateTo('team'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+          <span>TEAM DATABASE</span>
           <span class="text-xs opacity-50">→</span>
         </button>
       </div>
@@ -4322,10 +4318,10 @@ function renderScheduleTab() {
     <div class="apple-card p-5 sm:p-6 space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10">
         <div class="flex items-center gap-4">
-          <div class="px-4 py-2 rounded-2xl bg-rpGold text-[#090C11] text-center min-w-[96px]">
-            <div class="text-[10px] font-black uppercase tracking-wider">${grp.weekLabel}</div>
-            <div class="text-lg sm:text-xl font-black leading-tight">${grp.dateLabel.split(' ')[0]}</div>
-            <div class="text-[10px] font-bold uppercase">${grp.dateLabel.split(' ').slice(1).join(' ')}</div>
+          <div class="px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-rpGold text-[#090C11] text-center min-w-[100px] sm:min-w-[115px] shadow-md flex flex-col justify-center shrink-0">
+            <div class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider opacity-80">${grp.weekLabel}</div>
+            <div class="text-4xl sm:text-5xl font-black leading-none my-1 tracking-tight">${grp.dateLabel.split(' ')[0]}</div>
+            <div class="text-[9px] sm:text-[10px] font-bold uppercase opacity-85 leading-tight">${grp.dateLabel.split(' ').slice(1).join(' ')}</div>
           </div>
           <div>
             <div class="text-xs uppercase tracking-wider text-rpGold font-bold">${grp.weekLabel}</div>
@@ -4401,30 +4397,41 @@ function renderScheduleTab() {
 }
 
 
-function getMemberAvatarHtml(memberName, sizeClass = "w-5 h-5 text-[9px]") {
+function getMemberAvatarHtml(memberName, sizeClass = "w-7 h-7 text-xs") {
   if (!memberName || memberName === "-" || memberName.trim() === "") return "";
   const clean = memberName.trim();
   const m = (APP_STATE.teamMembers || []).find(x => 
     (x.nickname && x.nickname.toLowerCase() === clean.toLowerCase()) || 
     (x.fullName && x.fullName.toLowerCase() === clean.toLowerCase())
   );
-  if (m && m.avatarUrl) {
-    return `<img src="${m.avatarUrl}" alt="${clean}" class="${sizeClass} rounded-full object-cover border border-white/20 shrink-0 inline-block align-middle" />`;
+
+  let photoUrl = m ? (m.avatarUrl || m.photo) : null;
+  const isCur = APP_STATE.currentUser?.nickname && (
+    clean.toLowerCase() === APP_STATE.currentUser.nickname.toLowerCase() ||
+    clean.toLowerCase().includes('franky')
+  );
+  if (isCur && APP_STATE.currentUser?.photo) {
+    photoUrl = APP_STATE.currentUser.photo;
   }
-  // Fallback Google Avatar or elegant Initial
-  if (m && m.email && m.email.endsWith("@gmail.com")) {
-    const initial = clean.charAt(0).toUpperCase();
-    return `<span class="${sizeClass} rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-black font-extrabold flex items-center justify-center shrink-0 border border-amber-300/40 inline-flex align-middle" title="${clean}">${initial}</span>`;
+  if (!photoUrl && m && m.email && APP_STATE.currentUser?.email && m.email.toLowerCase() === APP_STATE.currentUser.email.toLowerCase()) {
+    photoUrl = APP_STATE.currentUser?.photo;
   }
+
+  if (photoUrl) {
+    return `<img src="${photoUrl}" alt="${clean}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(clean)}&background=E5B567&color=090C11&bold=true';" class="${sizeClass} rounded-full object-cover border border-rpGold/50 shadow-sm shrink-0 inline-block align-middle" />`;
+  }
+  
+  // High quality elegant avatar with persona initials
   const initial = clean.charAt(0).toUpperCase();
-  return `<span class="${sizeClass} rounded-full bg-white/15 text-rpGold font-bold flex items-center justify-center shrink-0 border border-white/15 inline-flex align-middle" title="${clean}">${initial}</span>`;
+  const uiAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(clean)}&background=E5B567&color=090C11&bold=true`;
+  return `<img src="${uiAvatar}" alt="${clean}" class="${sizeClass} rounded-full object-cover border border-amber-400/40 shadow-sm shrink-0 inline-block align-middle" />`;
 }
 
 function renderMembersWithAvatars(namesArr) {
   if (!Array.isArray(namesArr) || !namesArr.length) return `<span class="opacity-40">-</span>`;
   return namesArr.map(name => {
-    const av = getMemberAvatarHtml(name, "w-4 h-4 text-[8px]");
-    return `<span class="inline-flex items-center gap-1 bg-white/[0.04] px-1.5 py-0.5 rounded-md">${av}<span>${name}</span></span>`;
+    const av = getMemberAvatarHtml(name, "w-6 h-6 sm:w-7 sm:h-7 text-xs font-bold");
+    return `<span class="inline-flex items-center gap-1.5 bg-white/[0.05] hover:bg-white/[0.09] pl-1 pr-2.5 py-1 rounded-full border border-white/10 shadow-sm text-xs font-semibold transition">${av}<span>${name}</span></span>`;
   }).join(" ");
 }
 
@@ -4472,27 +4479,6 @@ function setScheduleBranch(brId) {
 function openAddBranchModal() {
   openModal('Tambah Cabang Gereja Baru', `
     <div class="space-y-3 text-xs sm:text-sm">
-
-      <div class="p-3.5 rounded-2xl bg-black/25 border border-white/10 flex flex-col sm:flex-row items-center gap-4">
-        <div class="relative shrink-0">
-          <img id="mfAvatarPreview" src="${m.avatarUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.nickname || 'Member') + '&background=E5B567&color=090C11&bold=true'}" 
-               alt="Avatar Preview" class="w-16 h-16 rounded-full object-cover border-2 border-rpGold/50 shadow-md" />
-          <input type="hidden" id="mfAvatarUrl" value="${m.avatarUrl || ''}" />
-        </div>
-        <div class="flex-1 space-y-1 text-center sm:text-left">
-          <div class="text-xs font-bold text-rpGold">Foto Profil Member</div>
-          <p class="text-[11px] opacity-70">Upload foto profil (PNG/JPG). Jika dikosongkan, foto otomatis diambil dari akun Google yang didaftarkan.</p>
-          <div class="pt-1 flex flex-wrap gap-2 justify-center sm:justify-start">
-            <label class="px-3 py-1 rounded-full bg-rpGold text-[#090C11] text-[11px] font-bold cursor-pointer hover:bg-amber-300 transition">
-              Pilih Foto
-              <input type="file" accept="image/*" onchange="handleMemberAvatarUpload(this)" class="hidden" />
-            </label>
-            <button type="button" onclick="document.getElementById('mfAvatarUrl').value=''; document.getElementById('mfAvatarPreview').src='https://ui-avatars.com/api/?name='+encodeURIComponent(document.getElementById('mfNickname').value||'Member')+'&background=E5B567&color=090C11&bold=true';" class="px-3 py-1 rounded-full bg-white/10 text-[11px] font-semibold hover:bg-white/20 transition">
-              Reset ke Google/Inisial
-            </button>
-          </div>
-        </div>
-      </div>
 
       <div>
         <label class="block text-xs font-semibold mb-1">Nama Lengkap Cabang</label>
@@ -5056,7 +5042,7 @@ function renderSetlistTab() {
           <span class="font-bold text-rpGoldSoft">Tujuan Lagu:</span> ${song.purpose || "-"}
         </div>
 
-        <pre class="whitespace-pre-wrap font-sans text-xs leading-relaxed bg-black/25 rounded-2xl p-3.5 border border-white/[0.06]">${song.lyrics || ""}</pre>
+        <div class="whitespace-pre-wrap font-sans text-xs leading-relaxed bg-black/25 rounded-2xl p-4 sm:p-5 border border-white/[0.06] md:columns-2 lg:columns-3 md:gap-8 lg:gap-10 [column-fill:balance]">${song.lyrics || ""}</div>
 
         <div class="no-print space-y-2 pt-1">
           <div class="text-[11px] font-bold opacity-75">Catatan & Komentar Tim (${(song.comments || []).length})</div>
@@ -5117,13 +5103,21 @@ function renderSetlistTab() {
             <div>Singers: <strong>${renderMembersWithAvatars(sch.assignments?.["Singers"] || [])}</strong></div>
             ${(sch.assignments?.["Saxophonist"] || []).length ? `<div>Saxophonist: <strong>${renderMembersWithAvatars(sch.assignments["Saxophonist"])}</strong></div>` : ""}
           </div>
-          <div class="apple-card-soft p-4 space-y-1 text-xs flex flex-col justify-between">
+          <div class="apple-card-soft p-4 space-y-2 text-xs flex flex-col justify-between">
             <div>
-              <div class="font-bold text-rpGold">Rekomendasi Dresscode Ibadah</div>
-              <div class="text-xs font-semibold mt-1">${ed.dresscode?.palette || "Earth tone (cream, beige, cokelat)"}</div>
+              <div class="flex items-center justify-between mb-1">
+                <div class="font-bold text-rpGold">Rekomendasi Dresscode Ibadah</div>
+                ${ed.dresscode?.imageUrl ? '<span class="px-2 py-0.5 rounded-full bg-rpGold/20 text-rpGold font-bold text-[10px]">Foto Tersedia</span>' : ''}
+              </div>
+              ${ed.dresscode?.imageUrl ? `
+                <div class="my-2 relative rounded-xl overflow-hidden border border-white/15 bg-black/30 group max-h-48 flex items-center justify-center">
+                  <img src="${ed.dresscode.imageUrl}" alt="Dresscode Guide" class="w-full h-auto max-h-44 object-contain rounded-xl hover:scale-105 transition duration-300" />
+                </div>
+              ` : ''}
+              <div class="text-xs font-bold mt-1">${ed.dresscode?.palette || "Earth tone (cream, beige, cokelat, atau warna natural)"}</div>
               <div class="text-[11px] opacity-75">${ed.dresscode?.style || "Semi-formal, rapi, dan sederhana"}</div>
             </div>
-            ${editable ? `<div class="pt-2"><button onclick="openEditEdifikasiSetlistModal('${sch.id}')" class="px-3.5 py-1.5 rounded-full bg-rpGold/20 hover:bg-rpGold/30 text-rpGold text-xs font-bold">✏️ Edit Materi Edifikasi Minggu Ini</button></div>` : ""}
+            ${editable ? `<div class="pt-2"><button onclick="openEditEdifikasiSetlistModal('${sch.id}')" class="px-3.5 py-1.5 rounded-full bg-rpGold/20 hover:bg-rpGold/30 text-rpGold text-xs font-bold flex items-center gap-1.5"><span>✏️</span> <span>Edit & Upload Foto Dresscode</span></button></div>` : ""}
           </div>
         </div>
       </div>
@@ -5911,8 +5905,31 @@ function openEditEdifikasiSetlistModal(schId) {
           <input id="edHeart" type="text" value="${ed.teamHandout?.heartAttitude || "Percaya • Berserah • Bersyukur • Mengalami Anugerah • Taat"}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
         </div>
         <div>
-          <label class="block text-xs font-semibold mb-1">Dresscode Rekomendasi</label>
-          <input id="edDresscode" type="text" value="${ed.dresscode?.palette || "Earth tone (cream, beige, cokelat)"}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+          <label class="block text-xs font-semibold mb-1">Dresscode Rekomendasi (Warna & Nuansa)</label>
+          <input id="edDresscode" type="text" value="${ed.dresscode?.palette || "Earth tone (cream, beige, cokelat, atau warna natural)"}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        </div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-black/25 border border-white/10 space-y-2">
+        <div class="text-xs font-bold text-rpGold flex items-center gap-1.5">
+          <span>👗</span> <span>Upload Foto Contoh Dresscode</span>
+        </div>
+        <p class="text-[11px] opacity-70">Unggah foto/palet warna panduan dresscode agar tim dapat melihat visual pakaian secara langsung.</p>
+        <div class="flex items-center gap-4 pt-1">
+          <div class="w-20 h-20 rounded-xl bg-black/40 border border-white/20 flex items-center justify-center overflow-hidden shrink-0">
+            <img id="edDresscodeImagePreview" src="${ed.dresscode?.imageUrl || ''}" alt="Dresscode" class="w-full h-full object-cover ${ed.dresscode?.imageUrl ? '' : 'hidden'}" />
+            <span id="edDresscodeNoImage" class="text-2xl ${ed.dresscode?.imageUrl ? 'hidden' : ''}">👕</span>
+          </div>
+          <div class="space-y-1.5 flex-1">
+            <input type="hidden" id="edDresscodeImageUrl" value="${ed.dresscode?.imageUrl || ''}" />
+            <label class="px-3.5 py-1.5 rounded-full bg-rpGold text-black font-bold text-xs cursor-pointer hover:brightness-105 inline-flex items-center gap-1 shadow">
+              <span>📷</span> <span>Pilih Gambar Dresscode</span>
+              <input type="file" accept="image/*" onchange="handleDresscodeImageUpload(this)" class="hidden" />
+            </label>
+            ${ed.dresscode?.imageUrl ? `
+              <button type="button" onclick="document.getElementById('edDresscodeImageUrl').value=''; document.getElementById('edDresscodeImagePreview').src=''; document.getElementById('edDresscodeImagePreview').classList.add('hidden'); document.getElementById('edDresscodeNoImage').classList.remove('hidden');" class="px-3 py-1.5 rounded-full bg-rose-500/20 text-rose-300 text-xs font-semibold hover:bg-rose-500/30 ml-2">Hapus Foto</button>
+            ` : ''}
+          </div>
         </div>
       </div>
 
@@ -5922,6 +5939,52 @@ function openEditEdifikasiSetlistModal(schId) {
       </div>
     </div>
   `);
+}
+
+
+function handleDresscodeImageUpload(input) {
+  if (!input || !input.files || !input.files[0]) return;
+  const file = input.files[0];
+  if (!file.type.startsWith("image/")) return showToast("Pilih file gambar (JPG/PNG).");
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const rawData = e.target.result;
+    const img = new Image();
+    img.onload = function() {
+      const maxDim = 1200;
+      let w = img.width;
+      let h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
+      const compressedData = canvas.toDataURL("image/jpeg", 0.85);
+
+      const previewEl = document.getElementById("edDresscodeImagePreview");
+      const noImgEl = document.getElementById("edDresscodeNoImage");
+      const valEl = document.getElementById("edDresscodeImageUrl");
+      if (valEl) valEl.value = compressedData;
+      if (previewEl) {
+        previewEl.src = compressedData;
+        previewEl.classList.remove("hidden");
+      }
+      if (noImgEl) noImgEl.classList.add("hidden");
+      showToast("Foto dresscode siap disimpan.");
+    };
+    img.src = rawData;
+  };
+  reader.readAsDataURL(file);
 }
 
 function saveEditEdifikasiSetlist(schId) {
@@ -5950,6 +6013,8 @@ function saveEditEdifikasiSetlist(schId) {
 
   if (!ed.dresscode) ed.dresscode = {};
   ed.dresscode.palette = document.getElementById("edDresscode").value.trim();
+  const dcImgEl = document.getElementById("edDresscodeImageUrl");
+  if (dcImgEl) ed.dresscode.imageUrl = dcImgEl.value.trim();
 
   sl.edifikasi = ed;
   saveState();
@@ -7286,7 +7351,7 @@ function renderRundownTab() {
       <td class="py-3 px-3 opacity-90">${row.detail || '-'}</td>
       <td class="py-3 px-3 opacity-80">${row.equipment || '-'}</td>
       <td class="py-3 px-3 opacity-80">${row.location || 'Main Hall'}</td>
-      <td class="py-3 px-3 font-semibold">${row.pic || '-'}</td>
+      <td class="py-3 px-3">${renderRundownPicHtml(row.pic)}</td>
       <td class="py-3 px-3 opacity-85">${row.tech || '-'}</td>
       ${editable ? `
         <td class="no-print py-3 px-3 text-right whitespace-nowrap">
@@ -7443,23 +7508,178 @@ function saveRundownMeta(schId) {
   showToast('Info liturgi & crew diperbarui.');
 }
 
+
+function splitRundownTime(timeStr) {
+  if (!timeStr) return ['', ''];
+  const clean = timeStr.trim().replace(/\s*\|\s*/g, ' - ');
+  const parts = clean.split(/\s*[-–—]\s*/);
+  if (parts.length >= 2) {
+    return [parts[0].trim(), parts[1].trim()];
+  }
+  return [parts[0].trim(), ''];
+}
+
+function parseTimeToMinutes(tStr) {
+  if (!tStr) return 0;
+  const match = tStr.trim().match(/^(\d{1,2})[:.](\d{2})/);
+  if (!match) return 0;
+  return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+}
+
+function formatMinutesToTime(totalMin) {
+  const norm = ((totalMin % 1440) + 1440) % 1440;
+  const h = Math.floor(norm / 60);
+  const m = norm % 60;
+  return `${h.toString().padStart(2, '0')}.${m.toString().padStart(2, '0')}`;
+}
+
+function parseDurationToMinutes(durStr) {
+  if (!durStr) return 0;
+  const num = parseInt(durStr.replace(/[^\d]/g, ''), 10);
+  return isNaN(num) ? 0 : num;
+}
+
+function autoUpdateRundownDuration(startId = 'edRdStartTime', endId = 'edRdEndTime', durId = 'edRdDur') {
+  const s = document.getElementById(startId)?.value?.trim();
+  const e = document.getElementById(endId)?.value?.trim();
+  if (s && e) {
+    const sMin = parseTimeToMinutes(s);
+    const eMin = parseTimeToMinutes(e);
+    if (eMin > sMin) {
+      const dur = eMin - sMin;
+      const durEl = document.getElementById(durId);
+      if (durEl) durEl.value = `${dur}m`;
+    }
+  }
+}
+
+function autoUpdateRundownEndTime(startId = 'edRdStartTime', durId = 'edRdDur', endId = 'edRdEndTime') {
+  const s = document.getElementById(startId)?.value?.trim();
+  const dur = document.getElementById(durId)?.value?.trim();
+  if (s && dur) {
+    const sMin = parseTimeToMinutes(s);
+    const durMin = parseDurationToMinutes(dur);
+    if (sMin > 0 && durMin > 0) {
+      const eMin = sMin + durMin;
+      const endEl = document.getElementById(endId);
+      if (endEl) endEl.value = formatMinutesToTime(eMin);
+    }
+  }
+}
+
+function renderPicSelectorChips(inputElId) {
+  const members = APP_STATE.teamMembers || [];
+  const presets = ['Tim EO & Tim MM', 'Tim EO', 'Tim MM', 'Tim Sound', 'PW Team', 'Hamba Tuhan / EO', 'Tim Usher'];
+  
+  const memberChips = members.map(m => {
+    let photoUrl = m.photo || m.avatarUrl;
+    if (!photoUrl && m.email && APP_STATE.currentUser?.email && m.email.toLowerCase() === APP_STATE.currentUser.email.toLowerCase()) {
+      photoUrl = APP_STATE.currentUser?.photo;
+    }
+    if (!photoUrl) {
+      photoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(m.nickname || m.fullName)}&background=E5B567&color=090C11&bold=true`;
+    }
+    return `
+      <button type="button" onclick="appendPicToInput('${inputElId}', '${m.nickname}')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.08] hover:bg-rpGold hover:text-black border border-white/10 text-xs font-semibold transition cursor-pointer">
+        <img src="${photoUrl}" alt="${m.nickname}" class="w-4 h-4 rounded-full object-cover shrink-0" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(m.nickname)}&background=E5B567&color=090C11&bold=true';" />
+        <span>${m.nickname}</span>
+      </button>
+    `;
+  }).join('');
+
+  const presetChips = presets.map(p => `
+    <button type="button" onclick="appendPicToInput('${inputElId}', '${p}')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.05] hover:bg-white/15 border border-white/10 text-xs font-medium text-amber-200 transition cursor-pointer">
+      <span>+</span> <span>${p}</span>
+    </button>
+  `).join('');
+
+  return memberChips + presetChips;
+}
+
+function appendPicToInput(inputId, val) {
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  const cur = el.value.trim();
+  if (!cur || cur === '-') {
+    el.value = val;
+  } else {
+    const parts = cur.split(',').map(s => s.trim());
+    if (parts.includes(val)) {
+      el.value = parts.filter(x => x !== val).join(', ');
+    } else {
+      el.value = cur + ', ' + val;
+    }
+  }
+}
+
+function renderRundownPicHtml(picStr) {
+  if (!picStr || picStr === '-') return '<span class="opacity-40">-</span>';
+  const parts = picStr.split(/[,&/]+/).map(s => s.trim()).filter(Boolean);
+  return `
+    <div class="flex flex-wrap items-center gap-1.5">
+      ${parts.map(p => {
+        const m = (APP_STATE.teamMembers || []).find(x => 
+          (x.nickname && x.nickname.toLowerCase() === p.toLowerCase()) || 
+          (x.fullName && x.fullName.toLowerCase() === p.toLowerCase())
+        );
+        let photoUrl = m ? (m.photo || m.avatarUrl) : null;
+        if (!photoUrl && m && m.email && APP_STATE.currentUser?.email && m.email.toLowerCase() === APP_STATE.currentUser.email.toLowerCase()) {
+          photoUrl = APP_STATE.currentUser?.photo;
+        }
+        if (m) {
+          if (!photoUrl) {
+            photoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(m.nickname || p)}&background=E5B567&color=090C11&bold=true`;
+          }
+          return `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-xs font-medium"><img src="${photoUrl}" alt="${p}" class="w-5 h-5 rounded-full object-cover border border-rpGold/30 shrink-0" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p)}&background=E5B567&color=090C11&bold=true';" /><span>${p}</span></span>`;
+        }
+        let icon = '👥';
+        const low = p.toLowerCase();
+        if (low.includes('sound')) icon = '🎧';
+        else if (low.includes('mm') || low.includes('multimedia') || low.includes('media')) icon = '💻';
+        else if (low.includes('eo')) icon = '📋';
+        else if (low.includes('tuhan') || low.includes('pastor') || low.includes('hamba')) icon = '✝️';
+        return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-[11px] font-semibold"><span class="text-xs">${icon}</span><span>${p}</span></span>`;
+      }).join('')}
+    </div>
+  `;
+}
+
 function openAddRundownRowModal(schId) {
-  openModal('Tambah Segmen Service Rundown', `
-    <div class="space-y-3 text-xs sm:text-sm">
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-semibold mb-1">Waktu / Jam Sesi (bisa multi-sesi)</label>
-          <input id="rdRowTime" type="text" placeholder="09.05-09.40 | 11.05-11.40" class="w-full px-3 py-2 rounded-xl bg-black/25 border border-white/15" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold mb-1">Durasi</label>
-          <input id="rdRowDur" type="text" placeholder="35m" class="w-full px-3 py-2 rounded-xl bg-black/25 border border-white/15" />
+  const rd = ensureRundownRecord(schId);
+  let defaultStart = '08.00';
+  if (rd.items && rd.items.length > 0) {
+    const lastIt = rd.items[rd.items.length - 1];
+    const [_, lastEnd] = splitRundownTime(lastIt.time);
+    if (lastEnd) defaultStart = lastEnd;
+  }
+  const defaultDur = '5m';
+  const startMin = parseTimeToMinutes(defaultStart);
+  const defaultEnd = startMin > 0 ? formatMinutesToTime(startMin + 5) : '08.05';
+
+  openModal('Tambah Segmen Service Rundown Baru', `
+    <div class="space-y-3.5 text-xs sm:text-sm">
+      <div class="p-3.5 rounded-2xl bg-black/30 border border-white/10 space-y-2">
+        <div class="text-xs font-bold text-rpGold">⏰ Waktu / Jam Sesi (2 Kolom)</div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-white/80 mb-1">Jam Mulai</label>
+            <input id="addRdStartTime" type="text" value="${defaultStart}" oninput="autoUpdateRundownDuration('addRdStartTime', 'addRdEndTime', 'addRdDur')" placeholder="08.55" class="w-full px-3 py-2 rounded-xl bg-black/35 border border-white/20 text-xs font-bold text-rpGold focus:border-rpGold focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-white/80 mb-1">Jam Selesai</label>
+            <input id="addRdEndTime" type="text" value="${defaultEnd}" oninput="autoUpdateRundownDuration('addRdStartTime', 'addRdEndTime', 'addRdDur')" placeholder="09.00" class="w-full px-3 py-2 rounded-xl bg-black/35 border border-white/20 text-xs font-bold text-rpGold focus:border-rpGold focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-white/80 mb-1">Durasi</label>
+            <input id="addRdDur" type="text" value="${defaultDur}" oninput="autoUpdateRundownEndTime('addRdStartTime', 'addRdDur', 'addRdEndTime')" placeholder="5m" class="w-full px-3 py-2 rounded-xl bg-black/35 border border-white/20 text-xs font-semibold focus:border-rpGold focus:outline-none" />
+          </div>
         </div>
       </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-semibold mb-1">Segmen Liturgi</label>
-          <input id="rdRowSeg" type="text" placeholder="Contoh: Praise & Worship Session / Song After Sermon" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+          <input id="rdRowSeg" type="text" placeholder="Contoh: Praise & Worship / Warta Jemaat" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
         </div>
         <div>
           <label class="block text-xs font-semibold mb-1">Location</label>
@@ -7470,16 +7690,22 @@ function openAddRundownRowModal(schId) {
         <label class="block text-xs font-semibold mb-1">Detail / Daftar Lagu & Key / Keterangan</label>
         <textarea id="rdRowDetail" rows="2" placeholder="1. Judul Lagu (WL) - Key | 2. ..." class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15"></textarea>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-semibold mb-1">Equipment</label>
-          <input id="rdRowEquip" type="text" placeholder="Sound system, instruments, monitors, LED, ProPresenter" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+      <div>
+        <label class="block text-xs font-semibold mb-1">Equipment</label>
+        <input id="rdRowEquip" type="text" placeholder="Sound system, instruments, monitors, LED, ProPresenter" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+      </div>
+
+      <div class="space-y-1.5 p-3.5 rounded-2xl bg-black/25 border border-white/10">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-bold text-rpGold">PIC (Orang / Tim Bertanggung Jawab)</label>
+          <span class="text-[10px] opacity-65">Klik nama untuk memilih</span>
         </div>
-        <div>
-          <label class="block text-xs font-semibold mb-1">PIC</label>
-          <input id="rdRowPic" type="text" placeholder="WL, MD, PW Team, EO, Hamba Tuhan" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        <input id="addRdPic" type="text" placeholder="Pilih dari daftar tim di bawah atau ketik..." class="w-full px-3.5 py-2 rounded-xl bg-black/35 border border-white/20 text-xs font-semibold focus:border-rpGold focus:outline-none" />
+        <div class="pt-1.5 flex flex-wrap gap-1.5 max-h-32 overflow-y-auto no-scrollbar p-1.5 bg-black/30 rounded-xl border border-white/10">
+          ${renderPicSelectorChips('addRdPic')}
         </div>
       </div>
+
       <div>
         <label class="block text-xs font-semibold mb-1">Multimedia / Cue Teknis (Lighting, Sound, PPT, Video)</label>
         <input id="rdRowTech" type="text" placeholder="Setting lighting full, lirik LED, PPT presentasi" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
@@ -7494,14 +7720,19 @@ function openAddRundownRowModal(schId) {
 
 function saveNewRundownRow(schId) {
   const rd = ensureRundownRecord(schId);
+  const sVal = document.getElementById('addRdStartTime').value.trim();
+  const eVal = document.getElementById('addRdEndTime').value.trim();
+  const durVal = document.getElementById('addRdDur').value.trim();
+  const timeFormatted = eVal ? `${sVal}–${eVal}` : sVal;
+
   rd.items.push({
-    time: document.getElementById('rdRowTime').value.trim() || '08.00',
-    duration: document.getElementById('rdRowDur').value.trim() || '10m',
+    time: timeFormatted || '08.00',
+    duration: durVal || '5m',
     segment: document.getElementById('rdRowSeg').value.trim() || 'Segmen Ibadah',
     detail: document.getElementById('rdRowDetail').value.trim() || '-',
     equipment: document.getElementById('rdRowEquip').value.trim() || '-',
     location: document.getElementById('rdRowLoc').value.trim() || 'Main Hall',
-    pic: document.getElementById('rdRowPic').value.trim() || '-',
+    pic: document.getElementById('addRdPic').value.trim() || '-',
     tech: document.getElementById('rdRowTech').value.trim() || '-'
   });
   saveState();
@@ -7514,18 +7745,35 @@ function openEditRundownRowModal(schId, idx) {
   const rd = ensureRundownRecord(schId);
   const row = rd.items[idx];
   if (!row) return;
+  const [startTime, endTime] = splitRundownTime(row.time);
+
   openModal('Edit Segmen Rundown', `
-    <div class="space-y-3 text-xs sm:text-sm">
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-semibold mb-1">Waktu / Jam Sesi</label>
-          <input id="edRdTime" type="text" value="${row.time || ''}" class="w-full px-3 py-2 rounded-xl bg-black/25 border border-white/15" />
+    <div class="space-y-3.5 text-xs sm:text-sm">
+      <!-- 2 Kolom Waktu & Durasi dengan Pergeseran Otomatis -->
+      <div class="p-3.5 rounded-2xl bg-black/30 border border-white/10 space-y-2">
+        <div class="text-xs font-bold text-rpGold flex items-center justify-between">
+          <span>⏰ Waktu / Jam Sesi (2 Kolom)</span>
+          <label class="inline-flex items-center gap-1.5 text-[11px] font-normal text-amber-200 cursor-pointer">
+            <input type="checkbox" id="edRdAutoShift" checked class="accent-amber-400" />
+            <span>Geser otomatis jam segmen selanjutnya</span>
+          </label>
         </div>
-        <div>
-          <label class="block text-xs font-semibold mb-1">Durasi</label>
-          <input id="edRdDur" type="text" value="${row.duration || ''}" class="w-full px-3 py-2 rounded-xl bg-black/25 border border-white/15" />
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-white/80 mb-1">Jam Mulai</label>
+            <input id="edRdStartTime" type="text" value="${startTime}" oninput="autoUpdateRundownDuration()" placeholder="Contoh: 08.55" class="w-full px-3 py-2 rounded-xl bg-black/35 border border-white/20 text-xs font-bold text-rpGold focus:border-rpGold focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-white/80 mb-1">Jam Selesai</label>
+            <input id="edRdEndTime" type="text" value="${endTime}" oninput="autoUpdateRundownDuration()" placeholder="Contoh: 09.00" class="w-full px-3 py-2 rounded-xl bg-black/35 border border-white/20 text-xs font-bold text-rpGold focus:border-rpGold focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-white/80 mb-1">Durasi</label>
+            <input id="edRdDur" type="text" value="${row.duration || ''}" oninput="autoUpdateRundownEndTime()" placeholder="5m / 7m" class="w-full px-3 py-2 rounded-xl bg-black/35 border border-white/20 text-xs font-semibold focus:border-rpGold focus:outline-none" />
+          </div>
         </div>
       </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-semibold mb-1">Segmen Liturgi</label>
@@ -7540,23 +7788,32 @@ function openEditRundownRowModal(schId, idx) {
         <label class="block text-xs font-semibold mb-1">Detail / Lagu & Key</label>
         <textarea id="edRdDetail" rows="2" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15">${row.detail || ''}</textarea>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-semibold mb-1">Equipment</label>
-          <input id="edRdEquip" type="text" value="${row.equipment || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+
+      <div>
+        <label class="block text-xs font-semibold mb-1">Equipment</label>
+        <input id="edRdEquip" type="text" value="${row.equipment || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+      </div>
+
+      <!-- PIC Picker with Team Selector Chips -->
+      <div class="space-y-1.5 p-3.5 rounded-2xl bg-black/25 border border-white/10">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-bold text-rpGold">PIC (Orang / Tim Bertanggung Jawab)</label>
+          <span class="text-[10px] opacity-65">Klik nama di bawah untuk menambah/hapus</span>
         </div>
-        <div>
-          <label class="block text-xs font-semibold mb-1">PIC</label>
-          <input id="edRdPic" type="text" value="${row.pic || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        <input id="edRdPic" type="text" value="${row.pic || ''}" placeholder="Pilih dari daftar tim di bawah atau ketik kustom..." class="w-full px-3.5 py-2 rounded-xl bg-black/35 border border-white/20 text-xs font-semibold focus:border-rpGold focus:outline-none" />
+        <div class="pt-1.5 flex flex-wrap gap-1.5 max-h-32 overflow-y-auto no-scrollbar p-1.5 bg-black/30 rounded-xl border border-white/10">
+          ${renderPicSelectorChips('edRdPic')}
         </div>
       </div>
+
       <div>
         <label class="block text-xs font-semibold mb-1">Multimedia / Cue Teknis</label>
         <input id="edRdTech" type="text" value="${row.tech || ''}" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
       </div>
+
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-white/10 text-xs font-semibold">Batal</button>
-        <button onclick="saveEditedRundownRow('${schId}', ${idx})" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold">Simpan Perubahan</button>
+        <button onclick="saveEditedRundownRow('${schId}', ${idx})" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold shadow-md">Simpan Perubahan</button>
       </div>
     </div>
   `);
@@ -7565,9 +7822,21 @@ function openEditRundownRowModal(schId, idx) {
 function saveEditedRundownRow(schId, idx) {
   const rd = ensureRundownRecord(schId);
   if (!rd.items[idx]) return;
+
+  const sVal = document.getElementById('edRdStartTime').value.trim();
+  const eVal = document.getElementById('edRdEndTime').value.trim();
+  const durVal = document.getElementById('edRdDur').value.trim();
+  const timeFormatted = eVal ? `${sVal}–${eVal}` : sVal;
+
+  const oldTime = rd.items[idx].time;
+  const [oldStart, oldEnd] = splitRundownTime(oldTime);
+  const oldEndMin = parseTimeToMinutes(oldEnd);
+  const newEndMin = parseTimeToMinutes(eVal);
+  const deltaMin = (oldEndMin > 0 && newEndMin > 0) ? (newEndMin - oldEndMin) : 0;
+
   rd.items[idx] = {
-    time: document.getElementById('edRdTime').value.trim(),
-    duration: document.getElementById('edRdDur').value.trim(),
+    time: timeFormatted,
+    duration: durVal || '5m',
     segment: document.getElementById('edRdSeg').value.trim(),
     detail: document.getElementById('edRdDetail').value.trim(),
     equipment: document.getElementById('edRdEquip').value.trim(),
@@ -7575,10 +7844,26 @@ function saveEditedRundownRow(schId, idx) {
     pic: document.getElementById('edRdPic').value.trim(),
     tech: document.getElementById('edRdTech').value.trim()
   };
+
+  const autoShift = document.getElementById('edRdAutoShift')?.checked ?? true;
+  if (autoShift && deltaMin !== 0) {
+    for (let k = idx + 1; k < rd.items.length; k++) {
+      const it = rd.items[k];
+      const [itS, itE] = splitRundownTime(it.time);
+      if (!itS) continue;
+      const itSMin = parseTimeToMinutes(itS) + deltaMin;
+      const itDurMin = parseDurationToMinutes(it.duration) || (itE ? parseTimeToMinutes(itE) - parseTimeToMinutes(itS) : 5);
+      const itEMin = itSMin + itDurMin;
+      it.time = `${formatMinutesToTime(itSMin)}–${formatMinutesToTime(itEMin)}`;
+    }
+    showToast(`Segmen diperbarui & jam ${rd.items.length - idx - 1} segmen berikutnya otomatis digeser (${deltaMin > 0 ? '+' : ''}${deltaMin}m).`);
+  } else {
+    showToast('Segmen rundown diperbarui.');
+  }
+
   saveState();
   closeModal();
   renderCurrentView();
-  showToast('Segmen rundown diperbarui.');
 }
 
 function deleteRundownRow(schId, idx) {
@@ -7637,29 +7922,43 @@ function renderTeamListHtml() {
       return `<span class="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-bold uppercase">${label}</span>`;
     }).join('');
 
-    const photoHtml = m.photo
-      ? `<img src="${m.photo}" alt="${m.nickname}" class="w-9 h-9 rounded-full object-cover border border-rpGold/40 shrink-0" />`
-      : `<div class="w-9 h-9 rounded-full bg-rpGold/20 text-rpGold font-extrabold text-xs flex items-center justify-center shrink-0">${(m.nickname || 'RP').slice(0, 2).toUpperCase()}</div>`;
+    let photoUrl = m.photo || m.avatarUrl;
+    if (!photoUrl && isSelf && APP_STATE.currentUser?.photo) {
+      photoUrl = APP_STATE.currentUser.photo;
+    }
+    if (!photoUrl && m.email && APP_STATE.currentUser?.email && m.email.toLowerCase() === APP_STATE.currentUser.email.toLowerCase()) {
+      photoUrl = APP_STATE.currentUser.photo;
+    }
+    if (!photoUrl) {
+      photoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(m.nickname || m.fullName || 'Member')}&background=E5B567&color=090C11&bold=true`;
+    }
+
+    const photoHtml = `<img src="${photoUrl}" alt="${m.nickname}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(m.nickname || 'Member')}&background=E5B567&color=090C11&bold=true';" class="w-12 h-12 rounded-full object-cover border-2 border-rpGold/40 shadow-sm shrink-0" />`;
 
     return `
-      <div onclick="openMemberDetailModal('${m.id}')" class="apple-card-soft px-4 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:border-rpGold/40 cursor-pointer transition">
-        <div class="flex items-center gap-3 min-w-0">
+      <div onclick="openMemberDetailModal('${m.id}')" class="apple-card-soft p-4 rounded-2xl flex flex-col justify-between gap-3 hover:border-rpGold/50 hover:shadow-lg cursor-pointer transition group">
+        <div class="flex items-start gap-3.5">
           ${photoHtml}
-          <div class="min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-bold truncate">${m.nickname}</span>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-sm font-bold truncate group-hover:text-rpGold transition">${m.nickname}</span>
               <span class="text-xs opacity-60 truncate">(${m.fullName})</span>
               ${isSelf ? '<span class="px-2 py-0.5 rounded-full bg-rpGold text-[#090C11] text-[10px] font-extrabold">Saya</span>' : ''}
             </div>
-            ${m.birthday ? `<div class="text-[10px] opacity-60">🎂 Ultah: ${m.birthday}</div>` : ''}
+            ${m.birthday ? `<div class="text-[10px] opacity-60 mt-0.5">🎂 Ultah: ${m.birthday}</div>` : ''}
           </div>
         </div>
-        <div class="flex flex-wrap items-center gap-1.5">
-          ${branchBadges}
-          ${posBadges}
+
+        <div class="space-y-2 pt-1 border-t border-white/[0.06]">
+          <div class="flex flex-wrap items-center gap-1.5">
+            ${branchBadges}
+            ${posBadges}
+          </div>
           ${canEdit ? `
-            <button onclick="event.stopPropagation(); openEditMemberModal('${m.id}')" class="ml-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-[11px] font-bold">Edit</button>
-            ${isRPM() ? `<button onclick="event.stopPropagation(); confirmDeleteMember('${m.id}')" class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 text-[11px] font-bold">Hapus</button>` : ''}
+            <div class="flex items-center justify-end gap-1.5 pt-1">
+              <button onclick="event.stopPropagation(); openEditMemberModal('${m.id}')" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-[11px] font-bold">Edit</button>
+              ${isRPM() ? `<button onclick="event.stopPropagation(); confirmDeleteMember('${m.id}')" class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 text-[11px] font-bold">Hapus</button>` : ''}
+            </div>
           ` : ''}
         </div>
       </div>`;
@@ -7733,7 +8032,7 @@ function renderTeamTab() {
         </div>
       </div>
 
-      <div id="teamMemberListContainer" class="space-y-2">
+      <div id="teamMemberListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
         ${renderTeamListHtml()}
       </div>
     </div>
