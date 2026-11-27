@@ -420,7 +420,7 @@ const APP_ASSETS = {
       <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">SERVICE RUNDOWN</button>
       <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">PRAYER WALL</button>
       <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">SONG BANK</button>
-      <button data-nav="team" onclick="navigateTo('team')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">TEAM DATABASE</button>
+      <button data-nav="team" onclick="navigateTo('team')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">RP TEAM</button>
     </div>
   </nav>
 </header>
@@ -485,7 +485,7 @@ const APP_ASSETS = {
           <span class="text-xs opacity-50">→</span>
         </button>
         <button onclick="navigateTo('team'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>TEAM DATABASE</span>
+          <span>RP TEAM</span>
           <span class="text-xs opacity-50">→</span>
         </button>
       </div>
@@ -1946,98 +1946,49 @@ function isAssignedWlForSchedule(schId) {
 
 function renderNavigationMenu() {
   const isUserRpm = isRPM();
-  const desktopNav = document.getElementById('desktopNavBar');
-  const mobileNav = document.getElementById('mobileNavBar');
+  const mainNav = document.getElementById('appMainNavBar');
   const drawerNav = document.getElementById('mobileDrawerNavLinks');
 
-  if (desktopNav) {
-    if (isUserRpm) {
-      desktopNav.innerHTML = `
-        <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SCHEDULE</button>
-        <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SETLIST</button>
-        <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Song Bank</button>
-        <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Service Rundown</button>
-        <button data-nav="team" onclick="navigateTo('team')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Team Database</button>
-        <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Prayer Wall</button>
-      `;
-    } else {
-      desktopNav.innerHTML = `
-        <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">JADWAL IBADAH</button>
-        <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">SETLIST & LAGU</button>
-        <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Song Bank</button>
-        <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-semibold transition">Prayer Wall</button>
-      `;
-    }
-  }
-
-  if (mobileNav) {
-    if (isUserRpm) {
-      mobileNav.innerHTML = `
-        <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SCHEDULE</button>
-        <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">SETLIST</button>
-        <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Song Bank</button>
-        <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Rundown</button>
-        <button data-nav="team" onclick="navigateTo('team')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Team</button>
-        <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Prayer</button>
-      `;
-    } else {
-      mobileNav.innerHTML = `
-        <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Jadwal</button>
-        <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Setlist</button>
-        <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Song Bank</button>
-        <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition">Prayer</button>
-      `;
-    }
+  if (mainNav) {
+    mainNav.innerHTML = `
+      <div class="max-w-7xl mx-auto px-4 sm:px-8 py-1.5 flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar">
+        <button data-nav="schedule" onclick="navigateTo('schedule')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">SCHEDULE</button>
+        <button data-nav="setlist" onclick="navigateTo('setlist')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">SETLIST</button>
+        <button data-nav="rundown" onclick="navigateTo('rundown')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">SERVICE RUNDOWN</button>
+        <button data-nav="prayer" onclick="navigateTo('prayer')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">PRAYER WALL</button>
+        <button data-nav="songbank" onclick="navigateTo('songbank')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">SONG BANK</button>
+        <button data-nav="team" onclick="navigateTo('team')" class="nav-pill shrink-0 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition">RP TEAM</button>
+      </div>
+    `;
   }
 
   if (drawerNav) {
-    if (isUserRpm) {
-      drawerNav.innerHTML = `
-        <button onclick="navigateTo('schedule'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>SCHEDULE (Jadwal & Tim)</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
-        <button onclick="navigateTo('setlist'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>SETLIST & Lagu Ibadah</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
-        <button onclick="navigateTo('songbank'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Song Bank</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
-        <button onclick="navigateTo('rundown'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Service Rundown (Liturgi)</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
-        <button onclick="navigateTo('team'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Team Database</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
-        <button onclick="navigateTo('prayer'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Prayer Wall</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
-      `;
-    } else {
-      drawerNav.innerHTML = `
-        <button onclick="navigateTo('schedule'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Jadwal Ibadah</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
-        <button onclick="navigateTo('setlist'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Setlist & Latihan Lagu</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
-        <button onclick="navigateTo('songbank'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Song Bank</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
-        <button onclick="navigateTo('prayer'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
-          <span>Prayer Wall</span>
-          <span class="text-xs opacity-50">→</span>
-        </button>
-      `;
-    }
+    drawerNav.innerHTML = `
+      <button onclick="navigateTo('schedule'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+        <span>SCHEDULE</span>
+        <span class="text-xs opacity-50">→</span>
+      </button>
+      <button onclick="navigateTo('setlist'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+        <span>SETLIST</span>
+        <span class="text-xs opacity-50">→</span>
+      </button>
+      <button onclick="navigateTo('rundown'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+        <span>SERVICE RUNDOWN</span>
+        <span class="text-xs opacity-50">→</span>
+      </button>
+      <button onclick="navigateTo('prayer'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+        <span>PRAYER WALL</span>
+        <span class="text-xs opacity-50">→</span>
+      </button>
+      <button onclick="navigateTo('songbank'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+        <span>SONG BANK</span>
+        <span class="text-xs opacity-50">→</span>
+      </button>
+      <button onclick="navigateTo('team'); toggleMobileDrawer();" class="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 flex items-center justify-between transition">
+        <span>RP TEAM</span>
+        <span class="text-xs opacity-50">→</span>
+      </button>
+    `;
   }
 
   highlightNav();
@@ -2718,6 +2669,39 @@ function renderWlFilteredCards() {
   container.innerHTML = filtered.map(item => renderWlCardItem(item)).join('');
 }
 
+function openEditMemberFromWhitelist(email) {
+  if (!email) return;
+  const lower = email.toLowerCase().trim();
+  let m = (APP_STATE.teamMembers || []).find(x => (x.email || '').toLowerCase() === lower);
+
+  if (!m) {
+    const wlItem = (__cloudWhitelistCache || []).find(w => (w.email || '').toLowerCase() === lower) || {};
+    const fallbackNick = wlItem.name || lower.split('@')[0];
+    m = {
+      id: 'm-' + Date.now(),
+      fullName: wlItem.name || fallbackNick,
+      nickname: fallbackNick,
+      email: lower,
+      role: wlItem.role || 'GENERAL',
+      positions: wlItem.positions || ['Singers'],
+      branches: wlItem.branches || ['putat'],
+      phone: '',
+      birthday: '',
+      instagram: '',
+      tiktok: '',
+      altContact: '',
+      hobby: '',
+      favoriteSong: '',
+      notes: 'Terdaftar via Whitelist Gatekeeper'
+    };
+    APP_STATE.teamMembers.push(m);
+    saveState();
+  }
+
+  // Open the full Edit Profil modal
+  openEditMemberModal(m.id);
+}
+
 function renderWlCardItem(item) {
   const isMaster = item.email.toLowerCase() === MASTER_SUPER_ADMIN.toLowerCase();
   const mem = (APP_STATE.teamMembers || []).find(m => (m.email || '').toLowerCase() === item.email.toLowerCase());
@@ -2759,16 +2743,17 @@ function renderWlCardItem(item) {
     : '';
 
   return `
-    <div class="p-3 rounded-2xl bg-white/[0.05] hover:bg-white/[0.08] border border-white/10 transition space-y-2">
+    <div onclick="openEditMemberFromWhitelist('${item.email}')" class="p-3 sm:p-3.5 rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] hover:border-rpGold/50 border border-white/10 transition space-y-2 cursor-pointer group" title="Klik untuk edit profil ${nickname || item.email}">
       <div class="flex items-start justify-between gap-3">
         <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-rpGold/30 to-amber-600/30 border border-rpGold/40 text-rpGold font-extrabold flex items-center justify-center text-xs shrink-0 shadow-sm">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-rpGold/30 to-amber-600/30 border border-rpGold/40 text-rpGold font-extrabold flex items-center justify-center text-xs shrink-0 shadow-sm group-hover:scale-105 transition">
             ${initial}
           </div>
           <div class="min-w-0">
-            <div class="font-bold text-white text-xs sm:text-sm flex flex-wrap items-center gap-1.5">
+            <div class="font-bold text-white text-xs sm:text-sm flex flex-wrap items-center gap-1.5 group-hover:text-rpGold transition">
               <span class="truncate">${item.email}</span>
               ${nickname ? `<span class="text-rpGold font-normal text-xs">(${nickname})</span>` : ''}
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 group-hover:bg-rpGold group-hover:text-black font-semibold text-gray-300 transition">✏️ Edit Profil</span>
             </div>
             <div class="flex items-center gap-2 mt-0.5">
               ${roleBadge}
@@ -2776,7 +2761,7 @@ function renderWlCardItem(item) {
           </div>
         </div>
 
-        <div class="flex items-center gap-1.5 shrink-0">
+        <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
           ${inviteBtn}
           ${deleteBtn}
         </div>
@@ -2828,7 +2813,7 @@ function renderWlAddForm() {
       <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-3 text-amber-200 text-xs leading-relaxed">
         <span class="text-xl shrink-0 mt-0.5">ℹ️</span>
         <div>
-          Email yang didaftarkan akan langsung diizinkan login melalui Google dan otomatis terdaftar ke <strong>Team Database</strong> agar siap dialokasikan ke jadwal pelayanan.
+          Email yang didaftarkan akan langsung diizinkan login melalui Google dan otomatis terdaftar ke <strong>RP TEAM</strong> agar siap dialokasikan ke jadwal pelayanan.
         </div>
       </div>
 
@@ -2994,12 +2979,12 @@ async function addWhitelistEmail() {
     });
     const data = await res.json();
     if (data.success) {
-      showToast(data.message || ("Email " + email + " berhasil ditambahkan ke Cloud & Team Database."));
+      showToast(data.message || ("Email " + email + " berhasil ditambahkan ke Cloud & RP TEAM."));
     } else {
-      showToast(data.message || "Tersimpan di Team Database lokal.");
+      showToast(data.message || "Tersimpan di RP TEAM lokal.");
     }
   } catch (err) {
-    showToast("Email " + email + " disimpan di Team Database lokal.");
+    showToast("Email " + email + " disimpan di RP TEAM lokal.");
   }
 
   syncStateToCloud();
@@ -3141,7 +3126,7 @@ function openMandatoryProfileModal(member) {
         <div>
           <h4 class="font-bold text-amber-300 text-sm">Selamat Datang di Royal Priesthood!</h4>
           <p class="text-xs opacity-85 mt-1 leading-relaxed">
-            Akun Google Anda (<strong>${m.email || APP_STATE.currentUser?.email}</strong>) terhubung ke Team Database. Mohon lengkapi profil pelayanan Anda di bawah ini agar koordinasi jadwal dan briefing ibadah dapat tersampaikan dengan lancar.
+            Akun Google Anda (<strong>${m.email || APP_STATE.currentUser?.email}</strong>) terhubung ke RP TEAM. Mohon lengkapi profil pelayanan Anda di bawah ini agar koordinasi jadwal dan briefing ibadah dapat tersampaikan dengan lancar.
           </p>
         </div>
       </div>
@@ -8003,8 +7988,8 @@ function renderTeamTab() {
     <div class="space-y-6">
       <div class="apple-card p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div class="text-xs uppercase tracking-widest text-rpGold font-bold">Team Database</div>
-          <h2 class="text-xl sm:text-2xl font-bold mt-0.5">Database Tim Pelayanan Royal Priesthood & Lintas Divisi</h2>
+          <div class="text-xs uppercase tracking-widest text-rpGold font-bold">RP TEAM</div>
+          <h2 class="text-xl sm:text-2xl font-bold mt-0.5">Direktori & Profil Pelayanan RP TEAM</h2>
           <p class="text-xs sm:text-sm opacity-75 mt-1">
             Klik nama anggota untuk melihat profil lengkap. Pelayan yang login dengan Gmail dapat melengkapi/memperbarui profil pribadinya.
           </p>
@@ -8233,7 +8218,7 @@ function collectMemberFormValues() {
 }
 
 function openNewMemberModal() {
-  openModal('Tambah Member Baru ke Team Database', `
+  openModal('Tambah Member Baru ke RP TEAM', `
     ${buildMemberFormHtml({ role: 'GENERAL', positions: ['Singers'] })}
     <div class="flex justify-end gap-2 pt-4">
       <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-white/10 text-xs font-semibold">Batal</button>
@@ -9296,7 +9281,7 @@ function confirmDeleteMember(memberId) {
         <div class="space-y-1.5">
           <h4 class="font-bold text-rose-300 text-sm sm:text-base">Apakah Anda yakin ingin menghapus anggota ini?</h4>
           <p class="text-xs leading-relaxed text-white/90">
-            Data anggota <strong>"${name}"</strong> (${m.fullName || m.nickname}) akan dihapus secara permanen dari <strong>Team Database</strong> dan <strong>Cloud Whitelist</strong>.
+            Data anggota <strong>"${name}"</strong> (${m.fullName || m.nickname}) akan dihapus secara permanen dari <strong>RP TEAM</strong> dan <strong>Cloud Whitelist</strong>.
           </p>
           <div class="p-2.5 rounded-xl bg-black/40 border border-white/10 text-[11px] space-y-1 text-gray-200 mt-2">
             <div>• Email: <strong class="text-white">${m.email || '-'}</strong></div>
@@ -9358,7 +9343,7 @@ async function executeDeleteMember(memberId) {
   syncStateToCloud();
   closeModal();
   renderCurrentView();
-  showToast(`Anggota "${name}" berhasil dihapus dari Team Database.`);
+  showToast(`Anggota "${name}" berhasil dihapus dari RP TEAM.`);
 }
 
 </script>
