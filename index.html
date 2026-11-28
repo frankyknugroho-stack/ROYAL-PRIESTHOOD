@@ -437,7 +437,7 @@ const APP_ASSETS = {
 </header>
 
 <!-- FIXED HEADER SPACER -->
-<div class="header-spacer h-[104px] sm:h-[114px] shrink-0 no-print" aria-hidden="true"></div>
+<div class="header-spacer h-[6.6rem] sm:h-[7.2rem] shrink-0 no-print" aria-hidden="true"></div>
 
 <!-- MOBILE DRAWER -->
 <div id="mobileDrawer" class="no-print fixed inset-0 z-50 hidden">
@@ -516,28 +516,29 @@ const APP_ASSETS = {
 </div>
 
 <!-- HERO WEBSITE HEADER WITH DEDICATED SLIDESHOW STAGE & LOWERED TEXT -->
-<section class="no-print relative overflow-hidden border-b border-white/[0.08] pt-16 sm:pt-20">
+<section class="no-print relative overflow-hidden border-b border-white/[0.08] pt-0">
   <div class="relative flex flex-col justify-between">
-    <!-- 0. DEDICATED WIDESCREEN IMAGE SLIDESHOW BANNER (1920 × 600 PX) -->
-    <div class="relative z-10 max-w-7xl mx-auto w-full px-3 sm:px-6 pt-3 sm:pt-5 pb-2">
-      <div id="widescreenBannerWrapper" class="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-rpGold/40 shadow-2xl bg-black/80 aspect-[16/9] sm:aspect-[21/9] lg:aspect-[1920/600] w-full min-h-[180px] sm:min-h-[250px] md:min-h-[320px] lg:min-h-[380px] max-h-[460px] flex items-center justify-center group touch-pan-y">
-        <img id="widescreenBannerImg" src="" alt="Royal Priesthood Banner" onerror="if (this.src !== APP_ASSETS.HERO_BANNER) this.src = APP_ASSETS.HERO_BANNER;" class="w-full h-full object-cover object-center transition-opacity duration-700 select-none" />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/35 pointer-events-none"></div>
+    <!-- 0. DEDICATED FULL-WIDTH WIDESCREEN IMAGE SLIDESHOW BANNER (1920 × 600 PX) -->
+    <div class="relative z-10 w-full pb-2">
+      <div id="widescreenBannerWrapper" class="relative w-full overflow-hidden border-y border-rpGold/40 shadow-2xl bg-[#070A0F] flex items-center justify-center group touch-pan-y">
+        <div id="widescreenBannerBackdrop" class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-45 pointer-events-none"></div>
+        <img id="widescreenBannerImg" src="" alt="Royal Priesthood Banner" onload="adjustWidescreenBannerLayout()" onerror="if (this.src !== APP_ASSETS.HERO_BANNER) this.src = APP_ASSETS.HERO_BANNER;" class="relative z-[1] w-full h-auto max-h-[340px] sm:max-h-[440px] lg:max-h-[480px] xl:max-h-[560px] object-cover object-center transition-opacity duration-700 select-none block" />
+        <div class="absolute inset-0 z-[2] bg-gradient-to-t from-black/80 via-black/15 to-black/25 pointer-events-none"></div>
         
-        <div id="widescreenBannerCaption" class="absolute bottom-2.5 left-3 right-3 sm:bottom-6 sm:left-8 sm:right-8 text-white z-10 pointer-events-none space-y-0.5">
+        <div id="widescreenBannerCaption" class="absolute bottom-2.5 left-4 right-4 sm:bottom-6 sm:left-10 sm:right-10 max-w-7xl mx-auto text-white z-10 pointer-events-none space-y-0.5">
           <div id="wsBannerTitle" class="text-sm sm:text-2xl md:text-3xl font-extrabold tracking-tight drop-shadow-lg text-rpGold"></div>
           <div id="wsBannerSubtitle" class="text-[10px] sm:text-xs md:text-base opacity-90 drop-shadow font-medium text-gray-200 line-clamp-1 sm:line-clamp-none"></div>
         </div>
 
         <!-- Navigation Buttons -->
-        <button onclick="prevBannerSlide()" class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/25 text-white flex items-center justify-center text-xs sm:text-lg font-bold transition opacity-80 hover:opacity-100 shadow-xl z-20 cursor-pointer" title="Slide Sebelumnya" aria-label="Slide Sebelumnya">‹</button>
-        <button onclick="nextBannerSlide()" class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/25 text-white flex items-center justify-center text-xs sm:text-lg font-bold transition opacity-80 hover:opacity-100 shadow-xl z-20 cursor-pointer" title="Slide Berikutnya" aria-label="Slide Berikutnya">›</button>
+        <button onclick="prevBannerSlide()" class="absolute left-2.5 sm:left-5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/25 text-white flex items-center justify-center text-sm sm:text-lg font-bold transition opacity-80 hover:opacity-100 shadow-xl z-20 cursor-pointer" title="Slide Sebelumnya" aria-label="Slide Sebelumnya">‹</button>
+        <button onclick="nextBannerSlide()" class="absolute right-2.5 sm:right-5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/25 text-white flex items-center justify-center text-sm sm:text-lg font-bold transition opacity-80 hover:opacity-100 shadow-xl z-20 cursor-pointer" title="Slide Berikutnya" aria-label="Slide Berikutnya">›</button>
 
         <!-- Dot Indicators -->
         <div id="widescreenBannerDots" class="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20"></div>
 
         <!-- RPM Upload Button -->
-        <div class="absolute top-2 right-2 sm:top-4 sm:right-4 z-20">
+        <div class="absolute top-2.5 right-3 sm:top-4 sm:right-6 z-20">
           <button onclick="openManageBannersModal()" class="px-2.5 py-1 sm:px-4 sm:py-2 rounded-full bg-black/80 hover:bg-black/95 backdrop-blur-md border border-rpGold/40 text-rpGold text-[9px] sm:text-xs font-bold flex items-center gap-1.5 shadow-2xl transition hover:scale-105 cursor-pointer">
             <span>📷</span> <span class="hidden sm:inline">Kelola / Upload Slide (1920×600)</span><span class="sm:hidden">Upload Slide</span>
           </button>
@@ -9487,6 +9488,26 @@ function initBannerTouchSwipe() {
   }, { passive: true });
 }
 
+function adjustWidescreenBannerLayout() {
+  const img = document.getElementById('widescreenBannerImg');
+  const backdrop = document.getElementById('widescreenBannerBackdrop');
+  if (!img) return;
+  const nw = img.naturalWidth || 0;
+  const nh = img.naturalHeight || 0;
+  if (!nw || !nh) return;
+  const ratio = nw / nh;
+
+  if (backdrop && img.src) {
+    backdrop.style.backgroundImage = `url("${img.src}")`;
+  }
+
+  if (ratio >= 2.2) {
+    img.className = 'relative z-[1] w-full h-auto min-h-[145px] sm:min-h-[220px] max-h-[600px] object-cover object-center transition-opacity duration-700 select-none block';
+  } else {
+    img.className = 'relative z-[1] w-full h-auto lg:h-[460px] xl:h-[520px] object-cover lg:object-contain object-center transition-opacity duration-700 select-none block';
+  }
+}
+
 function renderWidescreenBanner() {
   initBannerTouchSwipe();
   const banners = getWidescreenBanners();
@@ -9495,16 +9516,21 @@ function renderWidescreenBanner() {
   const cur = banners[__wsBannerIdx];
 
   const imgEl = document.getElementById('widescreenBannerImg');
+  const backdropEl = document.getElementById('widescreenBannerBackdrop');
   const titleEl = document.getElementById('wsBannerTitle');
   const subEl = document.getElementById('wsBannerSubtitle');
   const dotsEl = document.getElementById('widescreenBannerDots');
 
   const bannerImgSrc = cur.imageUrl || APP_ASSETS.HERO_BANNER;
+  if (backdropEl) {
+    backdropEl.style.backgroundImage = `url("${bannerImgSrc}")`;
+  }
   if (imgEl) {
     imgEl.style.opacity = '0.4';
     setTimeout(() => {
       imgEl.src = bannerImgSrc;
       imgEl.style.opacity = '1';
+      if (imgEl.complete) adjustWidescreenBannerLayout();
     }, 120);
   }
 
