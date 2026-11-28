@@ -70,6 +70,9 @@
     html.light .text-amber-300 {
       color: #92400E !important;
     }
+    html.light .text-emerald-200, html.light .text-emerald-300 {
+      color: #065F46 !important;
+    }
     html.light .text-rpGold {
       color: #B45309 !important;
     }
@@ -4325,20 +4328,33 @@ function renderScheduleTab() {
   `).join('');
 
   const swapsHtml = (APP_STATE.swapRequests || []).map(sw => `
-    <div class="apple-card-soft p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div class="space-y-1 text-xs">
-        <div class="flex items-center gap-2">
-          <span class="font-bold text-sm text-rpGold">${sw.requester} → ${sw.replacement}</span>
-          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${sw.status === 'Disetujui RPM' ? 'bg-emerald-500/20 text-emerald-300' : (sw.status === 'Ditolak' ? 'bg-rose-500/20 text-rose-300' : 'bg-amber-500/20 text-amber-300')}">${sw.status}</span>
+    <div class="apple-card-soft p-4 flex flex-col gap-3">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="space-y-1 text-xs">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-bold text-sm text-rpGold">${sw.requester} → ${sw.replacement}</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${sw.status === 'Disetujui RPM' ? 'bg-emerald-500/20 text-emerald-300' : (sw.status === 'Ditolak' ? 'bg-rose-500/20 text-rose-300' : 'bg-amber-500/20 text-amber-300')}">${sw.status}</span>
+          </div>
+          <div>Dari tugas <strong>${sw.requester}</strong> pada <strong>${sw.fromDate}</strong> (${sw.fromSession}) ditukar dengan <strong>${sw.replacement}</strong> pada <strong>${sw.toDate}</strong> (${sw.toSession}).</div>
+          <div class="opacity-70">Alasan: ${sw.reason || '-'}</div>
         </div>
-        <div>Dari tugas <strong>${sw.requester}</strong> pada <strong>${sw.fromDate}</strong> (${sw.fromSession}) ditukar dengan <strong>${sw.replacement}</strong> pada <strong>${sw.toDate}</strong> (${sw.toSession}).</div>
-        <div class="opacity-70">Alasan: ${sw.reason || '-'}</div>
+        ${isRPM() && sw.status === 'Menunggu Verifikasi Admin' ? `
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="verifySwapRequest('${sw.id}', 'Disetujui RPM')" class="px-3 py-1.5 rounded-full bg-emerald-500 text-black text-xs font-bold">Setujui</button>
+            <button onclick="verifySwapRequest('${sw.id}', 'Ditolak')" class="px-3 py-1.5 rounded-full bg-rose-500/25 text-rose-200 text-xs font-bold">Tolak</button>
+          </div>` : ''}
       </div>
-      ${isRPM() && sw.status === 'Menunggu Verifikasi Admin' ? `
-        <div class="flex items-center gap-2 shrink-0">
-          <button onclick="verifySwapRequest('${sw.id}', 'Disetujui RPM')" class="px-3 py-1.5 rounded-full bg-emerald-500 text-black text-xs font-bold">Setujui</button>
-          <button onclick="verifySwapRequest('${sw.id}', 'Ditolak')" class="px-3 py-1.5 rounded-full bg-rose-500/25 text-rose-200 text-xs font-bold">Tolak</button>
-        </div>` : ''}
+      <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-white/10">
+        <button onclick="copySwapRequestAnnouncement('${sw.id}')" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-[11px] font-semibold transition flex items-center gap-1">
+          <span>📋</span><span>Salin Pengumuman WA</span>
+        </button>
+        <button onclick="shareSwapRequestToGroup('${sw.id}')" class="px-3 py-1.5 rounded-full wa-green-btn text-[11px] font-bold transition flex items-center gap-1">
+          <span>📲</span><span>Share ke WA Group</span>
+        </button>
+        <button onclick="sendSwapRequestToCsRp('${sw.id}')" class="px-3 py-1.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/35 text-emerald-200 text-[11px] font-bold transition flex items-center gap-1">
+          <span>💬</span><span>Kirim Update ke CS RP</span>
+        </button>
+      </div>
     </div>
   `).join('');
 
@@ -4737,47 +4753,268 @@ function saveEditedSchedule(schId) {
   showToast('Formasi jadwal berhasil diperbarui.');
 }
 
+const CS_RP_WHATSAPP_NUMBER = '6281340538536';
+
+function getSwapAffectedPositions(sch, personName) {
+  if (!sch || !sch.assignments || !personName) return '';
+  const lower = personName.trim().toLowerCase();
+  const matched = Object.entries(sch.assignments)
+    .filter(([, arr]) => Array.isArray(arr) && arr.some(n => String(n).trim().toLowerCase() === lower))
+    .map(([pos]) => pos);
+  return matched.join(', ');
+}
+
+function buildSwapAnnouncementText({
+  requester = '',
+  replacement = '',
+  fromDate = '',
+  fromSession = '',
+  branchName = '',
+  toDate = '',
+  toSession = '',
+  reason = '',
+  positionsText = '',
+  status = 'Menunggu Verifikasi Admin'
+} = {}) {
+  const cabangPrefix = branchName ? `${branchName} — ` : '';
+  const statusLabel = status === 'Disetujui RPM'
+    ? 'Disetujui RPM (Jadwal Resmi Diperbarui)'
+    : status;
+
+  let txt = `📢 *PENGUMUMAN UPDATE / TUKAR JADWAL PELAYANAN*\n`;
+  txt += `_Royal Priesthood MDC Service Management_\n\n`;
+  txt += `Shalom tim pelayanan & *CS RP* 🙏\nBerikut informasi perubahan / tukar jadwal pelayanan:\n\n`;
+  txt += `📍 *Jadwal Tugas Asal:*\n`;
+  txt += `• Tanggal: *${fromDate || '-'}*\n`;
+  txt += `• Cabang & Sesi: *${cabangPrefix}${fromSession || '-'}*\n`;
+  if (positionsText) {
+    txt += `• Posisi Pelayanan: *${positionsText}*\n`;
+  }
+  txt += `\n🔄 *Detail Tukar Jadwal:*\n`;
+  txt += `• Yang Mengajukan: *${requester || '-'}*\n`;
+  txt += `• Digantikan / Tukar Dengan: *${replacement || '-'}*\n`;
+  txt += `• Tugas Pengganti: *${toDate || '-'}* (${toSession || '-'})\n`;
+  txt += `• Alasan: ${reason || '-'}\n`;
+  txt += `• Status: *${statusLabel}*\n\n`;
+  txt += `Mohon perhatian rekan-rekan tim di WA Group serta bantuan update data dari *CS RP*. Terima kasih, Tuhan Yesus memberkati! 🙌\n\n`;
+  txt += `🔗 *Buka Aplikasi Royal Priesthood:*\n${window.location.href}`;
+  return txt;
+}
+
+function getSwapFormAnnouncementData() {
+  const requester = document.getElementById('swapRequester')?.value || '';
+  const replacement = document.getElementById('swapReplacement')?.value || '';
+  const fromSchId = document.getElementById('swapFromSch')?.value || '';
+  const toDateIso = document.getElementById('swapToDate')?.value || '';
+  const toSession = document.getElementById('swapToSession')?.value?.trim() || 'Ibadah Reguler';
+  const reason = document.getElementById('swapReason')?.value?.trim() || '';
+
+  const fromSch = APP_STATE.schedules.find(s => s.id === fromSchId) || APP_STATE.schedules[0];
+  const br = fromSch ? APP_STATE.branches.find(b => b.id === fromSch.branchId) : null;
+  const positionsText = getSwapAffectedPositions(fromSch, requester);
+
+  return {
+    requester,
+    replacement,
+    fromSch,
+    fromDate: fromSch ? fromSch.dateLabel : '-',
+    fromSession: fromSch ? fromSch.sessionName : '-',
+    branchName: br ? (br.shortName || br.name) : '',
+    toDate: formatIndoDate(toDateIso),
+    toSession,
+    reason,
+    positionsText,
+    status: 'Menunggu Verifikasi Admin'
+  };
+}
+
+function updateSwapWaPreview(forceReset = false) {
+  const previewEl = document.getElementById('swapWaPreview');
+  if (!previewEl) return;
+  if (!forceReset && previewEl.dataset.manualEdited === 'true') return;
+  if (forceReset) previewEl.dataset.manualEdited = 'false';
+  const data = getSwapFormAnnouncementData();
+  previewEl.value = buildSwapAnnouncementText(data);
+}
+
+function copyTextToClipboard(text, successMsg = 'Teks berhasil disalin ke clipboard!') {
+  if (!text) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast(successMsg);
+    }).catch(() => {
+      fallbackCopyText(text, successMsg);
+    });
+  } else {
+    fallbackCopyText(text, successMsg);
+  }
+}
+
+function fallbackCopyText(text, successMsg) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast(successMsg);
+  } catch (e) {
+    showToast('Gagal menyalin teks. Silakan salin manual.');
+  }
+  document.body.removeChild(ta);
+}
+
+function copySwapWaPreview() {
+  const previewEl = document.getElementById('swapWaPreview');
+  const txt = previewEl ? previewEl.value : buildSwapAnnouncementText(getSwapFormAnnouncementData());
+  copyTextToClipboard(txt, 'Kata-kata pengumuman WA Group tersalin!');
+}
+
+function shareSwapWaPreviewToGroup() {
+  const previewEl = document.getElementById('swapWaPreview');
+  const txt = previewEl ? previewEl.value : buildSwapAnnouncementText(getSwapFormAnnouncementData());
+  window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank', 'noopener,noreferrer');
+}
+
+function sendSwapWaPreviewToCsRp() {
+  const previewEl = document.getElementById('swapWaPreview');
+  const txt = previewEl ? previewEl.value : buildSwapAnnouncementText(getSwapFormAnnouncementData());
+  window.open(`https://wa.me/${CS_RP_WHATSAPP_NUMBER}?text=${encodeURIComponent(txt)}`, '_blank', 'noopener,noreferrer');
+}
+
+function getAnnouncementTextForSwapRecord(sw) {
+  if (!sw) return '';
+  const sch = APP_STATE.schedules.find(s => s.id === sw.fromScheduleId);
+  const br = sch ? APP_STATE.branches.find(b => b.id === sch.branchId) : null;
+  const positionsText = sw.positionsText || getSwapAffectedPositions(sch, sw.requester);
+  return buildSwapAnnouncementText({
+    requester: sw.requester,
+    replacement: sw.replacement,
+    fromDate: sw.fromDate,
+    fromSession: sw.fromSession,
+    branchName: sw.branchName || (br ? (br.shortName || br.name) : ''),
+    toDate: sw.toDate,
+    toSession: sw.toSession,
+    reason: sw.reason,
+    positionsText,
+    status: sw.status
+  });
+}
+
+function copySwapRequestAnnouncement(swapId) {
+  const sw = (APP_STATE.swapRequests || []).find(x => x.id === swapId);
+  if (!sw) return;
+  copyTextToClipboard(getAnnouncementTextForSwapRecord(sw), 'Pengumuman tukar jadwal siap ditempel di WA Group!');
+}
+
+function shareSwapRequestToGroup(swapId) {
+  const sw = (APP_STATE.swapRequests || []).find(x => x.id === swapId);
+  if (!sw) return;
+  const txt = getAnnouncementTextForSwapRecord(sw);
+  window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank', 'noopener,noreferrer');
+}
+
+function sendSwapRequestToCsRp(swapId) {
+  const sw = (APP_STATE.swapRequests || []).find(x => x.id === swapId);
+  if (!sw) return;
+  const txt = getAnnouncementTextForSwapRecord(sw);
+  window.open(`https://wa.me/${CS_RP_WHATSAPP_NUMBER}?text=${encodeURIComponent(txt)}`, '_blank', 'noopener,noreferrer');
+}
+
 function openSwapModal(defaultSchId = '') {
-  const memberOpts = APP_STATE.teamMembers.map(m => `<option value="${m.nickname}">${m.nickname} (${m.fullName})</option>`).join('');
-  const schOpts = APP_STATE.schedules.map(s =>
-    `<option value="${s.id}" ${s.id === defaultSchId ? 'selected' : ''}>${s.dateLabel} — ${s.sessionName}</option>`
-  ).join('');
+  const members = APP_STATE.teamMembers || [];
+  const curNick = APP_STATE.currentUser?.nickname || '';
+  const defaultReq = members.find(m => m.nickname.toLowerCase() === curNick.toLowerCase())?.nickname || (members[0]?.nickname || '');
+  const defaultRep = members.find(m => m.nickname !== defaultReq)?.nickname || defaultReq;
+
+  const reqOpts = members.map(m => `<option value="${m.nickname}" ${m.nickname === defaultReq ? 'selected' : ''}>${m.nickname} (${m.fullName})</option>`).join('');
+  const repOpts = members.map(m => `<option value="${m.nickname}" ${m.nickname === defaultRep ? 'selected' : ''}>${m.nickname} (${m.fullName})</option>`).join('');
+  const schOpts = APP_STATE.schedules.map(s => {
+    const br = APP_STATE.branches.find(b => b.id === s.branchId);
+    const brLabel = br ? `${br.shortName} • ` : '';
+    return `<option value="${s.id}" ${s.id === defaultSchId ? 'selected' : ''}>${s.dateLabel} — ${brLabel}${s.sessionName}</option>`;
+  }).join('');
+
+  const defaultSch = APP_STATE.schedules.find(s => s.id === defaultSchId) || APP_STATE.schedules[0];
+  const defaultBr = defaultSch ? APP_STATE.branches.find(b => b.id === defaultSch.branchId) : null;
+  const initialPreview = buildSwapAnnouncementText({
+    requester: defaultReq,
+    replacement: defaultRep,
+    fromDate: defaultSch ? defaultSch.dateLabel : '-',
+    fromSession: defaultSch ? defaultSch.sessionName : '-',
+    branchName: defaultBr ? (defaultBr.shortName || defaultBr.name) : '',
+    toDate: formatIndoDate('2026-12-25'),
+    toSession: 'Ibadah Gabungan Natal (08.00 & 10.30 WIB)',
+    reason: '',
+    positionsText: getSwapAffectedPositions(defaultSch, defaultReq),
+    status: 'Menunggu Verifikasi Admin'
+  });
 
   openModal('Ajukan Tukar Jadwal', `
-    <div class="space-y-3 text-xs sm:text-sm">
+    <div class="space-y-3.5 text-xs sm:text-sm max-h-[80vh] overflow-y-auto pr-1">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-semibold mb-1">Siapa yang Mengajukan Tukar</label>
-          <select id="swapRequester" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15">${memberOpts}</select>
+          <select id="swapRequester" onchange="updateSwapWaPreview()" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15">${reqOpts}</select>
         </div>
         <div>
           <label class="block text-xs font-semibold mb-1">Tukar dengan Siapa</label>
-          <select id="swapReplacement" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15">${memberOpts}</select>
+          <select id="swapReplacement" onchange="updateSwapWaPreview()" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15">${repOpts}</select>
         </div>
       </div>
 
       <div>
         <label class="block text-xs font-semibold mb-1">Dari Jadwal Tugas Asal</label>
-        <select id="swapFromSch" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15">${schOpts}</select>
+        <select id="swapFromSch" onchange="updateSwapWaPreview()" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15">${schOpts}</select>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-semibold mb-1">Tanggal Tugas Pengganti</label>
-          <input id="swapToDate" type="date" value="2026-12-25" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+          <input id="swapToDate" type="date" value="2026-12-25" onchange="updateSwapWaPreview()" oninput="updateSwapWaPreview()" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
         </div>
         <div>
           <label class="block text-xs font-semibold mb-1">Sesi / Keterangan Tugas Pengganti</label>
-          <input id="swapToSession" type="text" value="Ibadah Gabungan Natal (08.00 & 10.30 WIB)" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+          <input id="swapToSession" type="text" value="Ibadah Gabungan Natal (08.00 & 10.30 WIB)" oninput="updateSwapWaPreview()" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
         </div>
       </div>
 
       <div>
         <label class="block text-xs font-semibold mb-1">Alasan Pergantian / Tukar Jadwal</label>
-        <input id="swapReason" type="text" placeholder="Contoh: Ada tugas pelayanan / luar kota" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
+        <input id="swapReason" type="text" placeholder="Contoh: Ada tugas pelayanan / luar kota" oninput="updateSwapWaPreview()" class="w-full px-3.5 py-2 rounded-xl bg-black/25 border border-white/15" />
       </div>
 
-      <div class="flex justify-end gap-2 pt-2">
+      <!-- AUTO-GENERATED WA GROUP ANNOUNCEMENT & CS RP UPDATE -->
+      <div class="p-3.5 rounded-2xl bg-emerald-500/[0.07] border border-emerald-400/30 space-y-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div class="text-xs font-extrabold text-emerald-300 flex items-center gap-1.5">
+              <span>📢</span><span>Kata-Kata Pengumuman WA Group & Laporan CS RP</span>
+            </div>
+            <div class="text-[11px] opacity-75">Otomatis dibuat sesuai data di atas. Anda bisa langsung salin, share ke WA Group, atau kirim ke CS RP.</div>
+          </div>
+          <button type="button" onclick="updateSwapWaPreview(true)" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[10px] font-semibold transition">🔄 Reset Teks</button>
+        </div>
+
+        <textarea id="swapWaPreview" rows="8" oninput="this.dataset.manualEdited='true'" class="w-full p-3 rounded-xl bg-black/40 border border-white/15 font-mono text-[11px] leading-relaxed text-gray-100 focus:outline-none focus:border-emerald-400 resize-y">${initialPreview}</textarea>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="copySwapWaPreview()" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition flex items-center gap-1.5">
+            <span>📋</span><span>Salin untuk WA Group</span>
+          </button>
+          <button type="button" onclick="shareSwapWaPreviewToGroup()" class="px-3.5 py-2 rounded-xl wa-green-btn text-xs font-bold transition shadow flex items-center gap-1.5">
+            <span>📲</span><span>Share ke WA Group</span>
+          </button>
+          <button type="button" onclick="sendSwapWaPreviewToCsRp()" class="px-3.5 py-2 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/35 border border-emerald-400/40 text-emerald-200 text-xs font-bold transition flex items-center gap-1.5">
+            <span>💬</span><span>Kirim Update ke CS RP</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-white/10">
         <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-white/10 text-xs font-semibold">Batal</button>
         <button onclick="submitSwapRequest()" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold">Kirim Pengajuan</button>
       </div>
@@ -4786,32 +5023,57 @@ function openSwapModal(defaultSchId = '') {
 }
 
 function submitSwapRequest() {
-  const requester = document.getElementById('swapRequester').value;
-  const replacement = document.getElementById('swapReplacement').value;
-  const fromSchId = document.getElementById('swapFromSch').value;
-  const toDateIso = document.getElementById('swapToDate').value;
-  const toSession = document.getElementById('swapToSession').value.trim() || 'Ibadah Reguler';
-  const reason = document.getElementById('swapReason').value.trim();
+  const data = getSwapFormAnnouncementData();
+  const { requester, replacement, fromSch, fromDate, fromSession, branchName, toDate, toSession, reason, positionsText } = data;
 
   if (requester === replacement) return showToast('Pilih anggota pengganti yang berbeda.');
-  const fromSch = APP_STATE.schedules.find(s => s.id === fromSchId) || APP_STATE.schedules[0];
 
-  APP_STATE.swapRequests.unshift({
+  const previewEl = document.getElementById('swapWaPreview');
+  const announcementText = (previewEl && previewEl.value.trim()) ? previewEl.value.trim() : buildSwapAnnouncementText(data);
+
+  const newSwap = {
     id: 'swap-' + Date.now(),
     requester,
     replacement,
     fromScheduleId: fromSch.id,
-    fromDate: fromSch.dateLabel,
-    fromSession: fromSch.sessionName,
-    toDate: formatIndoDate(toDateIso),
+    branchName,
+    positionsText,
+    fromDate,
+    fromSession,
+    toDate,
     toSession,
     reason,
     status: 'Menunggu Verifikasi Admin'
-  });
+  };
+
+  APP_STATE.swapRequests.unshift(newSwap);
   saveState();
-  closeModal();
+  syncStateToCloud();
   renderCurrentView();
-  showToast('Pengajuan tukar jadwal terkirim ke Admin / RPM.');
+  showToast('Pengajuan tukar jadwal terkirim & siap diumumkan ke WA Group / CS RP!');
+
+  openModal('✅ Pengajuan Tukar Jadwal Tersimpan', `
+    <div class="space-y-3.5 text-xs sm:text-sm">
+      <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-400/30 text-emerald-200 text-xs leading-relaxed">
+        Pengajuan tukar jadwal <strong>${requester} → ${replacement}</strong> (${fromDate}) telah disimpan ke daftar verifikasi Admin / RPM. Silakan kirim pengumuman ke <strong>WA Group</strong> dan/atau update ke <strong>CS RP</strong>:
+      </div>
+      <textarea id="swapPostSubmitPreview" rows="9" class="w-full p-3 rounded-xl bg-black/40 border border-white/15 font-mono text-[11px] leading-relaxed text-gray-100 focus:outline-none focus:border-rpGold resize-y">${announcementText}</textarea>
+      <div class="flex flex-wrap items-center gap-2">
+        <button type="button" onclick="copyTextToClipboard(document.getElementById('swapPostSubmitPreview').value, 'Pengumuman WA Group berhasil disalin!')" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition flex items-center gap-1.5">
+          <span>📋</span><span>Salin Teks WA Group</span>
+        </button>
+        <button type="button" onclick="window.open('https://wa.me/?text=' + encodeURIComponent(document.getElementById('swapPostSubmitPreview').value), '_blank', 'noopener,noreferrer')" class="px-3.5 py-2 rounded-xl wa-green-btn text-xs font-bold transition shadow flex items-center gap-1.5">
+          <span>📲</span><span>Share ke WA Group</span>
+        </button>
+        <button type="button" onclick="window.open('https://wa.me/' + CS_RP_WHATSAPP_NUMBER + '?text=' + encodeURIComponent(document.getElementById('swapPostSubmitPreview').value), '_blank', 'noopener,noreferrer')" class="px-3.5 py-2 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/35 border border-emerald-400/40 text-emerald-200 text-xs font-bold transition flex items-center gap-1.5">
+          <span>💬</span><span>Kirim Update ke CS RP</span>
+        </button>
+      </div>
+      <div class="flex justify-end pt-2 border-t border-white/10">
+        <button onclick="closeModal()" class="gold-pill-btn px-5 py-2 rounded-full text-xs font-bold">Selesai</button>
+      </div>
+    </div>
+  `);
 }
 
 function verifySwapRequest(swapId, status) {
@@ -4830,6 +5092,7 @@ function verifySwapRequest(swapId, status) {
     }
   }
   saveState();
+  syncStateToCloud();
   renderCurrentView();
   showToast(`Pengajuan tukar jadwal ${status}.`);
 }
